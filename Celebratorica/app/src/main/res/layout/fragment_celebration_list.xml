@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:id="@+id/coordinator_layout"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:orientation="vertical">
+
+		<android.support.v7.widget.Toolbar
+			android:id="@+id/toolbar"
+			style="@style/Material.Toolbar"
+			android:title="@string/app_name" />
+
+		<android.support.v7.widget.RecyclerView
+			android:id="@+id/celebration_list_view"
+			style="@style/Material.List.WithFloatingActionButton" />
+	</LinearLayout>
+
+	<android.support.design.widget.FloatingActionButton
+		android:id="@+id/add_button"
+		style="@style/Material.FloatingActionButton"
+		android:layout_alignParentBottom="true"
+		android:src="@drawable/ic_add_24dp"
+		app:backgroundTint="@color/primary" />
+</android.support.design.widget.CoordinatorLayout>

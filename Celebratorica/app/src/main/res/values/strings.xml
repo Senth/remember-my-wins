@@ -1,4 +1,15 @@
 <resources>
 	<string name="app_name">Celebratorica</string>
+
+	<!-- Celebrations -->
 	<string name="celebration_header">Celebrations</string>
+	<string name="item_date">Date</string>
+	<string name="item_text">Text</string>
+	<string name="item_add_header">New Item</string>
+	<string name="item_add_discard">Discard new item?</string>
+	<string name="item_add_success">Item created</string>
+
+	<!-- Showcases -->
+	<string name="showcase_add_item_title">Add Item</string>
+	<string name="showcase_add_item_message">Add something that happened today worth celebrating.</string>
 </resources>

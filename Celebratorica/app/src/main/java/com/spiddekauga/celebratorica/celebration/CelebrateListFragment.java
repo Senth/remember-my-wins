@@ -17,6 +17,7 @@ import com.spiddekauga.android.AppFragmentHelper;
 import com.spiddekauga.android.ui.list.ClickListener;
 import com.spiddekauga.android.ui.list.RemoveListener;
 import com.spiddekauga.celebratorica.R;
+import com.spiddekauga.celebratorica.util.Showcases;
 import com.spiddekauga.celebratorica.util.Sqlite;
 import com.spiddekauga.celebratorica.util.SqliteInitializedEvent;
 import com.spiddekauga.utils.EventBus;
@@ -35,6 +36,7 @@ private final List<Celebration> mAddToAdapter = new ArrayList<>();
 private Toolbar mToolbar;
 private CelebrationAdapter mCelebrationAdapter = null;
 private RecyclerView mCelebrationListView = null;
+private FloatingActionButton mAddButton = null;
 
 @Override
 public void onCreate(Bundle savedInstanceState) {
@@ -65,17 +67,13 @@ public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle sa
 	mToolbar = (Toolbar) view.findViewById(R.id.toolbar);
 	AppActivity.getActivity().setSupportActionBar(mToolbar);
 
-	FloatingActionButton addItemButton = (FloatingActionButton) view.findViewById(R.id.add_button);
-	addItemButton.setOnClickListener(new View.OnClickListener() {
+	mAddButton = (FloatingActionButton) view.findViewById(R.id.add_button);
+	mAddButton.setOnClickListener(new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
 			new CelebrateAddFragment().show();
 		}
 	});
-
-	// TODO only show if empty
-//	FloatingActionButton addButton = (FloatingActionButton) view.findViewById(R.id.add_button);
-//	Showcases.ADD_CELEBRATION.show(addButton);
 
 	return view;
 }
@@ -90,6 +88,10 @@ private void populateCelebrations() {
 	if (mCelebrationAdapter.getItemCount() == 0) {
 		List<Celebration> celebrations = mCelebrationRepo.getCelebrations();
 		mCelebrationAdapter.setItems(celebrations);
+
+		if (celebrations.isEmpty()) {
+			Showcases.ADD_CELEBRATION.show(mAddButton);
+		}
 	}
 }
 

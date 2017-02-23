@@ -8,6 +8,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -72,6 +74,7 @@ public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle sa
 			new CelebrationAddFragment().show();
 		}
 	});
+	setHasOptionsMenu(true);
 
 	return view;
 }
@@ -80,6 +83,11 @@ public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle sa
 public void onDestroy() {
 	super.onDestroy();
 	mEventBus.unregister(this);
+}
+
+@Override
+public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+	inflater.inflate(R.menu.menu_default, menu);
 }
 
 private void populateCelebrations() {

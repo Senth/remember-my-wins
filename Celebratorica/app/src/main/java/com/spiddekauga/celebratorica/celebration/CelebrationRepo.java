@@ -23,7 +23,7 @@ private CelebrationRepo() {
  * Get singleton instance
  * @return get instance
  */
-public static CelebrationRepo getInstance() {
+static CelebrationRepo getInstance() {
 	if (mInstance == null) {
 		mInstance = new CelebrationRepo();
 	}
@@ -32,12 +32,20 @@ public static CelebrationRepo getInstance() {
 
 /**
  * Get all celebrations in a specified list
- * @param listId the list id to get the celebration from
  * @return list of all celebrations in the specified list
  */
-List<Celebration> getCelebrations(long listId) {
-	return mSqliteGateway.getCelebrations(listId);
+List<Celebration> getCelebrations() {
+	return mSqliteGateway.getCelebrations(1);
 }
+
+///**
+// * Get all celebrations in a specified list
+// * @param listId the list id to get the celebration from
+// * @return list of all celebrations in the specified list
+// */
+//List<Celebration> getCelebrations(long listId) {
+//	return mSqliteGateway.getCelebrations(listId);
+//}
 
 @SuppressWarnings("unused")
 @Subscribe

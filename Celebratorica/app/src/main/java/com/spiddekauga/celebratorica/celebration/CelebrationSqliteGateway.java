@@ -28,7 +28,10 @@ List<Celebration> getCelebrations(long listId) {
 			resources.getString(R.string.table_item_text) + ", " +
 			resources.getString(R.string.table_item_date) +
 			" FROM " + resources.getString(R.string.table_item) +
-			" WHERE " + resources.getString(R.string.table_list_id) + "=" + listId;
+			" WHERE " + resources.getString(R.string.table_list_id) + "=" + listId +
+			" ORDER BY " +
+			resources.getString(R.string.table_item_date) + " DESC, " +
+			resources.getString(R.string.table_item_id) + " DESC";
 
 
 	List<Celebration> celebrations = new ArrayList<>();
@@ -39,7 +42,7 @@ List<Celebration> getCelebrations(long listId) {
 		int i = 0;
 		celebration.setItemId(cursor.getLong(i++));
 		celebration.setText(cursor.getString(i++));
-		celebration.setDate(cursor.getLong(i++));
+		celebration.setDate(cursor.getLong(i));
 
 		celebrations.add(celebration);
 	}
@@ -58,6 +61,11 @@ void addCelebration(Celebration celebration) {
 	contentValues.put(resources.getString(R.string.table_list_id), celebration.getListId());
 	contentValues.put(resources.getString(R.string.table_item_text), celebration.getText());
 	contentValues.put(resources.getString(R.string.table_item_date), celebration.getDateTime());
+
+	// If we have an id, use that
+	if (celebration.getItemId() != -1) {
+		contentValues.put(resources.getString(R.string.table_item_id), celebration.getItemId());
+	}
 
 	long id = insert(resources.getString(R.string.table_item), contentValues);
 	celebration.setItemId(id);

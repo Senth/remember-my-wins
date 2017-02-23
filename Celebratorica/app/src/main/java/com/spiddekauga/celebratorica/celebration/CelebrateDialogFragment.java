@@ -103,7 +103,7 @@ public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle sa
 			pickDate();
 		}
 	});
-	if (dateValue.isEmpty()) {
+	if (dateValue == null || dateValue.isEmpty()) {
 		clearDate();
 		mDateOriginal = mDateEdit.getText().toString();
 	} else {
@@ -188,5 +188,7 @@ protected void setFields(Celebration celebration) {
 protected void setCelebrationFromFields(Celebration celebration) {
 	celebration.setText(mTextEdit.getText().toString());
 	celebration.setDate(mDateEdit.getText().toString());
+	// TODO set list id
+	celebration.setListId(1);
 }
 }

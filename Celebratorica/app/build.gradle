@@ -1,5 +1,10 @@
 apply plugin: 'com.android.application'
 
+if (project.hasProperty("celebratorica.signing")
+        && new File(project.property("celebratorica.signing")).exists()) {
+    apply from: project.property("celebratorica.signing");
+}
+
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"

@@ -47,9 +47,7 @@ public void onCreate(Bundle savedInstanceState) {
 	mCelebrationAdapter.addSwipeRemoveFunctionality(this, false);
 	mCelebrationAdapter.addEditFunctionality(this);
 
-	if (Sqlite.isInitialized()) {
-		populateCelebrations();
-	}
+	populateCelebrations();
 }
 
 @Nullable
@@ -85,7 +83,7 @@ public void onDestroy() {
 }
 
 private void populateCelebrations() {
-	if (mCelebrationAdapter.getItemCount() == 0) {
+	if (Sqlite.isInitialized() && mAddButton != null && mCelebrationAdapter.getItemCount() == 0) {
 		List<Celebration> celebrations = mCelebrationRepo.getCelebrations();
 		mCelebrationAdapter.setItems(celebrations);
 

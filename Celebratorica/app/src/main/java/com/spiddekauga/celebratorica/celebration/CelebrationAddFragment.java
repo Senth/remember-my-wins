@@ -14,7 +14,7 @@ import com.spiddekauga.utils.EventBus;
 /**
  * Adds a new celebration item to a specific list
  */
-public class CelebrateAddFragment extends CelebrateDialogFragment {
+public class CelebrationAddFragment extends CelebrationDialogFragment {
 @Override
 public boolean onMenuItemClick(MenuItem item) {
 	if (validateTextFields()) {

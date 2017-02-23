@@ -27,8 +27,8 @@ import java.util.GregorianCalendar;
 /**
  * Base class for adding/editing a celebration item
  */
-public abstract class CelebrateDialogFragment extends AppFragment implements Toolbar.OnMenuItemClickListener {
-private static final String TAG = CelebrateDialogFragment.class.getSimpleName();
+public abstract class CelebrationDialogFragment extends AppFragment implements Toolbar.OnMenuItemClickListener {
+private static final String TAG = CelebrationDialogFragment.class.getSimpleName();
 private static final SimpleDateFormat DATE_FORMAT = Celebration.getDateFormat();
 private static final String TEXT_SAVE_KEY = "text";
 private static final String DATE_SAVE_KEY = "date";

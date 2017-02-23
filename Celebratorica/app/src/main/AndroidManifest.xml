@@ -8,7 +8,7 @@
 		android:label="@string/app_name"
 		android:supportsRtl="true"
 		android:theme="@style/Material">
-		<activity android:name=".celebration.CelebrateActivity">
+		<activity android:name=".celebration.CelebrationActivity">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 

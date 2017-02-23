@@ -8,6 +8,7 @@
 	<string name="item_add_header">New Item</string>
 	<string name="item_add_discard">Discard new item?</string>
 	<string name="item_add_success">Item created</string>
+	<string name="item_edit_success">Saved changes</string>
 
 	<!-- Showcases -->
 	<string name="showcase_add_item_title">Add Item</string>

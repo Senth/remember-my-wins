@@ -29,7 +29,7 @@ import java.util.List;
 /**
  * Show all the items in a list
  */
-public class CelebrateListFragment extends AppFragment implements RemoveListener<Celebration>, ClickListener<Celebration> {
+public class CelebrationListFragment extends AppFragment implements RemoveListener<Celebration>, ClickListener<Celebration> {
 private static final EventBus mEventBus = EventBus.getInstance();
 private final CelebrationRepo mCelebrationRepo = CelebrationRepo.getInstance();
 private final List<Celebration> mAddToAdapter = new ArrayList<>();
@@ -71,7 +71,7 @@ public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle sa
 	mAddButton.setOnClickListener(new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			new CelebrateAddFragment().show();
+			new CelebrationAddFragment().show();
 		}
 	});
 
@@ -113,7 +113,9 @@ public void onResume() {
 
 @Override
 public void onClick(Celebration item) {
-	// TODO open edit fragment
+	CelebrationEditFragment celebrationEditFragment = new CelebrationEditFragment();
+	celebrationEditFragment.setEditCelebration(item);
+	celebrationEditFragment.show();
 }
 
 @Override
@@ -138,7 +140,9 @@ public void onCelebration(CelebrationEvent event) {
 		break;
 
 	case EDIT:
-		mCelebrationAdapter.notifyItemChanged(event.getCelebration());
+		// Remove and add - Updates the location in the adapter if date was changed
+		mCelebrationAdapter.remove(event.getCelebration());
+		mCelebrationAdapter.addCelebration(event.getCelebration());
 		break;
 
 	case REMOVE:

@@ -1,5 +1,7 @@
 package com.spiddekauga.celebratorica.util;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.view.MenuItem;
 
 import com.spiddekauga.android.feedback.FeedbackFragment;
@@ -19,6 +21,11 @@ protected void onFirstTime() {
 @Override
 public boolean onOptionsItemSelected(MenuItem item) {
 	switch (item.getItemId()) {
+	case R.id.action_open_article:
+		Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(AppActivity.getActivity().getResources().getString(R.string.article_url)));
+		startActivity(browserIntent);
+		return true;
+
 	case R.id.action_feedback:
 		FeedbackFragment feedbackFragment = new FeedbackFragment();
 		feedbackFragment.show();

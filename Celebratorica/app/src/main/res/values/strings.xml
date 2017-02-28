@@ -10,6 +10,10 @@
 	<string name="item_add_success">Item created</string>
 	<string name="item_edit_success">Saved changes</string>
 
+	<!-- Menus -->
+	<string name="open_article_menu">Open article</string>
+	<string name="article_url" translatable="false">https://matteusmagnusson.com/celebrate-little-things-life/?utm_campaign=celebratorica&amp;utm_medium=menu&amp;utm_source=celebratorica</string>
+
 	<!-- Showcases -->
 	<string name="showcase_add_item_title">Add Item</string>
 	<string name="showcase_add_item_message">Add something that happened today worth celebrating.</string>

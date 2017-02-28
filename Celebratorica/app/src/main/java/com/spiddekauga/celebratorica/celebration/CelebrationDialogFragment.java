@@ -50,6 +50,10 @@ private String mTextOriginal = "";
 private String mDateOriginal = "";
 private DatePickerDialog mDatePickerDialog;
 
+protected EditText getTextField() {
+	return mTextEdit;
+}
+
 /**
  * Validate all text fields
  * @return true if all text fields are valid

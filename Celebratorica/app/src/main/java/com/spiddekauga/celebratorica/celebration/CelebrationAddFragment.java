@@ -7,6 +7,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.spiddekauga.android.AppFragmentHelper;
 import com.spiddekauga.android.ui.SnackbarHelper;
 import com.spiddekauga.celebratorica.R;
 import com.spiddekauga.utils.EventBus;
@@ -38,6 +39,9 @@ private void addCelebration() {
 @Override
 public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 	View view = super.onCreateView(inflater, container, savedInstanceState);
+
+	AppFragmentHelper.focusEditText(getTextField());
+
 
 	setBackMessage(R.string.item_add_discard);
 

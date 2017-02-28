@@ -176,7 +176,9 @@ public void onResume() {
  */
 protected void setFields(Celebration celebration) {
 	if (celebration != null) {
+		mTextOriginal = celebration.getText();
 		mTextEdit.setText(celebration.getText());
+		mDateOriginal = celebration.getDate();
 		mDateEdit.setText(celebration.getDate());
 	}
 }

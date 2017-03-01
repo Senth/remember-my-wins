@@ -11,4 +11,9 @@
 		android:id="@+id/action_feedback"
 		android:title="@string/feedback_menu"
 		app:showAsAction="never" />
+
+	<item
+		android:id="@+id/action_legal"
+		android:title="@string/legal_title"
+		app:showAsAction="never" />
 </menu>

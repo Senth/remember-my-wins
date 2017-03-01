@@ -5,7 +5,9 @@ import android.net.Uri;
 import android.view.MenuItem;
 
 import com.spiddekauga.android.feedback.FeedbackFragment;
+import com.spiddekauga.android.util.DocumentChangeChecker;
 import com.spiddekauga.celebratorica.R;
+import com.spiddekauga.celebratorica.settings.SettingsActivity;
 
 /**
  * Base activity for all activities in this app
@@ -16,6 +18,14 @@ protected void onFirstTime() {
 	super.onFirstTime();
 
 	Sqlite.init();
+	checkDocumentUpdates();
+}
+
+private void checkDocumentUpdates() {
+	DocumentChangeChecker documentChangeChecker = DocumentChangeChecker.getInstance();
+
+	// Privacy Policy
+	documentChangeChecker.checkDocument(R.raw.privacy_policy, R.string.legal_privacy_policy_title, R.string.legal_privacy_policy_changed);
 }
 
 @Override
@@ -29,6 +39,10 @@ public boolean onOptionsItemSelected(MenuItem item) {
 	case R.id.action_feedback:
 		FeedbackFragment feedbackFragment = new FeedbackFragment();
 		feedbackFragment.show();
+		return true;
+
+	case R.id.action_legal:
+		AppActivity.switchTo(SettingsActivity.class);
 		return true;
 
 	default:

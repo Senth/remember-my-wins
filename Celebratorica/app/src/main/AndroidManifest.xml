@@ -18,6 +18,12 @@
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
+
+		<!-- Settings -->
+		<activity android:name=".settings.SettingsActivity" />
+
+		<!-- Info -->
+		<activity android:name="com.spiddekauga.android.info.InfoActivity" />
 	</application>
 
 </manifest>

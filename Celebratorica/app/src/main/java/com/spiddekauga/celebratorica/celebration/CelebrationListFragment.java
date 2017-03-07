@@ -35,7 +35,6 @@ public class CelebrationListFragment extends AppFragment implements RemoveListen
 private static final EventBus mEventBus = EventBus.getInstance();
 private final CelebrationRepo mCelebrationRepo = CelebrationRepo.getInstance();
 private final List<Celebration> mAddToAdapter = new ArrayList<>();
-private Toolbar mToolbar;
 private CelebrationAdapter mCelebrationAdapter = null;
 private RecyclerView mCelebrationListView = null;
 private FloatingActionButton mAddButton = null;
@@ -48,8 +47,6 @@ public void onCreate(Bundle savedInstanceState) {
 	mCelebrationAdapter = new CelebrationAdapter();
 	mCelebrationAdapter.addSwipeRemoveFunctionality(this, false);
 	mCelebrationAdapter.addEditFunctionality(this);
-
-	populateCelebrations();
 }
 
 @Nullable
@@ -64,8 +61,8 @@ public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle sa
 	mCelebrationListView.setLayoutManager(layoutManager);
 	mCelebrationListView.setAdapter(mCelebrationAdapter);
 
-	mToolbar = (Toolbar) view.findViewById(R.id.toolbar);
-	AppActivity.getActivity().setSupportActionBar(mToolbar);
+	Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
+	AppActivity.getActivity().setSupportActionBar(toolbar);
 
 	mAddButton = (FloatingActionButton) view.findViewById(R.id.add_button);
 	mAddButton.setOnClickListener(new View.OnClickListener() {
@@ -90,6 +87,30 @@ public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 	inflater.inflate(R.menu.menu_default, menu);
 }
 
+@Override
+public void onResume() {
+	super.onResume();
+	mCelebrationListView.invalidate();
+
+	// Add new items to the list after a short delay
+	if (!mAddToAdapter.isEmpty()) {
+		new Handler().postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				for (final Celebration celebration : mAddToAdapter) {
+					mCelebrationAdapter.addCelebration(celebration);
+				}
+				mAddToAdapter.clear();
+			}
+		}, 75);
+	} else {
+		populateCelebrations();
+	}
+}
+
+/**
+ * Populate the list with celebrations. Does nothing if the list is already populated
+ */
 private void populateCelebrations() {
 	if (Sqlite.isInitialized() && mAddButton != null && mCelebrationAdapter.getItemCount() == 0) {
 		List<Celebration> celebrations = mCelebrationRepo.getCelebrations();
@@ -99,22 +120,6 @@ private void populateCelebrations() {
 			Showcases.ADD_CELEBRATION.show(mAddButton);
 		}
 	}
-}
-
-@Override
-public void onResume() {
-	super.onResume();
-	mCelebrationListView.invalidate();
-
-	new Handler().postDelayed(new Runnable() {
-		@Override
-		public void run() {
-			for (final Celebration celebration : mAddToAdapter) {
-				mCelebrationAdapter.addCelebration(celebration);
-			}
-			mAddToAdapter.clear();
-		}
-	}, 50);
 }
 
 @Override

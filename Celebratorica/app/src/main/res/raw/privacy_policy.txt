@@ -1,8 +1,8 @@
-<p><strong>Last update: 1st March, 2017</strong></p>
+<p><strong>Last update: 8th March, 2017</strong></p>
 <p>We strive to make this as human readable as possible. But there might be a bit of legal jargon inside this document.</p>
 <hr>
 <h2>Policy Summary</h2>
-<h4>Contacting the user: Feature request and bug report form</h4>
+<h4>Contacting the user: Feedback and bug report form</h4>
 <p>Personal Data: first name and email address</p>
 <hr>
 <h2>Full Policy</h2>
@@ -11,10 +11,8 @@
 <h4>Contacting the user</h4>
 <p>By filling in the feature request or bug report with their data. The user authorizes this Application to use these details to reply to requests for information, quotes or any other kind of requests.</p>
 <h5>What is collected</h5>
-<ul>
-<li>First Name</li>
-<li>Email Address</li>
-</ul>
+<p>- First Name<br/>
+- Email Address</p>
 <h5>How is it used?</h5>
 <p>Answer the user’s feature request or bug report through email.</p>
 <h3>Do third parties see and/or have access to information obtained by the Application</h3>

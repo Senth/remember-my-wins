@@ -2,6 +2,7 @@ package com.spiddekauga.celebratorica.util;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.view.MenuItem;
 
 import com.spiddekauga.android.feedback.FeedbackFragment;
@@ -13,10 +14,19 @@ import com.spiddekauga.celebratorica.settings.SettingsActivity;
  * Base activity for all activities in this app
  */
 public abstract class AppActivity extends com.spiddekauga.android.AppActivity {
-@Override
-protected void onFirstTime() {
-	super.onFirstTime();
+private static boolean mFirstTime = true;
 
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+	super.onCreate(savedInstanceState);
+
+	if (mFirstTime) {
+		mFirstTime = false;
+		onFirstTime();
+	}
+}
+
+private void onFirstTime() {
 	Sqlite.init();
 	checkDocumentUpdates();
 }

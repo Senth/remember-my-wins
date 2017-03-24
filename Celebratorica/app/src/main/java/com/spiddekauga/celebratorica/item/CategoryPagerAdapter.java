@@ -36,4 +36,10 @@ public CategoryPageFragment instantiateItem(int position) {
 public int getCount() {
 	return mCachedCategories.size();
 }
+
+@Override
+public CharSequence getPageTitle(int position) {
+	Category category = mCachedCategories.get(position);
+	return category.getName();
+}
 }

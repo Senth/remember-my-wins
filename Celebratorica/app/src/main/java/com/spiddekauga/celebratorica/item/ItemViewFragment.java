@@ -3,6 +3,7 @@ package com.spiddekauga.celebratorica.item;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -26,6 +27,7 @@ public class ItemViewFragment extends AppFragment {
 private static final EventBus mEventBus = EventBus.getInstance();
 private static final String PAGE_POSITION_KEY = "page_position";
 private ViewPager mViewPager;
+private TabLayout mTabLayout;
 private CategoryPagerAdapter mPageAdapter;
 
 @Override
@@ -61,6 +63,8 @@ public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle sa
 	setHasOptionsMenu(true);
 	
 	mViewPager = (ViewPager) view.findViewById(R.id.view_pager);
+	mTabLayout = (TabLayout) view.findViewById(R.id.view_pager_tabs);
+	mTabLayout.setupWithViewPager(mViewPager);
 	bindAdapter();
 	
 	return view;

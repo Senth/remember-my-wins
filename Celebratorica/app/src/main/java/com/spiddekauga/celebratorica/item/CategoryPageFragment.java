@@ -110,6 +110,19 @@ public void onResume() {
 	}
 }
 
+@Override
+public void onStop() {
+	Log.d(TAG, "onStop() — Id: " + mCategoryId);
+	super.onStop();
+}
+
+@Override
+public void onDestroy() {
+	Log.d(TAG, "onDestroy() — Id: " + mCategoryId);
+	super.onDestroy();
+	mEventBus.unregister(this);
+}
+
 /**
  * Populate the list with celebrations. Does nothing if the list is already populated
  */
@@ -129,12 +142,6 @@ private void populateItems() {
 //			Showcases.ADD_CELEBRATION.show(mAddButton);
 //		}
 	}
-}
-
-@Override
-public void onDestroy() {
-	super.onDestroy();
-	mEventBus.unregister(this);
 }
 
 private void readArguments() {

@@ -69,7 +69,7 @@ public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle sa
 private void bindAdapter() {
 	if (Sqlite.isInitialized() && mViewPager.getAdapter() == null) {
 		if (mPageAdapter == null) {
-			mPageAdapter = new CategoryPagerAdapter(getFragmentManager());
+			mPageAdapter = new CategoryPagerAdapter(getChildFragmentManager());
 		}
 		mViewPager.setAdapter(mPageAdapter);
 	}

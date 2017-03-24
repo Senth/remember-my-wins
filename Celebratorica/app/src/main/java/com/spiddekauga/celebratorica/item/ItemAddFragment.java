@@ -1,4 +1,4 @@
-package com.spiddekauga.celebratorica.celebration;
+package com.spiddekauga.celebratorica.item;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -15,21 +15,21 @@ import com.spiddekauga.utils.EventBus;
 /**
  * Adds a new celebration item to a specific list
  */
-public class CelebrationAddFragment extends CelebrationDialogFragment {
+public class ItemAddFragment extends ItemDialogFragment {
 @Override
 public boolean onMenuItemClick(MenuItem item) {
 	if (validateTextFields()) {
-		addCelebration();
+		addItem();
 	}
 	return true;
 }
 
-private void addCelebration() {
-	Celebration celebration = new Celebration();
-	setCelebrationFromFields(celebration);
-
-	CelebrationEvent celebrationEvent = new CelebrationEvent(celebration, CelebrationEvent.Actions.ADD);
-	EventBus.getInstance().post(celebrationEvent);
+private void addItem() {
+	Item item = new Item();
+	setItemFromFields(item);
+	
+	ItemEvent itemEvent = new ItemEvent(item, ItemEvent.Actions.ADD);
+	EventBus.getInstance().post(itemEvent);
 	SnackbarHelper.showSnackbar(R.string.item_add_success);
 
 	dismiss();

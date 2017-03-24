@@ -2,13 +2,16 @@
 	<string name="app_name">Celebratorica</string>
 
 	<!-- Celebrations -->
-	<string name="celebration_header">Celebrations</string>
 	<string name="item_date">Date</string>
 	<string name="item_text">Text</string>
 	<string name="item_add_header">New Item</string>
 	<string name="item_add_discard">Discard new item?</string>
 	<string name="item_add_success">Item created</string>
 	<string name="item_edit_success">Saved changes</string>
+
+	<!-- Default Categories -->
+	<string name="category_default_celebrate_name">Celebrate</string>
+	<string name="category_default_gratitude_name">Gratitude</string>
 
 	<!-- Menus -->
 	<string name="open_article_menu">Open article</string>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="sqlite_db_name" translatable="false">DB</string>
-	<integer name="sqlite_db_version">1</integer>
+	<integer name="sqlite_db_version">2</integer>
 
 	<!-- List -->
 	<string name="table_list" translatable="false">list</string>

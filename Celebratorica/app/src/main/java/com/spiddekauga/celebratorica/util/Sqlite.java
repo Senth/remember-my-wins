@@ -48,29 +48,47 @@ public static boolean isInitialized() {
 
 @Override
 public void onCreate(SQLiteDatabase db) {
+	Log.d(TAG, "onCreate()");
+
 	Resources resources = AppActivity.getActivity().getResources();
 	createListTable(resources, db);
 	createItemTable(resources, db);
-
+	
 	// Create default items
 	createDefaultLists(resources, db);
 }
 
 @Override
 public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+	Log.d(TAG, "onUpgrade() — " + oldVersion + " -> " + newVersion);
+	
+	Resources resources = AppActivity.getActivity().getResources();
+	
+	// 1 -> 2: Add new default list
+	if (oldVersion < 2) {
+		String table = resources.getString(R.string.table_list);
+		ContentValues values = new ContentValues();
+		values.put(resources.getString(R.string.table_list_id), 2);
+		values.put(resources.getString(R.string.table_list_order), 2);
+		values.put(resources.getString(R.string.table_list_name), resources.getString(R.string.category_default_gratitude_name));
+		db.insert(table, null, values);
+	}
 }
 
 private void createListTable(Resources resources, SQLiteDatabase db) {
+	Log.d(TAG, "createListTable()");
+	
 	String sql = "CREATE TABLE IF NOT EXISTS " + resources.getString(R.string.table_list) + " (" +
 			resources.getString(R.string.table_list_id) + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
 			resources.getString(R.string.table_list_order) + " INTEGER, " +
 			resources.getString(R.string.table_list_name) + " TEXT)";
-
+	
 	db.execSQL(sql);
 }
 
 private void createItemTable(Resources resources, SQLiteDatabase db) {
+	Log.d(TAG, "createItemTable()");
+	
 	String sql = "CREATE TABLE IF NOT EXISTS " + resources.getString(R.string.table_item) + " (" +
 			resources.getString(R.string.table_item_id) + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
 			resources.getString(R.string.table_list_id) + " INTEGER, " +
@@ -81,11 +99,19 @@ private void createItemTable(Resources resources, SQLiteDatabase db) {
 }
 
 private void createDefaultLists(Resources resources, SQLiteDatabase db) {
+	Log.d(TAG, "createDefaultLists()");
+	
 	String table = resources.getString(R.string.table_list);
 	ContentValues values = new ContentValues();
 	values.put(resources.getString(R.string.table_list_id), 1);
 	values.put(resources.getString(R.string.table_list_order), 1);
-	values.put(resources.getString(R.string.table_list_name), resources.getString(R.string.celebration_header));
+	values.put(resources.getString(R.string.table_list_name), resources.getString(R.string.category_default_celebrate_name));
+	db.insert(table, null, values);
+	
+	values = new ContentValues();
+	values.put(resources.getString(R.string.table_list_id), 2);
+	values.put(resources.getString(R.string.table_list_order), 2);
+	values.put(resources.getString(R.string.table_list_name), resources.getString(R.string.category_default_gratitude_name));
 	db.insert(table, null, values);
 }
 
@@ -94,7 +120,7 @@ private static class InitTask extends AsyncTask<Void, Void, Sqlite> {
 	protected Sqlite doInBackground(Void... params) {
 		return new Sqlite();
 	}
-
+	
 	@Override
 	protected void onPostExecute(Sqlite sqlite) {
 		if (sqlite != null) {

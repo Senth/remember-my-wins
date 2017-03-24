@@ -11,7 +11,7 @@
 		android:label="@string/app_name"
 		android:supportsRtl="true"
 		android:theme="@style/Material">
-		<activity android:name=".celebration.CelebrationActivity">
+		<activity android:name=".item.ItemActivity">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 

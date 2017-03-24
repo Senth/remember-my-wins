@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="app_name">Celebratorica</string>
-	<string name="celebration_header">Firanden</string>
+	<string name="category_default_celebrate_name">Firanden</string>
 	<string name="item_add_discard">Kasta ny post?</string>
 	<string name="item_add_header">Lägg till post</string>
 	<string name="item_add_success">Post tillagd</string>

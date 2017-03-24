@@ -1,4 +1,4 @@
-package com.spiddekauga.celebratorica.celebration;
+package com.spiddekauga.celebratorica.item;
 
 import android.support.annotation.NonNull;
 
@@ -11,10 +11,10 @@ import java.util.Date;
 /**
  * A celebration item
  */
-class Celebration implements Comparable<Celebration> {
+class Item implements Comparable<Item> {
 private final SimpleDateFormat DATE_FORMAT = getDateFormat();
 private long mItemId = -1;
-private long mListId = -1;
+private long mCategoryId = -1;
 private String mText = "";
 private String mDate = "";
 private long mDateTime = -1;
@@ -34,12 +34,12 @@ void setItemId(long itemId) {
 	mItemId = itemId;
 }
 
-long getListId() {
-	return mListId;
+long getCategoryId() {
+	return mCategoryId;
 }
 
-void setListId(long listId) {
-	mListId = listId;
+void setCategoryId(long categoryId) {
+	mCategoryId = categoryId;
 }
 
 String getText() {
@@ -54,15 +54,15 @@ String getDate() {
 	return mDate;
 }
 
-void setDate(long dateTime) {
-	mDateTime = dateTime;
-	mDate = DATE_FORMAT.format(new Date(dateTime));
-}
-
 void setDate(String date) {
 	mDate = date;
 	ParsePosition parsePosition = new ParsePosition(0);
 	mDateTime = DATE_FORMAT.parse(mDate, parsePosition).getTime();
+}
+
+void setDate(long dateTime) {
+	mDateTime = dateTime;
+	mDate = DATE_FORMAT.format(new Date(dateTime));
 }
 
 long getDateTime() {
@@ -70,7 +70,7 @@ long getDateTime() {
 }
 
 @Override
-public int compareTo(@NonNull Celebration other) {
+public int compareTo(@NonNull Item other) {
 	// This is before
 	if (mDateTime < other.mDateTime) {
 		return -1;
@@ -90,7 +90,7 @@ public int compareTo(@NonNull Celebration other) {
 @Override
 public int hashCode() {
 	int result = (int) (mItemId ^ (mItemId >>> 32));
-	result = 31 * result + (int) (mListId ^ (mListId >>> 32));
+	result = 31 * result + (int) (mCategoryId ^ (mCategoryId >>> 32));
 	return result;
 }
 
@@ -102,10 +102,10 @@ public boolean equals(Object o) {
 	if (o == null || getClass() != o.getClass()) {
 		return false;
 	}
-
-	Celebration that = (Celebration) o;
-
-	return mItemId == that.mItemId && mListId == that.mListId;
+	
+	Item that = (Item) o;
+	
+	return mItemId == that.mItemId && mCategoryId == that.mCategoryId;
 
 }
 }

@@ -1,4 +1,4 @@
-package com.spiddekauga.celebratorica.celebration;
+package com.spiddekauga.celebratorica.item;
 
 import android.os.Bundle;
 import android.support.annotation.MenuRes;
@@ -27,12 +27,13 @@ import java.util.GregorianCalendar;
 /**
  * Base class for adding/editing a celebration item
  */
-public abstract class CelebrationDialogFragment extends AppFragment implements Toolbar.OnMenuItemClickListener {
-private static final String TAG = CelebrationDialogFragment.class.getSimpleName();
-private static final SimpleDateFormat DATE_FORMAT = Celebration.getDateFormat();
+public abstract class ItemDialogFragment extends AppFragment implements Toolbar.OnMenuItemClickListener {
+private static final String TAG = ItemDialogFragment.class.getSimpleName();
+private static final SimpleDateFormat DATE_FORMAT = Item.getDateFormat();
 private static final String TEXT_SAVE_KEY = "text";
 private static final String DATE_SAVE_KEY = "date";
 private static final String ORIGINAL_SAVE_SUFFIX = "_original";
+private static final String CATEGORY_ID_SAKE_KEY = "category_id";
 private final ValidatorGroup mValidatorGroup = new ValidatorGroup();
 private EditText mTextEdit;
 private EditText mDateEdit;
@@ -48,6 +49,7 @@ private final DatePickerDialog.OnDateSetListener mDateSetListener = new DatePick
 };
 private String mTextOriginal = "";
 private String mDateOriginal = "";
+private long mCategoryId = -1;
 private DatePickerDialog mDatePickerDialog;
 
 protected EditText getTextField() {
@@ -62,12 +64,20 @@ protected boolean validateTextFields() {
 	return mValidatorGroup.validate();
 }
 
+/**
+ * Set the category id for this dialog
+ * @param categoryId the category id for this dialog
+ */
+void setCategoryId(long categoryId) {
+	mCategoryId = categoryId;
+}
+
 @Nullable
 @Override
 public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 	Log.d(TAG, "onCreateView()");
-
-	View view = inflater.inflate(R.layout.fragment_celebrate_dialog, container, false);
+	
+	View view = inflater.inflate(R.layout.fragment_item_dialog, container, false);
 
 
 	// Restore saved values
@@ -79,6 +89,11 @@ public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle sa
 		mTextOriginal = savedInstanceState.getString(TEXT_SAVE_KEY + ORIGINAL_SAVE_SUFFIX);
 		dateValue = savedInstanceState.getString(DATE_SAVE_KEY);
 		mDateOriginal = savedInstanceState.getString(DATE_SAVE_KEY + ORIGINAL_SAVE_SUFFIX);
+		mCategoryId = savedInstanceState.getLong(CATEGORY_ID_SAKE_KEY);
+	}
+	
+	if (mCategoryId == -1) {
+		throw new IllegalStateException("List id has not been set");
 	}
 
 
@@ -123,6 +138,7 @@ public void onSaveInstanceState(Bundle outState) {
 	outState.putString(TEXT_SAVE_KEY + ORIGINAL_SAVE_SUFFIX, mTextOriginal);
 	outState.putString(DATE_SAVE_KEY, mDateEdit.getText().toString());
 	outState.putString(DATE_SAVE_KEY + ORIGINAL_SAVE_SUFFIX, mDateOriginal);
+	outState.putLong(CATEGORY_ID_SAKE_KEY, mCategoryId);
 
 	super.onSaveInstanceState(outState);
 }
@@ -175,26 +191,26 @@ public void onResume() {
 }
 
 /**
- * Set fields from a specified celebration item
- * @param celebration celebration item to copy values from
+ * Set fields from a specified item item
+ * @param item item item to copy values from
  */
-protected void setFields(Celebration celebration) {
-	if (celebration != null) {
-		mTextOriginal = celebration.getText();
-		mTextEdit.setText(celebration.getText());
-		mDateOriginal = celebration.getDate();
-		mDateEdit.setText(celebration.getDate());
+protected void setFields(Item item) {
+	if (item != null) {
+		mTextOriginal = item.getText();
+		mTextEdit.setText(item.getText());
+		mDateOriginal = item.getDate();
+		mDateEdit.setText(item.getDate());
+		mCategoryId = item.getCategoryId();
 	}
 }
 
 /**
- * Set a celebration item from the field values
- * @param celebration the celebration to set
+ * Set a item item from the field values
+ * @param item the item to set
  */
-protected void setCelebrationFromFields(Celebration celebration) {
-	celebration.setText(mTextEdit.getText().toString());
-	celebration.setDate(mDateEdit.getText().toString());
-	// TODO set list id
-	celebration.setListId(1);
+protected void setItemFromFields(Item item) {
+	item.setText(mTextEdit.getText().toString());
+	item.setDate(mDateEdit.getText().toString());
+	item.setCategoryId(mCategoryId);
 }
 }

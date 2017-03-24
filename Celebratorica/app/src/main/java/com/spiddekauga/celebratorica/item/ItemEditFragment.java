@@ -1,4 +1,4 @@
-package com.spiddekauga.celebratorica.celebration;
+package com.spiddekauga.celebratorica.item;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -14,10 +14,9 @@ import com.spiddekauga.utils.EventBus;
 /**
  * Edit an existing celebration
  */
-public class CelebrationEditFragment extends CelebrationDialogFragment {
+public class ItemEditFragment extends ItemDialogFragment {
 private static final String ITEM_ID_SAVE_KEY = "item_id";
-private static final String LIST_ID_SAVE_KEY = "list_id";
-private Celebration mCelebration;
+private Item mItem;
 
 @Nullable
 @Override
@@ -25,13 +24,11 @@ public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle sa
 	View view = super.onCreateView(inflater, container, savedInstanceState);
 
 	if (savedInstanceState != null) {
-		long listId = savedInstanceState.getLong(LIST_ID_SAVE_KEY, -1);
 		long itemId = savedInstanceState.getLong(ITEM_ID_SAVE_KEY, -1);
-		mCelebration = new Celebration();
-		mCelebration.setListId(listId);
-		mCelebration.setItemId(itemId);
+		mItem = new Item();
+		mItem.setItemId(itemId);
 	} else {
-		setFields(mCelebration);
+		setFields(mItem);
 	}
 
 	setBackMessage(R.string.discard_changes);
@@ -42,8 +39,7 @@ public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle sa
 
 @Override
 public void onSaveInstanceState(Bundle outState) {
-	outState.putLong(LIST_ID_SAVE_KEY, mCelebration.getListId());
-	outState.putLong(ITEM_ID_SAVE_KEY, mCelebration.getItemId());
+	outState.putLong(ITEM_ID_SAVE_KEY, mItem.getItemId());
 
 	super.onSaveInstanceState(outState);
 }
@@ -62,7 +58,7 @@ protected int getMenu() {
 public boolean onMenuItemClick(MenuItem item) {
 	switch (item.getItemId()) {
 	case R.id.action_save:
-		saveCelebration();
+		saveItem();
 		return true;
 
 	case R.id.action_erase:
@@ -77,10 +73,10 @@ public boolean onMenuItemClick(MenuItem item) {
 /**
  * Save the edited celebration
  */
-private void saveCelebration() {
-	setCelebrationFromFields(mCelebration);
-
-	EventBus.getInstance().post(new CelebrationEvent(mCelebration, CelebrationEvent.Actions.EDIT));
+private void saveItem() {
+	setItemFromFields(mItem);
+	
+	EventBus.getInstance().post(new ItemEvent(mItem, ItemEvent.Actions.EDIT));
 	SnackbarHelper.showSnackbar(R.string.item_edit_success);
 
 	// Go back to list
@@ -91,7 +87,7 @@ private void saveCelebration() {
  * Remove the celebration
  */
 private void removeCelebration() {
-	CelebrationRemoveCommand removeCommand = new CelebrationRemoveCommand(mCelebration);
+	ItemRemoveCommand removeCommand = new ItemRemoveCommand(mItem);
 	removeCommand.execute();
 
 	// Go back to list
@@ -99,10 +95,10 @@ private void removeCelebration() {
 }
 
 /**
- * Set the celebration to be edited. Should be set before calling {@link #show()}
- * @param celebration the celebration to edit
+ * Set the item to be edited. Should be set before calling {@link #show()}
+ * @param item the item to edit
  */
-void setEditCelebration(Celebration celebration) {
-	mCelebration = celebration;
+void setEditCelebration(Item item) {
+	mItem = item;
 }
 }

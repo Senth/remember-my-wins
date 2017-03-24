@@ -1,4 +1,4 @@
-package com.spiddekauga.celebratorica.celebration;
+package com.spiddekauga.celebratorica.item;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -14,19 +14,19 @@ import java.util.List;
 /**
  * Adapter for viewing celebration items
  */
-class CelebrationAdapter extends AdvancedAdapter<Celebration, CelebrationAdapter.ViewHolder> {
+class ItemAdapter extends AdvancedAdapter<Item, ItemAdapter.ViewHolder> {
 
-void addCelebration(Celebration celebration) {
-	List<Celebration> celebrations = getItems();
+void add(Item item) {
+	List<Item> items = getItems();
 	boolean added = false;
-
-	int notifyChangedTo = celebrations.size();
-	for (int i = 0; i < celebrations.size(); i++) {
-		Celebration listCelebration = celebrations.get(i);
-
-		boolean isNewNewer = celebration.compareTo(listCelebration) > 0;
+	
+	int notifyChangedTo = items.size();
+	for (int i = 0; i < items.size(); i++) {
+		Item listItem = items.get(i);
+		
+		boolean isNewNewer = item.compareTo(listItem) > 0;
 		if (isNewNewer) {
-			addItem(i, celebration);
+			add(i, item);
 			added = true;
 			notifyChangedTo = i;
 			break;
@@ -35,7 +35,7 @@ void addCelebration(Celebration celebration) {
 
 	// Add to the end of the list
 	if (!added) {
-		addItem(celebration);
+		super.add(item);
 	}
 
 	// Update count for all later items
@@ -62,10 +62,10 @@ protected ViewHolder onCreateView(ViewGroup parent, int viewType) {
 
 @Override
 protected void onBindView(ViewHolder view, int position) {
-	final Celebration celebration = getItem(position);
-
-	view.mText.setText(celebration.getText());
-	view.mDate.setText(celebration.getDate());
+	final Item item = getItem(position);
+	
+	view.mText.setText(item.getText());
+	view.mDate.setText(item.getDate());
 
 	int count = getItemCount() - position;
 	view.mCount.setText(String.valueOf(count));

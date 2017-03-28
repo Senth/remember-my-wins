@@ -82,13 +82,15 @@ private void bindAdapter() {
 @Override
 public void onViewStateRestored(Bundle savedInstanceState) {
 	super.onViewStateRestored(savedInstanceState);
-	// TODO restore current tab position
+	if (savedInstanceState != null) {
+		mViewPager.setCurrentItem(savedInstanceState.getInt(PAGE_POSITION_KEY, 0));
+	}
 }
 
 @Override
 public void onSaveInstanceState(Bundle outState) {
 	super.onSaveInstanceState(outState);
-	// TODO save current tab position
+	outState.putInt(PAGE_POSITION_KEY, mViewPager.getCurrentItem());
 }
 
 @Override

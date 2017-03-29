@@ -74,18 +74,20 @@ public void onCreate(Bundle savedInstanceState) {
 public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 	readArguments();
 	
-	View view = inflater.inflate(R.layout.fragment_item_page, container, false);
+	return inflater.inflate(R.layout.fragment_item_page, container, false);
+}
+
+@Override
+public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+	super.onViewCreated(view, savedInstanceState);
 	
-	// Item list view
 	mItemListView = (RecyclerView) view.findViewById(R.id.list_item);
 	mItemListView.setHasFixedSize(true);
 	RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
 	mItemListView.setLayoutManager(layoutManager);
 	mItemListView.setAdapter(mItemAdapter);
 	
-	mAddButton = (FloatingActionButton) container.getRootView().findViewById(R.id.add_button);
-	
-	return view;
+	mAddButton = (FloatingActionButton) view.getRootView().findViewById(R.id.add_button);
 }
 
 @Override

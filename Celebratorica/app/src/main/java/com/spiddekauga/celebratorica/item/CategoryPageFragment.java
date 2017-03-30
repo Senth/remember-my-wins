@@ -65,7 +65,6 @@ public void onCreate(Bundle savedInstanceState) {
 	mEventBus.register(this);
 	
 	mItemAdapter = new ItemAdapter();
-	mItemAdapter.addSwipeRemoveFunctionality(this, false);
 	mItemAdapter.addEditFunctionality(this);
 }
 

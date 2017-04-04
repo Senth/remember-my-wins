@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="app_name">Celebratorica</string>
-	<string name="category_default_celebrate_name">Firanden</string>
+	<string name="category_default_celebrate_name">Fira</string>
 	<string name="item_add_discard">Kasta ny post?</string>
 	<string name="item_add_header">Lägg till post</string>
 	<string name="item_add_success">Post tillagd</string>
 	<string name="item_date">Datum</string>
-	<string name="item_edit_success">Spara ändringar</string>
 	<string name="item_text">Text</string>
 	<string name="open_article_menu">Öppna artikel</string>
 	<string name="showcase_add_item_title">Lägg till post</string>
 	<string name="showcase_add_item_message">Lägg till en händelse från idag som är värd att fira.</string>
+	<string name="category_default_gratitude_name">Tacksamhet</string>
+	<string name="category_add_discard">Kasta ny kategori?</string>
+	<string name="category_add_header">Ny kategori</string>
+	<string name="category_add_success">Kategory skapad</string>
+	<string name="category_name">Kategorinamn</string>
 </resources>

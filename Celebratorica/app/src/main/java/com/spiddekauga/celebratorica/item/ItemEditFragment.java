@@ -1,11 +1,7 @@
 package com.spiddekauga.celebratorica.item;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.spiddekauga.android.ui.SnackbarHelper;
 import com.spiddekauga.celebratorica.R;
@@ -18,11 +14,10 @@ public class ItemEditFragment extends ItemDialogFragment {
 private static final String ITEM_ID_SAVE_KEY = "item_id";
 private Item mItem;
 
-@Nullable
 @Override
-public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-	View view = super.onCreateView(inflater, container, savedInstanceState);
-
+public void onViewStateRestored(Bundle savedInstanceState) {
+	super.onViewStateRestored(savedInstanceState);
+	
 	if (savedInstanceState != null) {
 		long itemId = savedInstanceState.getLong(ITEM_ID_SAVE_KEY, -1);
 		mItem = new Item();
@@ -30,17 +25,14 @@ public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle sa
 	} else {
 		setFields(mItem);
 	}
-
+	
 	setBackMessage(R.string.discard_changes);
-
-	return view;
 }
-
 
 @Override
 public void onSaveInstanceState(Bundle outState) {
 	outState.putLong(ITEM_ID_SAVE_KEY, mItem.getItemId());
-
+	
 	super.onSaveInstanceState(outState);
 }
 
@@ -60,36 +52,36 @@ public boolean onMenuItemClick(MenuItem item) {
 	case R.id.action_save:
 		saveItem();
 		return true;
-
+	
 	case R.id.action_erase:
-		removeCelebration();
+		removeItem();
 		return true;
-
+	
 	default:
 		return false;
 	}
 }
 
 /**
- * Save the edited celebration
+ * Save the edited item
  */
 private void saveItem() {
 	setItemFromFields(mItem);
 	
 	EventBus.getInstance().post(new ItemEvent(mItem, ItemEvent.Actions.EDIT));
 	SnackbarHelper.showSnackbar(R.string.item_edit_success);
-
+	
 	// Go back to list
 	getFragmentManager().popBackStackImmediate();
 }
 
 /**
- * Remove the celebration
+ * Remove the item
  */
-private void removeCelebration() {
+private void removeItem() {
 	ItemRemoveCommand removeCommand = new ItemRemoveCommand(mItem);
 	removeCommand.execute();
-
+	
 	// Go back to list
 	getFragmentManager().popBackStackImmediate();
 }
@@ -98,7 +90,7 @@ private void removeCelebration() {
  * Set the item to be edited. Should be set before calling {@link #show()}
  * @param item the item to edit
  */
-void setEditCelebration(Item item) {
+void setEditItem(Item item) {
 	mItem = item;
 }
 }

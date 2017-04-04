@@ -40,6 +40,7 @@ List<Category> getCategories() {
 		
 		categories.add(category);
 	}
+	close(cursor);
 	
 	return categories;
 }
@@ -51,7 +52,7 @@ List<Category> getCategories() {
  */
 List<Item> getItems(long categoryId) {
 	Resources resources = AppActivity.getActivity().getResources();
-
+	
 	String sql = "SELECT " +
 			resources.getString(R.string.table_item_id) + ", " +
 			resources.getString(R.string.table_item_text) + ", " +
@@ -61,8 +62,8 @@ List<Item> getItems(long categoryId) {
 			" ORDER BY " +
 			resources.getString(R.string.table_item_date) + " DESC, " +
 			resources.getString(R.string.table_item_id) + " DESC";
-
-
+	
+	
 	Cursor cursor = rawQuery(sql);
 	List<Item> items = new ArrayList<>(cursor.getCount());
 	while (cursor.moveToNext()) {
@@ -75,8 +76,87 @@ List<Item> getItems(long categoryId) {
 		
 		items.add(item);
 	}
+	close(cursor);
 	
 	return items;
+}
+
+/**
+ * Add a new category. Will automatically set the category id
+ * @param category the category to add
+ */
+void addCategory(Category category) {
+	Resources resources = AppActivity.getActivity().getResources();
+	
+	ContentValues contentValues = new ContentValues();
+	contentValues.put(resources.getString(R.string.table_list_name), category.getName());
+	
+	// Order
+	int order;
+	if (category.getOrder() > 0) {
+		order = category.getOrder();
+	} else {
+		order = getCategoryCount() + 1;
+	}
+	contentValues.put(resources.getString(R.string.table_list_order), order);
+	
+	// Category id
+	if (category.getCategoryId() > 0) {
+		contentValues.put(resources.getString(R.string.table_list_id), category.getCategoryId());
+	}
+	
+	long id = insert(resources.getString(R.string.table_list), contentValues);
+	category.setCategoryId(id);
+}
+
+/**
+ * @return number of categories
+ */
+private int getCategoryCount() {
+	Resources resources = AppActivity.getActivity().getResources();
+	
+	String sql = "SELECT " +
+			resources.getString(R.string.table_list_order) +
+			" FROM " + resources.getString(R.string.table_list) +
+			" ORDER BY " + resources.getString(R.string.table_list_order) + " DESC" +
+			" LIMIT 1";
+	
+	Cursor cursor = rawQuery(sql);
+	int count = 0;
+	if (cursor.moveToNext()) {
+		count = cursor.getInt(0);
+	}
+	close(cursor);
+	
+	return count;
+}
+
+/**
+ * Update a category.
+ * @param category the category to update
+ */
+void updateCategory(Category category) {
+	Resources resources = AppActivity.getActivity().getResources();
+	
+	ContentValues contentValues = new ContentValues(2);
+	contentValues.put(resources.getString(R.string.table_list_name), category.getName());
+	contentValues.put(resources.getString(R.string.table_list_order), category.getOrder());
+	
+	String table = resources.getString(R.string.table_list);
+	String where = resources.getString(R.string.table_list_id) + "=" + category.getCategoryId();
+	update(table, contentValues, where);
+}
+
+/**
+ * Remove category.
+ * @param category the category to remove.
+ */
+void removeCategory(Category category) {
+	Resources resources = AppActivity.getActivity().getResources();
+	
+	String table = resources.getString(R.string.table_list);
+	String where = resources.getString(R.string.table_list_id) + "=" + category.getCategoryId();
+	delete(table, where);
 }
 
 /**
@@ -85,17 +165,17 @@ List<Item> getItems(long categoryId) {
  */
 void addItem(Item item) {
 	Resources resources = AppActivity.getActivity().getResources();
-
+	
 	ContentValues contentValues = new ContentValues();
 	contentValues.put(resources.getString(R.string.table_list_id), item.getCategoryId());
 	contentValues.put(resources.getString(R.string.table_item_text), item.getText());
 	contentValues.put(resources.getString(R.string.table_item_date), item.getDateTime());
-
+	
 	// If we have an id, use that
 	if (item.getItemId() != -1) {
 		contentValues.put(resources.getString(R.string.table_item_id), item.getItemId());
 	}
-
+	
 	long id = insert(resources.getString(R.string.table_item), contentValues);
 	item.setItemId(id);
 }
@@ -106,11 +186,11 @@ void addItem(Item item) {
  */
 void updateItem(Item item) {
 	Resources resources = AppActivity.getActivity().getResources();
-
-	ContentValues contentValues = new ContentValues();
+	
+	ContentValues contentValues = new ContentValues(2);
 	contentValues.put(resources.getString(R.string.table_item_text), item.getText());
 	contentValues.put(resources.getString(R.string.table_item_date), item.getDateTime());
-
+	
 	String table = resources.getString(R.string.table_item);
 	String where = resources.getString(R.string.table_item_id) + "=" + item.getItemId();
 	update(table, contentValues, where);
@@ -122,7 +202,7 @@ void updateItem(Item item) {
  */
 void removeItem(Item item) {
 	Resources resources = AppActivity.getActivity().getResources();
-
+	
 	String table = resources.getString(R.string.table_item);
 	String where = resources.getString(R.string.table_item_id) + "=" + item.getItemId();
 	delete(table, where);

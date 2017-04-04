@@ -20,7 +20,7 @@ CategoryPagerAdapter(@NonNull FragmentManager fragmentManager) {
 	invalidateCache();
 }
 
-public void invalidateCache() {
+void invalidateCache() {
 	mCachedCategories = mItemRepo.getCategories();
 }
 
@@ -41,5 +41,9 @@ public int getCount() {
 public CharSequence getPageTitle(int position) {
 	Category category = mCachedCategories.get(position);
 	return category.getName();
+}
+
+public Category getCategory(int position) {
+	return mCachedCategories.get(position);
 }
 }

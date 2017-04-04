@@ -1,13 +1,20 @@
 <resources>
 	<string name="app_name">Celebratorica</string>
 
-	<!-- Celebrations -->
+	<!-- Items -->
 	<string name="item_date">Date</string>
 	<string name="item_text">Text</string>
 	<string name="item_add_header">New Item</string>
 	<string name="item_add_discard">Discard new item?</string>
 	<string name="item_add_success">Item created</string>
-	<string name="item_edit_success">Saved changes</string>
+	<string name="item_edit_success" translatable="false">@string/edit_success</string>
+
+	<!-- Categories -->
+	<string name="category_name">Category name</string>
+	<string name="category_add_header">New category</string>
+	<string name="category_add_discard">Discard new category?</string>
+	<string name="category_add_success">Category created</string>
+	<string name="category_edit_success" translatable="false">@string/edit_success</string>
 
 	<!-- Default Categories -->
 	<string name="category_default_celebrate_name">Celebrate</string>

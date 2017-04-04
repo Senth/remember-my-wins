@@ -3,6 +3,7 @@ package com.spiddekauga.celebratorica.item;
 import com.spiddekauga.utils.EventBus;
 import com.squareup.otto.Subscribe;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -45,7 +46,7 @@ List<Item> getItems(long categoryId) {
  */
 List<Item> getItems() {
 	// TODO get items from all categories
-	return null;
+	return new ArrayList<>();
 }
 
 /**
@@ -94,5 +95,45 @@ private void editItem(Item item) {
  */
 private void removeItem(Item item) {
 	mSqliteGateway.removeItem(item);
+}
+
+@SuppressWarnings("unused")
+@Subscribe
+public void onCategory(CategoryEvent event) {
+	switch (event.getAction()) {
+	case ADD:
+		addCategory(event.getCategory());
+		break;
+	case EDIT:
+		editCategory(event.getCategory());
+		break;
+	case REMOVE:
+		removeCategory(event.getCategory());
+		break;
+	}
+}
+
+/**
+ * Add a new category. Will automatically set the category id
+ * @param category the category to add
+ */
+private void addCategory(Category category) {
+	mSqliteGateway.addCategory(category);
+}
+
+/**
+ * Update a category.
+ * @param category the category to update
+ */
+private void editCategory(Category category) {
+	mSqliteGateway.updateCategory(category);
+}
+
+/**
+ * Remove category.
+ * @param category the category to remove.
+ */
+private void removeCategory(Category category) {
+	mSqliteGateway.removeCategory(category);
 }
 }

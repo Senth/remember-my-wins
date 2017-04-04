@@ -161,7 +161,7 @@ long getCategoryId() {
 public void onClick(Item item) {
 	if (mCategoryId > 0) {
 		ItemEditFragment celebrationEditFragment = new ItemEditFragment();
-		celebrationEditFragment.setEditCelebration(item);
+		celebrationEditFragment.setEditItem(item);
 		celebrationEditFragment.setCategoryId(mCategoryId);
 		celebrationEditFragment.show();
 	}

@@ -1,28 +1,19 @@
 package com.spiddekauga.celebratorica.item;
 
+import com.spiddekauga.android.util.ObjectEvent;
+
 /**
  * Item event
  */
-class ItemEvent {
+class ItemEvent extends ObjectEvent {
 private final Item mItem;
-private final Actions mAction;
 
-ItemEvent(Item item, Actions action) {
+ItemEvent(Item item, ObjectEvent.Actions action) {
+	super(action);
 	mItem = item;
-	mAction = action;
 }
 
 public Item getItem() {
 	return mItem;
-}
-
-public Actions getAction() {
-	return mAction;
-}
-
-enum Actions {
-	ADD,
-	EDIT,
-	REMOVE,
 }
 }

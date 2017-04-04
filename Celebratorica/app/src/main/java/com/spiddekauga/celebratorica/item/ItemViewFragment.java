@@ -11,6 +11,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 
 import com.spiddekauga.android.AppActivity;
 import com.spiddekauga.android.AppFragment;
@@ -27,8 +29,8 @@ public class ItemViewFragment extends AppFragment {
 private static final EventBus mEventBus = EventBus.getInstance();
 private static final String PAGE_POSITION_KEY = "page_position";
 private ViewPager mViewPager;
-private TabLayout mTabLayout;
 private CategoryPagerAdapter mPageAdapter;
+private TabLayout mTabLayout;
 
 @Override
 public void onCreate(Bundle savedInstanceState) {
@@ -49,18 +51,24 @@ public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle sa
 		@Override
 		public void onClick(View v) {
 			// Current category id
-			int currentItemIndex = mViewPager.getCurrentItem();
-			CategoryPageFragment currentFragment = mPageAdapter.getItem(currentItemIndex);
-			long categoryId = currentFragment.getCategoryId();
+			Category category = getSelectedCategory();
 			
-			if (categoryId > 0) {
+			if (category.getCategoryId() > 0) {
 				ItemAddFragment itemAddFragment = new ItemAddFragment();
-				itemAddFragment.setCategoryId(categoryId);
+				itemAddFragment.setCategoryId(category.getCategoryId());
 				itemAddFragment.show();
 			}
 		}
 	});
 	setHasOptionsMenu(true);
+	
+	ImageButton imageButton = (ImageButton) view.findViewById(R.id.add_category_button);
+	imageButton.setOnClickListener(new View.OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			new CategoryAddFragment().show();
+		}
+	});
 	
 	mViewPager = (ViewPager) view.findViewById(R.id.view_pager);
 	mTabLayout = (TabLayout) view.findViewById(R.id.view_pager_tabs);
@@ -70,19 +78,53 @@ public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle sa
 	return view;
 }
 
+private Category getSelectedCategory() {
+	int currentItemIndex = mViewPager.getCurrentItem();
+	return mPageAdapter.getCategory(currentItemIndex);
+}
+
 private void bindAdapter() {
-	if (Sqlite.isInitialized() && mViewPager.getAdapter() == null) {
+	if (Sqlite.isInitialized() && mViewPager != null && mViewPager.getAdapter() == null) {
 		if (mPageAdapter == null) {
 			mPageAdapter = new CategoryPagerAdapter(getChildFragmentManager());
 		}
 		mViewPager.setAdapter(mPageAdapter);
+		updateLongPressListeners();
 	}
+}
+
+private void updateLongPressListeners() {
+	LinearLayout slidingTabStrip = (LinearLayout) mTabLayout.getChildAt(0);
+	for (int i = 0; i < slidingTabStrip.getChildCount(); i++) {
+		final int position = i;
+		View tabView = slidingTabStrip.getChildAt(position);
+		tabView.setLongClickable(true);
+		tabView.setOnLongClickListener(new View.OnLongClickListener() {
+			@Override
+			public boolean onLongClick(View v) {
+				Category category = mPageAdapter.getCategory(position);
+				
+				if (category != null && category.getCategoryId() > 0) {
+					CategoryEditFragment categoryEditFragment = new CategoryEditFragment();
+					categoryEditFragment.setArguments(category);
+					categoryEditFragment.show();
+				}
+				
+				return true;
+			}
+		});
+	}
+}
+
+@Override
+public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+	inflater.inflate(R.menu.menu_default, menu);
 }
 
 @Override
 public void onViewStateRestored(Bundle savedInstanceState) {
 	super.onViewStateRestored(savedInstanceState);
-	if (savedInstanceState != null) {
+	if (savedInstanceState != null && mViewPager != null) {
 		mViewPager.setCurrentItem(savedInstanceState.getInt(PAGE_POSITION_KEY, 0));
 	}
 }
@@ -94,14 +136,19 @@ public void onSaveInstanceState(Bundle outState) {
 }
 
 @Override
-public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-	inflater.inflate(R.menu.menu_default, menu);
-}
-
-@Override
 public void onDestroy() {
 	super.onDestroy();
 	mEventBus.unregister(this);
+}
+
+@SuppressWarnings("unused")
+@Subscribe
+public void onCategory(CategoryEvent event) {
+	if (mPageAdapter != null) {
+		mPageAdapter.invalidateCache();
+		mPageAdapter.notifyDataSetChanged();
+		updateLongPressListeners();
+	}
 }
 
 @SuppressWarnings("unused")

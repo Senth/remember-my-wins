@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<integer name="item_text_length_max">160</integer>
+	<integer name="category_name_length_max">15</integer>
 </resources>

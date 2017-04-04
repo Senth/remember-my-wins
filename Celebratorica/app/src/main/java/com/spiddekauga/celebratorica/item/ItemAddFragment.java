@@ -13,7 +13,7 @@ import com.spiddekauga.celebratorica.R;
 import com.spiddekauga.utils.EventBus;
 
 /**
- * Adds a new celebration item to a specific list
+ * Adds a new item to a category
  */
 public class ItemAddFragment extends ItemDialogFragment {
 @Override
@@ -31,7 +31,7 @@ private void addItem() {
 	ItemEvent itemEvent = new ItemEvent(item, ItemEvent.Actions.ADD);
 	EventBus.getInstance().post(itemEvent);
 	SnackbarHelper.showSnackbar(R.string.item_add_success);
-
+	
 	dismiss();
 }
 
@@ -39,12 +39,12 @@ private void addItem() {
 @Override
 public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 	View view = super.onCreateView(inflater, container, savedInstanceState);
-
+	
 	AppFragmentHelper.focusEditText(getTextField());
-
-
+	
+	
 	setBackMessage(R.string.item_add_discard);
-
+	
 	return view;
 }
 

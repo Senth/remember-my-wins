@@ -61,8 +61,8 @@ void setCategoryId(long categoryId) {
 
 @Nullable
 @Override
-public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-	Log.d(TAG, "onCreateView()");
+public View onCreateViewImpl(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+	Log.d(TAG, "onCreateViewImpl()");
 	
 	View view = inflater.inflate(R.layout.fragment_item_dialog, container, false);
 	

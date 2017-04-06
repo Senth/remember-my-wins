@@ -14,9 +14,10 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
-import com.spiddekauga.android.AppActivity;
 import com.spiddekauga.android.AppFragment;
+import com.spiddekauga.android.util.ObjectEvent;
 import com.spiddekauga.celebratorica.R;
+import com.spiddekauga.celebratorica.util.AppActivity;
 import com.spiddekauga.celebratorica.util.Sqlite;
 import com.spiddekauga.celebratorica.util.SqliteInitializedEvent;
 import com.spiddekauga.utils.EventBus;
@@ -31,6 +32,7 @@ private static final String PAGE_POSITION_KEY = "page_position";
 private ViewPager mViewPager;
 private CategoryPagerAdapter mPageAdapter;
 private TabLayout mTabLayout;
+private int mPositionAfterUpdate = -1;
 
 @Override
 public void onCreate(Bundle savedInstanceState) {
@@ -38,9 +40,14 @@ public void onCreate(Bundle savedInstanceState) {
 	mEventBus.register(this);
 }
 
+@Override
+public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+	inflater.inflate(R.menu.menu_default, menu);
+}
+
 @Nullable
 @Override
-public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+public View onCreateViewImpl(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 	View view = inflater.inflate(R.layout.fragment_item_view, container, false);
 	
 	Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
@@ -70,9 +77,14 @@ public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle sa
 		}
 	});
 	
+	if (mViewPager != null) {
+		mPositionAfterUpdate = mViewPager.getCurrentItem();
+	}
+	
 	mViewPager = (ViewPager) view.findViewById(R.id.view_pager);
 	mTabLayout = (TabLayout) view.findViewById(R.id.view_pager_tabs);
 	mTabLayout.setupWithViewPager(mViewPager);
+	mPageAdapter = null;
 	bindAdapter();
 	
 	return view;
@@ -117,14 +129,12 @@ private void updateLongPressListeners() {
 }
 
 @Override
-public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-	inflater.inflate(R.menu.menu_default, menu);
-}
-
-@Override
 public void onViewStateRestored(Bundle savedInstanceState) {
 	super.onViewStateRestored(savedInstanceState);
-	if (savedInstanceState != null && mViewPager != null) {
+	if (mPositionAfterUpdate != -1) {
+		mViewPager.setCurrentItem(mPositionAfterUpdate, false);
+		mPositionAfterUpdate = -1;
+	} else if (savedInstanceState != null) {
 		mViewPager.setCurrentItem(savedInstanceState.getInt(PAGE_POSITION_KEY, 0));
 	}
 }
@@ -144,10 +154,36 @@ public void onDestroy() {
 @SuppressWarnings("unused")
 @Subscribe
 public void onCategory(CategoryEvent event) {
-	if (mPageAdapter != null) {
-		mPageAdapter.invalidateCache();
-		mPageAdapter.notifyDataSetChanged();
-		updateLongPressListeners();
+	// Update the tab list
+	switch (event.getAction()) {
+	case ADDED:
+	case EDITED:
+	case REMOVED:
+		if (mPageAdapter != null) {
+			// Get current position
+			mPositionAfterUpdate = mViewPager.getCurrentItem();
+			Category selectedCategory = getSelectedCategory();
+			
+			// Adjust position if we removed an item before the selected item
+			if (event.getAction() == ObjectEvent.Actions.REMOVED) {
+				if (selectedCategory.getOrder() > event.getFirstObject().getOrder()) {
+					mPositionAfterUpdate -= 1;
+				}
+			}
+			// Adjust position if we added an item before the selected item
+			if (event.getAction() == ObjectEvent.Actions.ADDED) {
+				if (selectedCategory.getOrder() > event.getFirstObject().getOrder()) {
+					mPositionAfterUpdate += 1;
+				}
+			}
+			
+			mPageAdapter.invalidateCache();
+			mPageAdapter.notifyDataSetChanged();
+			updateLongPressListeners();
+			
+			mViewPager.setCurrentItem(mPositionAfterUpdate, false);
+		}
+		break;
 	}
 }
 

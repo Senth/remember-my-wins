@@ -3,11 +3,13 @@ package com.spiddekauga.celebratorica.item;
 import android.content.ContentValues;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.util.Log;
 
 import com.spiddekauga.android.sqlite.SqliteGateway;
 import com.spiddekauga.celebratorica.R;
 import com.spiddekauga.celebratorica.util.AppActivity;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +17,36 @@ import java.util.List;
  * Gateway for getting celebration and list items
  */
 class ItemSqliteGateway extends SqliteGateway {
+private static final String TAG = ItemSqliteGateway.class.getSimpleName();
+
+/**
+ * Get the specified category
+ * @param categoryId the category to get
+ * @return category with the categoryId, null if not found
+ */
+Category getCategory(long categoryId) {
+	Resources resources = AppActivity.getActivity().getResources();
+	
+	String sql = "SELECT " +
+			resources.getString(R.string.table_list_name) + ", " +
+			resources.getString(R.string.table_list_order) +
+			" FROM " + resources.getString(R.string.table_list) +
+			" WHERE " + resources.getString(R.string.table_list_id) + "=" + categoryId;
+	
+	Cursor cursor = rawQuery(sql);
+	Category category = null;
+	if (cursor.moveToNext()) {
+		int i = 0;
+		category = new Category();
+		category.setCategoryId(categoryId);
+		category.setName(cursor.getString(i++));
+		category.setOrder(cursor.getInt(i));
+	}
+	close(cursor);
+	
+	return category;
+}
+
 /**
  * Get all categories
  * @return list of all categories
@@ -88,17 +120,28 @@ List<Item> getItems(long categoryId) {
 void addCategory(Category category) {
 	Resources resources = AppActivity.getActivity().getResources();
 	
-	ContentValues contentValues = new ContentValues();
-	contentValues.put(resources.getString(R.string.table_list_name), category.getName());
 	
-	// Order
-	int order;
+	// Update categories after this order
 	if (category.getOrder() > 0) {
-		order = category.getOrder();
-	} else {
-		order = getCategoryCount() + 1;
+		try {
+			String sql = "UPDATE " + resources.getString(R.string.table_list) + " SET " +
+					resources.getString(R.string.table_list_order) + "=" + resources.getString(R.string.table_list_order) + "+1 " +
+					"WHERE " +
+					resources.getString(R.string.table_list_order) + ">=" + category.getOrder();
+			execSQL(sql);
+		} catch (SQLException e) {
+			Log.e(TAG, "removeCategory() — Invalid SQL syntax", e);
+		}
 	}
-	contentValues.put(resources.getString(R.string.table_list_order), order);
+	// Get new order
+	else {
+		category.setOrder(getCategoryCount() + 1);
+	}
+	
+	
+	ContentValues contentValues = new ContentValues();
+	contentValues.put(resources.getString(R.string.table_list_order), category.getOrder());
+	contentValues.put(resources.getString(R.string.table_list_name), category.getName());
 	
 	// Category id
 	if (category.getCategoryId() > 0) {
@@ -157,6 +200,18 @@ void removeCategory(Category category) {
 	String table = resources.getString(R.string.table_list);
 	String where = resources.getString(R.string.table_list_id) + "=" + category.getCategoryId();
 	delete(table, where);
+	
+	// Update order of categories after this category
+	try {
+		String sql = "UPDATE " + table + " SET " +
+				resources.getString(R.string.table_list_order) + "=" + resources.getString(R.string.table_list_order) + "-1 " +
+				"WHERE " +
+				resources.getString(R.string.table_list_order) + ">" + category.getOrder();
+		execSQL(sql);
+	} catch (SQLException e) {
+		Log.e(TAG, "removeCategory() — Invalid SQL syntax", e);
+	}
+	
 }
 
 /**

@@ -1,7 +1,7 @@
 package com.spiddekauga.celebratorica.item;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 
 import com.spiddekauga.android.ui.SnackbarHelper;
@@ -9,11 +9,12 @@ import com.spiddekauga.android.util.ObjectEvent;
 import com.spiddekauga.celebratorica.R;
 import com.spiddekauga.utils.EventBus;
 
+import de.mrapp.android.dialog.MaterialDialog;
+
 /**
  * Edit a category
  */
 public class CategoryEditFragment extends CategoryDialogFragment {
-private static final String TAG = CategoryEditFragment.class.getSimpleName();
 private Category mCategory = new Category();
 
 /**
@@ -41,13 +42,9 @@ protected void onDeclareArguments() {
 public void onViewStateRestored(Bundle savedInstanceState) {
 	super.onViewStateRestored(savedInstanceState);
 	
-	if (savedInstanceState != null) {
-		mCategory.setCategoryId((Long) getArgument(CATEGORY_ID_KEY));
-		mCategory.setName((String) getArgument(NAME_KEY));
-		mCategory.setOrder((Integer) getArgument(ORDER_KEY));
-	} else {
-		Log.w(TAG, "onViewStateRestored() — No arguments set!");
-	}
+	mCategory.setCategoryId((Long) getArgument(CATEGORY_ID_KEY));
+	mCategory.setName((String) getArgument(NAME_KEY));
+	mCategory.setOrder((Integer) getArgument(ORDER_KEY));
 }
 
 @Override
@@ -86,13 +83,26 @@ private void saveCategory() {
 	SnackbarHelper.showSnackbar(R.string.edit_success);
 	
 	// Go back to list
-	getFragmentManager().popBackStackImmediate();
+	dismiss();
 }
 
 /**
  * Remove the category
  */
 private void removeCategory() {
-	// TODO
+	MaterialDialog dialog = new MaterialDialog.Builder(getContext())
+			.setTitle(R.string.category_remove_dialog_title)
+			.setMessage(R.string.category_remove_dialog_message)
+			.setNegativeButton(R.string.cancel, null)
+			.setPositiveButton(R.string.remove, new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					CategoryRemoveCommand removeCommand = new CategoryRemoveCommand(mCategory);
+					removeCommand.execute();
+					
+					dismiss();
+				}
+			})
+			.show();
 }
 }

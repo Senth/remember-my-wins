@@ -24,7 +24,7 @@ private EditText mNameEdit;
 
 @Nullable
 @Override
-public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+public View onCreateViewImpl(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
 	View view = inflater.inflate(R.layout.fragment_category_dialog, container, false);
 	
 	initToolbar(view);

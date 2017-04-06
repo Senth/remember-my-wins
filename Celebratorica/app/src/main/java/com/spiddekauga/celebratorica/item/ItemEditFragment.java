@@ -72,7 +72,7 @@ private void saveItem() {
 	SnackbarHelper.showSnackbar(R.string.item_edit_success);
 	
 	// Go back to list
-	getFragmentManager().popBackStackImmediate();
+	dismiss();
 }
 
 /**
@@ -83,7 +83,7 @@ private void removeItem() {
 	removeCommand.execute();
 	
 	// Go back to list
-	getFragmentManager().popBackStackImmediate();
+	dismiss();
 }
 
 /**

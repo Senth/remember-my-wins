@@ -2,10 +2,8 @@ package com.spiddekauga.celebratorica.item;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 
 import com.spiddekauga.android.AppFragmentHelper;
 import com.spiddekauga.android.ui.SnackbarHelper;
@@ -35,17 +33,12 @@ private void addItem() {
 	dismiss();
 }
 
-@Nullable
 @Override
-public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-	View view = super.onCreateView(inflater, container, savedInstanceState);
+public void onViewCreatedImpl(View view, @Nullable Bundle savedInstanceState) {
+	super.onViewCreatedImpl(view, savedInstanceState);
 	
 	AppFragmentHelper.focusEditText(getTextField());
-	
-	
 	setBackMessage(R.string.item_add_discard);
-	
-	return view;
 }
 
 @Override

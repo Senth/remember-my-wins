@@ -1,5 +1,6 @@
 package com.spiddekauga.celebratorica.item;
 
+import com.spiddekauga.android.util.ObjectEvent;
 import com.spiddekauga.utils.EventBus;
 import com.squareup.otto.Subscribe;
 
@@ -10,6 +11,7 @@ import java.util.List;
  * Controller for getting celebration items and lists
  */
 class ItemRepo {
+private static final EventBus mEventBus = EventBus.getInstance();
 private static ItemRepo mInstance = null;
 private ItemSqliteGateway mSqliteGateway = new ItemSqliteGateway();
 
@@ -50,6 +52,15 @@ List<Item> getItems() {
 }
 
 /**
+ * Get the specified category
+ * @param categoryId the category to get
+ * @return category with the categoryId, null if not found
+ */
+Category getCategory(long categoryId) {
+	return mSqliteGateway.getCategory(categoryId);
+}
+
+/**
  * Get all item lists
  * @return list of all item lists
  */
@@ -62,39 +73,48 @@ List<Category> getCategories() {
 public void onItem(ItemEvent event) {
 	switch (event.getAction()) {
 	case ADD:
-		addItem(event.getItem());
+		addItems(event.getObjects());
+		mEventBus.post(new ItemEvent(event.getObjects(), ObjectEvent.Actions.ADDED));
 		break;
 	case EDIT:
-		editItem(event.getItem());
+		editItems(event.getObjects());
+		mEventBus.post(new ItemEvent(event.getObjects(), ObjectEvent.Actions.EDITED));
 		break;
 	case REMOVE:
-		removeItem(event.getItem());
+		removeItems(event.getObjects());
+		mEventBus.post(new ItemEvent(event.getObjects(), ObjectEvent.Actions.REMOVED));
 		break;
 	}
 }
 
 /**
- * Add a new item. Will automatically set the item id.
- * @param item the item to add
+ * Add new item. Will automatically set the item id if no item id has been specified
+ * @param items the items to add
  */
-private void addItem(Item item) {
-	mSqliteGateway.addItem(item);
+private void addItems(List<Item> items) {
+	for (Item item : items) {
+		mSqliteGateway.addItem(item);
+	}
 }
 
 /**
- * Update a item item.
- * @param item the item to update
+ * Update items
+ * @param items the item to update
  */
-private void editItem(Item item) {
-	mSqliteGateway.updateItem(item);
+private void editItems(List<Item> items) {
+	for (Item item : items) {
+		mSqliteGateway.updateItem(item);
+	}
 }
 
 /**
- * Remove a item item.
- * @param item the item item to remove
+ * Remove items.
+ * @param items the items to remove
  */
-private void removeItem(Item item) {
-	mSqliteGateway.removeItem(item);
+private void removeItems(List<Item> items) {
+	for (Item item : items) {
+		mSqliteGateway.removeItem(item);
+	}
 }
 
 @SuppressWarnings("unused")
@@ -102,38 +122,48 @@ private void removeItem(Item item) {
 public void onCategory(CategoryEvent event) {
 	switch (event.getAction()) {
 	case ADD:
-		addCategory(event.getCategory());
+		addCategories(event.getObjects());
+		mEventBus.post(new CategoryEvent(event.getObjects(), ObjectEvent.Actions.ADDED));
 		break;
 	case EDIT:
-		editCategory(event.getCategory());
+		editCategories(event.getObjects());
+		mEventBus.post(new CategoryEvent(event.getObjects(), ObjectEvent.Actions.EDITED));
 		break;
 	case REMOVE:
-		removeCategory(event.getCategory());
+		removeCategories(event.getObjects());
+		mEventBus.post(new CategoryEvent(event.getObjects(), ObjectEvent.Actions.REMOVED));
 		break;
 	}
 }
 
 /**
- * Add a new category. Will automatically set the category id
- * @param category the category to add
+ * Add new categories. Will automatically set the category id
+ * @param categories the categories to add
  */
-private void addCategory(Category category) {
-	mSqliteGateway.addCategory(category);
+private void addCategories(List<Category> categories) {
+	for (Category category : categories) {
+		mSqliteGateway.addCategory(category);
+	}
 }
 
 /**
- * Update a category.
- * @param category the category to update
+ * Update the specified categories
+ * @param categories the categories to update
  */
-private void editCategory(Category category) {
-	mSqliteGateway.updateCategory(category);
+private void editCategories(List<Category> categories) {
+	for (Category category : categories) {
+		mSqliteGateway.updateCategory(category);
+	}
 }
 
 /**
- * Remove category.
- * @param category the category to remove.
+ * Remove categories
+ * @param categories the categories to remove.
  */
-private void removeCategory(Category category) {
-	mSqliteGateway.removeCategory(category);
+
+private void removeCategories(List<Category> categories) {
+	for (Category category : categories) {
+		mSqliteGateway.removeCategory(category);
+	}
 }
 }

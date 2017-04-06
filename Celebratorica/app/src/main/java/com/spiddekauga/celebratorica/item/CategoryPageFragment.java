@@ -1,6 +1,5 @@
 package com.spiddekauga.celebratorica.item;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -27,14 +26,14 @@ import java.util.List;
 /**
  * Page fragment for showing all the items in a list
  */
-public class CategoryPageFragment extends Fragment implements RemoveListener<Item>, ClickListener<Item> {
+public class CategoryPageFragment extends com.spiddekauga.android.Fragment implements RemoveListener<Item>, ClickListener<Item> {
 static final long DISPLAY_ALL_CATEGORIES = -100;
 private static final String CATEGORY_ID_KEY = "category_id";
 private static final EventBus mEventBus = EventBus.getInstance();
 private static final String TAG = CategoryPageFragment.class.getSimpleName();
-private final ItemRepo mItemRepo = ItemRepo.getInstance();
+private static final ItemRepo mItemRepo = ItemRepo.getInstance();
 private final List<Item> mAddToAdapter = new ArrayList<>();
-private long mCategoryId;
+private Category mCategory;
 private ItemAdapter mItemAdapter = null;
 private RecyclerView mItemListView = null;
 private FloatingActionButton mAddButton;
@@ -60,39 +59,47 @@ static Bundle createArguments(long categoryId) {
 }
 
 @Override
-public void onCreate(Bundle savedInstanceState) {
-	super.onCreate(savedInstanceState);
-	mEventBus.register(this);
-	
-	mItemAdapter = new ItemAdapter();
-	mItemAdapter.addEditFunctionality(this);
+protected void onDeclareArguments() {
+	super.onDeclareArguments();
+	declareArgument(CATEGORY_ID_KEY, ArgumentRequired.REQUIRED);
 }
 
 @Nullable
 @Override
-public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-	readArguments();
-	
+public View onCreateViewImpl(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 	return inflater.inflate(R.layout.fragment_item_page, container, false);
 }
 
 @Override
-public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-	super.onViewCreated(view, savedInstanceState);
-	
-	mItemListView = (RecyclerView) view.findViewById(R.id.list_item);
+protected void onArgumentsSet() {
+	super.onArgumentsSet();
+	mCategory = mItemRepo.getCategory((Long) getArgument(CATEGORY_ID_KEY));
+}
+
+@Override
+public void onViewCreatedImpl(View view, @Nullable Bundle savedInstanceState) {
+	mItemAdapter = new ItemAdapter();
+	mItemAdapter.addEditFunctionality(this);
+	mItemListView = (RecyclerView) mView.findViewById(R.id.list_item);
 	mItemListView.setHasFixedSize(true);
 	RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
 	mItemListView.setLayoutManager(layoutManager);
 	mItemListView.setAdapter(mItemAdapter);
 	
-	mAddButton = (FloatingActionButton) view.getRootView().findViewById(R.id.add_button);
+	mAddButton = (FloatingActionButton) mView.getRootView().findViewById(R.id.add_button);
+}
+
+@Override
+public void onCreate(Bundle savedInstanceState) {
+	super.onCreate(savedInstanceState);
+	mEventBus.register(this);
 }
 
 @Override
 public void onResume() {
-	Log.d(TAG, "onResume() — Id: " + mCategoryId);
+	Log.d(TAG, "onResume() — " + mCategory.getName());
 	super.onResume();
+	
 	mItemListView.invalidate();
 	
 	// Add new items to the list after a short delay
@@ -113,13 +120,13 @@ public void onResume() {
 
 @Override
 public void onStop() {
-	Log.d(TAG, "onStop() — Id: " + mCategoryId);
+	Log.d(TAG, "onStop() — " + mCategory.getName());
 	super.onStop();
 }
 
 @Override
 public void onDestroy() {
-	Log.d(TAG, "onDestroy() — Id: " + mCategoryId);
+	Log.d(TAG, "onDestroy() — " + mCategory.getName());
 	super.onDestroy();
 	mEventBus.unregister(this);
 }
@@ -130,10 +137,10 @@ public void onDestroy() {
 private void populateItems() {
 	if (Sqlite.isInitialized() && mAddButton != null && mItemAdapter.getItemCount() == 0) {
 		List<Item> items;
-		if (mCategoryId == DISPLAY_ALL_CATEGORIES) {
+		if (mCategory.getCategoryId() == DISPLAY_ALL_CATEGORIES) {
 			items = mItemRepo.getItems();
 		} else {
-			items = mItemRepo.getItems(mCategoryId);
+			items = mItemRepo.getItems(mCategory.getCategoryId());
 		}
 		mItemAdapter.setItems(items);
 		
@@ -145,24 +152,12 @@ private void populateItems() {
 	}
 }
 
-private void readArguments() {
-	Bundle arguments = getArguments();
-	mCategoryId = arguments.getLong(CATEGORY_ID_KEY, -1);
-}
-
-/**
- * @return get the category id for this fragment
- */
-long getCategoryId() {
-	return mCategoryId;
-}
-
 @Override
 public void onClick(Item item) {
-	if (mCategoryId > 0) {
+	if (mCategory.getCategoryId() > 0) {
 		ItemEditFragment celebrationEditFragment = new ItemEditFragment();
 		celebrationEditFragment.setEditItem(item);
-		celebrationEditFragment.setCategoryId(mCategoryId);
+		celebrationEditFragment.setCategoryId(mCategory.getCategoryId());
 		celebrationEditFragment.show();
 	}
 }
@@ -177,27 +172,27 @@ public void onRemoved(Item item) {
 @Subscribe
 public void onItem(ItemEvent event) {
 	// Only handle events for our list
-	if (event.getItem().getCategoryId() == mCategoryId) {
+	if (event.getFirstObject().getCategoryId() == mCategory.getCategoryId()) {
 		switch (event.getAction()) {
 		case ADD:
 			// Add later when this fragment becomes active
 			if (AppFragmentHelper.getFragment() != this) {
-				mAddToAdapter.add(event.getItem());
+				mAddToAdapter.addAll(event.getObjects());
 			}
 			// Add directly
 			else {
-				mItemAdapter.add(event.getItem());
+				mItemAdapter.add(event.getFirstObject());
 			}
 			break;
 		
 		case EDIT:
 			// Remove and add - Updates the location in the adapter if date was changed
-			mItemAdapter.remove(event.getItem());
-			mItemAdapter.add(event.getItem());
+			mItemAdapter.remove(event.getFirstObject());
+			mItemAdapter.add(event.getFirstObject());
 			break;
 		
 		case REMOVE:
-			mItemAdapter.remove(event.getItem());
+			mItemAdapter.remove(event.getFirstObject());
 			break;
 		}
 	}

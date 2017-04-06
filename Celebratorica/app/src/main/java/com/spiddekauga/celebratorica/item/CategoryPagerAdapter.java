@@ -2,6 +2,7 @@ package com.spiddekauga.celebratorica.item;
 
 
 import android.app.FragmentManager;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
 import com.spiddekauga.android.ui.list.FragmentPagerAdapter;
@@ -43,7 +44,12 @@ public CharSequence getPageTitle(int position) {
 	return category.getName();
 }
 
-public Category getCategory(int position) {
+Category getCategory(int position) {
 	return mCachedCategories.get(position);
+}
+
+@Override
+public void restoreState(Parcelable state, ClassLoader loader) {
+	super.restoreState(state, loader);
 }
 }

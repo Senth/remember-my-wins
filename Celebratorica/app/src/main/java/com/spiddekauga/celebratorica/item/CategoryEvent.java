@@ -2,18 +2,18 @@ package com.spiddekauga.celebratorica.item;
 
 import com.spiddekauga.android.util.ObjectEvent;
 
+import java.util.List;
+
 /**
  * Category event
  */
-class CategoryEvent extends ObjectEvent {
-private final Category mCategory;
+class CategoryEvent extends ObjectEvent<Category> {
 
 CategoryEvent(Category category, Actions action) {
-	super(action);
-	mCategory = category;
+	super(category, action);
 }
 
-public Category getCategory() {
-	return mCategory;
+CategoryEvent(List<Category> categories, Actions action) {
+	super(categories, action);
 }
 }

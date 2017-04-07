@@ -9,7 +9,7 @@
 	<LinearLayout style="@style/Material.ListItem.Container">
 
 		<TextView
-			android:id="@+id/celebration_count"
+			android:id="@+id/item_count"
 			style="@style/Material.ListItem.Text"
 			android:textSize="20sp" />
 
@@ -19,12 +19,12 @@
 			android:paddingStart="@dimen/list_item_padding">
 
 			<TextView
-				android:id="@+id/celebration_text"
+				android:id="@+id/item_text"
 				style="@style/Material.ListItem.Text.Primary"
 				android:maxLines="5" />
 
 			<TextView
-				android:id="@+id/celebration_date"
+				android:id="@+id/item_date"
 				style="@style/Material.ListItem.Text.Secondary" />
 
 		</LinearLayout>

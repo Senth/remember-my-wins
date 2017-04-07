@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.spiddekauga.android.ui.list.ClickListener;
-import com.spiddekauga.android.ui.list.RemoveListener;
 import com.spiddekauga.celebratorica.R;
 import com.spiddekauga.celebratorica.util.Sqlite;
 import com.spiddekauga.celebratorica.util.SqliteInitializedEvent;
@@ -25,7 +24,7 @@ import java.util.List;
 /**
  * Page fragment for showing all the items in a list
  */
-public class CategoryPageFragment extends com.spiddekauga.android.Fragment implements RemoveListener<Item>, ClickListener<Item> {
+public class CategoryPageFragment extends com.spiddekauga.android.Fragment implements ClickListener<Item> {
 static final long DISPLAY_ALL_CATEGORIES = -100;
 private static final String CATEGORY_ID_KEY = "category_id";
 private static final EventBus mEventBus = EventBus.getInstance();
@@ -77,9 +76,11 @@ protected void onArgumentsSet() {
 
 @Override
 public void onViewCreatedImpl(View view, @Nullable Bundle savedInstanceState) {
+	super.onViewCreatedImpl(view, savedInstanceState);
+	
 	mItemAdapter = new ItemAdapter();
 	mItemAdapter.addEditFunctionality(this);
-	mItemListView = (RecyclerView) mView.findViewById(R.id.list_item);
+	mItemListView = (RecyclerView) mView.findViewById(R.id.item_list);
 	mItemListView.setHasFixedSize(true);
 	RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
 	mItemListView.setLayoutManager(layoutManager);
@@ -106,9 +107,7 @@ public void onResume() {
 		new Handler().postDelayed(new Runnable() {
 			@Override
 			public void run() {
-				for (final Item item : mAddToAdapter) {
-					mItemAdapter.add(item);
-				}
+				mItemAdapter.add(mAddToAdapter);
 				mAddToAdapter.clear();
 			}
 		}, 75);
@@ -128,7 +127,7 @@ private Category getCategory() {
 }
 
 /**
- * Populate the list with celebrations. Does nothing if the list is already populated
+ * Populate the list with items. Does nothing if the list is already populated
  */
 private void populateItems() {
 	if (Sqlite.isInitialized() && mAddButton != null && mItemAdapter.getItemCount() == 0) {
@@ -171,27 +170,13 @@ public void onClick(Item item) {
 	}
 }
 
-@Override
-public void onRemoved(Item item) {
-	ItemRemoveCommand removeCommand = new ItemRemoveCommand(item);
-	removeCommand.execute();
-}
-
 @SuppressWarnings("unused")
 @Subscribe
 public void onItem(ItemEvent event) {
 	// Only handle events for our list
 	if (event.getFirstObject().getCategoryId() == mCategoryId) {
 		switch (event.getAction()) {
-		case ADD:
-//			// Add later when this fragment becomes active
-//			if (AppFragmentHelper.getFragment() != this) {
-//				mAddToAdapter.addAll(event.getObjects());
-//			}
-//			// Add directly
-//			else {
-//			}
-			
+		case ADDED:
 			if (mItemAdapter.getItemCount() == 0) {
 				mItemAdapter.setItems(event.getObjects());
 			} else {
@@ -199,20 +184,20 @@ public void onItem(ItemEvent event) {
 			}
 			break;
 		
-		case EDIT:
+		case EDITED:
 			// Remove and add - Updates the location in the adapter if date was changed
-			mItemAdapter.remove(event.getFirstObject());
-			mItemAdapter.add(event.getFirstObject());
+			mItemAdapter.remove(event.getObjects());
+			mItemAdapter.add(event.getObjects());
 			break;
 		
-		case REMOVE:
+		case REMOVED:
 			// Removed all
 			if (mItemAdapter.getItemCount() == event.getObjects().size()) {
 				mItemAdapter.clear();
 			}
 			// Removed one or more
 			else {
-				mItemAdapter.remove(event.getFirstObject());
+				mItemAdapter.remove(event.getObjects());
 			}
 			break;
 		}

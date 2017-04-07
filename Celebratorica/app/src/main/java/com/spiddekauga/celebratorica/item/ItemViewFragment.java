@@ -42,6 +42,7 @@ public void onCreate(Bundle savedInstanceState) {
 
 @Override
 public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+	inflater.inflate(R.menu.menu_edit_categories, menu);
 	inflater.inflate(R.menu.menu_default, menu);
 }
 
@@ -52,6 +53,7 @@ public View onCreateViewImpl(LayoutInflater inflater, ViewGroup container, Bundl
 	
 	Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
 	AppActivity.getActivity().setSupportActionBar(toolbar);
+	setHasOptionsMenu(true);
 	
 	FloatingActionButton addButton = (FloatingActionButton) view.findViewById(R.id.add_button);
 	addButton.setOnClickListener(new View.OnClickListener() {
@@ -67,7 +69,6 @@ public View onCreateViewImpl(LayoutInflater inflater, ViewGroup container, Bundl
 			}
 		}
 	});
-	setHasOptionsMenu(true);
 	
 	ImageButton imageButton = (ImageButton) view.findViewById(R.id.add_category_button);
 	imageButton.setOnClickListener(new View.OnClickListener() {

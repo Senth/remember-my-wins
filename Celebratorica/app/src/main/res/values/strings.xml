@@ -18,6 +18,7 @@
 	<string name="category_add_success">Category created</string>
 	<string name="category_restored">Category restored</string>
 	<string name="category_removed">Category removed</string>
+	<string name="category_edit_header">Edit categories</string>
 	<string name="category_edit_success" translatable="false">@string/edit_success</string>
 	<string name="category_remove_dialog_title">Remove category?</string>
 	<string name="category_remove_dialog_message">Removing a category will remove all its items.\n\nDo you still want to remove the category?</string>

@@ -26,7 +26,7 @@ public void add(List<Item> newItems) {
 	
 	for (Item item : newItems) {
 		boolean added = false;
-		for (int i = 0; i < existingItems.size(); i++) {
+		for (int i = 0; i < existingItems.size(); ++i) {
 			Item listItem = existingItems.get(i);
 			
 			boolean isNewNewerThanCurrentItem = item.compareTo(listItem) > 0;
@@ -66,7 +66,7 @@ public void remove(int itemIndex) {
 
 @Override
 protected ViewHolder onCreateView(ViewGroup parent, int viewType) {
-	View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_celebration, parent, false);
+	View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_item, parent, false);
 	return new ViewHolder(itemView);
 }
 
@@ -81,16 +81,16 @@ protected void onBindView(ViewHolder view, int position) {
 	view.mCount.setText(String.valueOf(count));
 }
 
-class ViewHolder extends RecyclerView.ViewHolder {
+static class ViewHolder extends RecyclerView.ViewHolder {
 	final TextView mText;
 	final TextView mCount;
 	final TextView mDate;
 	
 	ViewHolder(View itemView) {
 		super(itemView);
-		mText = (TextView) itemView.findViewById(R.id.celebration_text);
-		mCount = (TextView) itemView.findViewById(R.id.celebration_count);
-		mDate = (TextView) itemView.findViewById(R.id.celebration_date);
+		mText = (TextView) itemView.findViewById(R.id.item_text);
+		mCount = (TextView) itemView.findViewById(R.id.item_count);
+		mDate = (TextView) itemView.findViewById(R.id.item_date);
 	}
 }
 }

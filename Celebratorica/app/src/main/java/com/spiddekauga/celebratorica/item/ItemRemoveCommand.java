@@ -25,7 +25,7 @@ public boolean undo() {
 @Override
 public boolean execute() {
 	mEventBus.post(new ItemEvent(mItem, ItemEvent.Actions.REMOVE));
-	showSnackbar(R.string.item_removed);
+	showSnackbarWithUndo(R.string.item_removed);
 	return true;
 }
 }

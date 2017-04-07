@@ -172,12 +172,11 @@ public void onCategory(CategoryEvent event) {
 			}
 			// Adjust position if we added an item before the selected item
 			if (event.getAction() == ObjectEvent.Actions.ADDED) {
-				if (selectedCategory.getOrder() > event.getFirstObject().getOrder()) {
+				if (selectedCategory.getOrder() >= event.getFirstObject().getOrder()) {
 					mPositionAfterUpdate += 1;
 				}
 			}
 			
-			mPageAdapter.invalidateCache();
 			mPageAdapter.notifyDataSetChanged();
 			updateLongPressListeners();
 			

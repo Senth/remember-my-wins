@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.spiddekauga.android.AppFragmentHelper;
 import com.spiddekauga.android.ui.list.ClickListener;
 import com.spiddekauga.android.ui.list.RemoveListener;
 import com.spiddekauga.celebratorica.R;
@@ -33,7 +32,7 @@ private static final EventBus mEventBus = EventBus.getInstance();
 private static final String TAG = CategoryPageFragment.class.getSimpleName();
 private static final ItemRepo mItemRepo = ItemRepo.getInstance();
 private final List<Item> mAddToAdapter = new ArrayList<>();
-private Category mCategory;
+private long mCategoryId;
 private ItemAdapter mItemAdapter = null;
 private RecyclerView mItemListView = null;
 private FloatingActionButton mAddButton;
@@ -73,7 +72,7 @@ public View onCreateViewImpl(LayoutInflater inflater, ViewGroup container, Bundl
 @Override
 protected void onArgumentsSet() {
 	super.onArgumentsSet();
-	mCategory = mItemRepo.getCategory((Long) getArgument(CATEGORY_ID_KEY));
+	mCategoryId = getArgument(CATEGORY_ID_KEY);
 }
 
 @Override
@@ -97,7 +96,7 @@ public void onCreate(Bundle savedInstanceState) {
 
 @Override
 public void onResume() {
-	Log.d(TAG, "onResume() — " + mCategory.getName());
+	Log.d(TAG, "onResume() — " + getCategory().getName());
 	super.onResume();
 	
 	mItemListView.invalidate();
@@ -118,17 +117,14 @@ public void onResume() {
 	}
 }
 
-@Override
-public void onStop() {
-	Log.d(TAG, "onStop() — " + mCategory.getName());
-	super.onStop();
-}
-
-@Override
-public void onDestroy() {
-	Log.d(TAG, "onDestroy() — " + mCategory.getName());
-	super.onDestroy();
-	mEventBus.unregister(this);
+private Category getCategory() {
+	Category category = mItemRepo.getCategory((Long) getArgument(CATEGORY_ID_KEY));
+	
+	if (category == null) {
+		category = new Category();
+		category.setCategoryId(mCategoryId);
+	}
+	return category;
 }
 
 /**
@@ -137,10 +133,10 @@ public void onDestroy() {
 private void populateItems() {
 	if (Sqlite.isInitialized() && mAddButton != null && mItemAdapter.getItemCount() == 0) {
 		List<Item> items;
-		if (mCategory.getCategoryId() == DISPLAY_ALL_CATEGORIES) {
+		if (mCategoryId == DISPLAY_ALL_CATEGORIES) {
 			items = mItemRepo.getItems();
 		} else {
-			items = mItemRepo.getItems(mCategory.getCategoryId());
+			items = mItemRepo.getItems(mCategoryId);
 		}
 		mItemAdapter.setItems(items);
 		
@@ -153,11 +149,24 @@ private void populateItems() {
 }
 
 @Override
+public void onStop() {
+	Log.d(TAG, "onStop() — " + getCategory().getName());
+	super.onStop();
+}
+
+@Override
+public void onDestroy() {
+	Log.d(TAG, "onDestroy() — " + getCategory().getName());
+	super.onDestroy();
+	mEventBus.unregister(this);
+}
+
+@Override
 public void onClick(Item item) {
-	if (mCategory.getCategoryId() > 0) {
+	if (mCategoryId > 0) {
 		ItemEditFragment celebrationEditFragment = new ItemEditFragment();
 		celebrationEditFragment.setEditItem(item);
-		celebrationEditFragment.setCategoryId(mCategory.getCategoryId());
+		celebrationEditFragment.setCategoryId(mCategoryId);
 		celebrationEditFragment.show();
 	}
 }
@@ -172,16 +181,21 @@ public void onRemoved(Item item) {
 @Subscribe
 public void onItem(ItemEvent event) {
 	// Only handle events for our list
-	if (event.getFirstObject().getCategoryId() == mCategory.getCategoryId()) {
+	if (event.getFirstObject().getCategoryId() == mCategoryId) {
 		switch (event.getAction()) {
 		case ADD:
-			// Add later when this fragment becomes active
-			if (AppFragmentHelper.getFragment() != this) {
-				mAddToAdapter.addAll(event.getObjects());
-			}
-			// Add directly
-			else {
-				mItemAdapter.add(event.getFirstObject());
+//			// Add later when this fragment becomes active
+//			if (AppFragmentHelper.getFragment() != this) {
+//				mAddToAdapter.addAll(event.getObjects());
+//			}
+//			// Add directly
+//			else {
+//			}
+			
+			if (mItemAdapter.getItemCount() == 0) {
+				mItemAdapter.setItems(event.getObjects());
+			} else {
+				mItemAdapter.add(event.getObjects());
 			}
 			break;
 		
@@ -192,7 +206,14 @@ public void onItem(ItemEvent event) {
 			break;
 		
 		case REMOVE:
-			mItemAdapter.remove(event.getFirstObject());
+			// Removed all
+			if (mItemAdapter.getItemCount() == event.getObjects().size()) {
+				mItemAdapter.clear();
+			}
+			// Removed one or more
+			else {
+				mItemAdapter.remove(event.getFirstObject());
+			}
 			break;
 		}
 	}

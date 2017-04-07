@@ -36,7 +36,7 @@ public boolean execute() {
 	if (!mItems.isEmpty()) {
 		mEventBus.post(new ItemEvent(mItems, ObjectEvent.Actions.REMOVE));
 	}
-	showSnackbar(R.string.category_removed);
+	showSnackbarWithUndo(R.string.category_removed);
 	return false;
 }
 }

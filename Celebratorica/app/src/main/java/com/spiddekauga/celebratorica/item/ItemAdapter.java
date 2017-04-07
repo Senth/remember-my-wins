@@ -16,28 +16,38 @@ import java.util.List;
  */
 class ItemAdapter extends AdvancedAdapter<Item, ItemAdapter.ViewHolder> {
 
-void add(Item item) {
-	List<Item> items = getItems();
-	boolean added = false;
+/**
+ * Add items to the correct chronological position
+ * @param newItems the items to add
+ */
+public void add(List<Item> newItems) {
+	List<Item> existingItems = getItems();
+	int notifyChangedTo = 0;
 	
-	int notifyChangedTo = items.size();
-	for (int i = 0; i < items.size(); i++) {
-		Item listItem = items.get(i);
+	for (Item item : newItems) {
+		boolean added = false;
+		for (int i = 0; i < existingItems.size(); i++) {
+			Item listItem = existingItems.get(i);
+			
+			boolean isNewNewerThanCurrentItem = item.compareTo(listItem) > 0;
+			if (isNewNewerThanCurrentItem) {
+				add(i, item);
+				added = true;
+				
+				if (notifyChangedTo < i) {
+					notifyChangedTo = i;
+				}
+				break;
+			}
+		}
 		
-		boolean isNewNewer = item.compareTo(listItem) > 0;
-		if (isNewNewer) {
-			add(i, item);
-			added = true;
-			notifyChangedTo = i;
-			break;
+		// Add to the end of the list
+		if (!added) {
+			add(getItemCount(), item);
+			notifyChangedTo = getItemCount();
 		}
 	}
-
-	// Add to the end of the list
-	if (!added) {
-		super.add(item);
-	}
-
+	
 	// Update count for all later items
 	if (notifyChangedTo > 0) {
 		notifyItemRangeChanged(0, notifyChangedTo);
@@ -47,7 +57,7 @@ void add(Item item) {
 @Override
 public void remove(int itemIndex) {
 	super.remove(itemIndex);
-
+	
 	// Update count for all later items (i.e. lower index)
 	if (itemIndex > 0) {
 		notifyItemRangeChanged(0, itemIndex);
@@ -66,7 +76,7 @@ protected void onBindView(ViewHolder view, int position) {
 	
 	view.mText.setText(item.getText());
 	view.mDate.setText(item.getDate());
-
+	
 	int count = getItemCount() - position;
 	view.mCount.setText(String.valueOf(count));
 }
@@ -75,7 +85,7 @@ class ViewHolder extends RecyclerView.ViewHolder {
 	final TextView mText;
 	final TextView mCount;
 	final TextView mDate;
-
+	
 	ViewHolder(View itemView) {
 		super(itemView);
 		mText = (TextView) itemView.findViewById(R.id.celebration_text);

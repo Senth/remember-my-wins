@@ -16,7 +16,7 @@ import com.spiddekauga.utils.EventBus;
 public class CategoryAddFragment extends CategoryDialogFragment {
 @Override
 public void onViewCreatedImpl(View view, @Nullable Bundle savedInstanceState) {
-	super.onViewCreated(view, savedInstanceState);
+	super.onViewCreatedImpl(view, savedInstanceState);
 	
 	focusNameTextField();
 	setBackMessage(R.string.category_add_discard);

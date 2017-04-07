@@ -21,7 +21,7 @@ CategoryPagerAdapter(@NonNull FragmentManager fragmentManager) {
 	invalidateCache();
 }
 
-void invalidateCache() {
+private void invalidateCache() {
 	mCachedCategories = mItemRepo.getCategories();
 }
 
@@ -31,6 +31,12 @@ public CategoryPageFragment instantiateItem(int position) {
 	CategoryPageFragment fragment = new CategoryPageFragment();
 	fragment.setArguments(categoryId);
 	return fragment;
+}
+
+@Override
+public void notifyDataSetChanged() {
+	invalidateCache();
+	super.notifyDataSetChanged();
 }
 
 @Override

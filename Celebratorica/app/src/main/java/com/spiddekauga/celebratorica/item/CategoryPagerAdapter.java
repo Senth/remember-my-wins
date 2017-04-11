@@ -56,6 +56,10 @@ public CharSequence getPageTitle(int position) {
 }
 
 Category getCategory(int position) {
-	return mCachedCategories.get(position);
+	if (!mCachedCategories.isEmpty()) {
+		return mCachedCategories.get(position);
+	} else {
+		return null;
+	}
 }
 }

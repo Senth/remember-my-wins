@@ -32,6 +32,7 @@ private static final String PAGE_POSITION_KEY = "page_position";
 private ViewPager mViewPager;
 private CategoryPagerAdapter mPageAdapter;
 private TabLayout mTabLayout;
+private FloatingActionButton mAddButton;
 private int mPositionAfterUpdate = -1;
 
 @Override
@@ -55,14 +56,14 @@ public View onCreateViewImpl(LayoutInflater inflater, ViewGroup container, Bundl
 	AppActivity.getActivity().setSupportActionBar(toolbar);
 	setHasOptionsMenu(true);
 	
-	FloatingActionButton addButton = (FloatingActionButton) view.findViewById(R.id.add_button);
-	addButton.setOnClickListener(new View.OnClickListener() {
+	mAddButton = (FloatingActionButton) view.findViewById(R.id.add_button);
+	mAddButton.setOnClickListener(new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
 			// Current category id
 			Category category = getSelectedCategory();
 			
-			if (category.getCategoryId() > 0) {
+			if (category != null && category.getCategoryId() > 0) {
 				ItemAddFragment itemAddFragment = new ItemAddFragment();
 				itemAddFragment.setCategoryId(category.getCategoryId());
 				itemAddFragment.show();
@@ -70,8 +71,8 @@ public View onCreateViewImpl(LayoutInflater inflater, ViewGroup container, Bundl
 		}
 	});
 	
-	ImageButton imageButton = (ImageButton) view.findViewById(R.id.add_category_button);
-	imageButton.setOnClickListener(new View.OnClickListener() {
+	ImageButton addCategoryButton = (ImageButton) view.findViewById(R.id.add_category_button);
+	addCategoryButton.setOnClickListener(new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
 			new CategoryAddFragment().show();
@@ -103,6 +104,11 @@ private void bindAdapter() {
 		}
 		mViewPager.setAdapter(mPageAdapter);
 		updateLongPressListeners();
+		
+		// Hide add button
+		if (mPageAdapter.getCount() == 0) {
+			mAddButton.setVisibility(View.GONE);
+		}
 	}
 }
 
@@ -165,17 +171,28 @@ public void onCategory(CategoryEvent event) {
 			mPositionAfterUpdate = mViewPager.getCurrentItem();
 			Category selectedCategory = getSelectedCategory();
 			
-			// Adjust position if we removed an item before the selected item
-			if (event.getAction() == ObjectEvent.Actions.REMOVED) {
-				if (selectedCategory.getOrder() > event.getFirstObject().getOrder()) {
-					mPositionAfterUpdate -= 1;
+			if (selectedCategory != null) {
+				// Adjust position if we removed an item before the selected item
+				if (event.getAction() == ObjectEvent.Actions.REMOVED) {
+					if (selectedCategory.getOrder() > event.getFirstObject().getOrder()) {
+						mPositionAfterUpdate -= 1;
+					}
+					
+					// Hide add item button
+					if (mPageAdapter.getCount() == 1) {
+						mAddButton.setVisibility(View.GONE);
+					}
+				}
+				// Adjust position if we added an item before the selected item
+				if (event.getAction() == ObjectEvent.Actions.ADDED) {
+					if (selectedCategory.getOrder() >= event.getFirstObject().getOrder()) {
+						mPositionAfterUpdate += 1;
+					}
 				}
 			}
-			// Adjust position if we added an item before the selected item
-			if (event.getAction() == ObjectEvent.Actions.ADDED) {
-				if (selectedCategory.getOrder() >= event.getFirstObject().getOrder()) {
-					mPositionAfterUpdate += 1;
-				}
+			// First category that was added, show add item button
+			else if (event.getAction() == ObjectEvent.Actions.ADDED) {
+				mAddButton.setVisibility(View.VISIBLE);
 			}
 			
 			mPageAdapter.notifyDataSetChanged();

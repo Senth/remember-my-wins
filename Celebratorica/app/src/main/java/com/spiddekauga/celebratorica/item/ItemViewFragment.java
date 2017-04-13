@@ -18,6 +18,7 @@ import com.spiddekauga.android.AppFragment;
 import com.spiddekauga.android.util.ObjectEvent;
 import com.spiddekauga.celebratorica.R;
 import com.spiddekauga.celebratorica.util.AppActivity;
+import com.spiddekauga.celebratorica.util.Showcases;
 import com.spiddekauga.celebratorica.util.Sqlite;
 import com.spiddekauga.celebratorica.util.SqliteInitializedEvent;
 import com.spiddekauga.utils.EventBus;
@@ -33,6 +34,7 @@ private ViewPager mViewPager;
 private CategoryPagerAdapter mPageAdapter;
 private TabLayout mTabLayout;
 private FloatingActionButton mAddButton;
+private ImageButton mAddCategoryButton;
 private int mPositionAfterUpdate = -1;
 
 @Override
@@ -71,8 +73,8 @@ public View onCreateViewImpl(LayoutInflater inflater, ViewGroup container, Bundl
 		}
 	});
 	
-	ImageButton addCategoryButton = (ImageButton) view.findViewById(R.id.add_category_button);
-	addCategoryButton.setOnClickListener(new View.OnClickListener() {
+	mAddCategoryButton = (ImageButton) view.findViewById(R.id.add_category_button);
+	mAddCategoryButton.setOnClickListener(new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
 			new CategoryAddFragment().show();
@@ -109,6 +111,7 @@ private void bindAdapter() {
 		if (mPageAdapter.getCount() == 0) {
 			mAddButton.setVisibility(View.GONE);
 		}
+		displayShowcases();
 	}
 }
 
@@ -135,6 +138,28 @@ private void updateLongPressListeners() {
 	}
 }
 
+private void displayShowcases() {
+	if (Sqlite.isInitialized()) {
+		Category category = getSelectedCategory();
+		if (mAddButton.getVisibility() == View.GONE) {
+			Showcases.ADD_FIRST_CATEGORY.show(mAddCategoryButton);
+		} else if (category != null && !activeCategoryHasItems()) {
+			Showcases.ADD_ITEM.show(mAddButton);
+		} else {
+			Showcases.ADD_ANOTHER_CATEGORY.show(mAddCategoryButton);
+		}
+	}
+}
+
+private boolean activeCategoryHasItems() {
+	Category category = getSelectedCategory();
+	if (category != null) {
+		return !ItemRepo.getInstance().getItems(category.getCategoryId()).isEmpty();
+	} else {
+		return false;
+	}
+}
+
 @Override
 public void onViewStateRestored(Bundle savedInstanceState) {
 	super.onViewStateRestored(savedInstanceState);
@@ -144,6 +169,12 @@ public void onViewStateRestored(Bundle savedInstanceState) {
 	} else if (savedInstanceState != null) {
 		mViewPager.setCurrentItem(savedInstanceState.getInt(PAGE_POSITION_KEY, 0));
 	}
+}
+
+@Override
+public void onResume() {
+	super.onResume();
+	displayShowcases();
 }
 
 @Override

@@ -32,6 +32,11 @@
 	<string name="article_url" translatable="false">https://matteusmagnusson.com/celebrate-little-things-life/?utm_campaign=celebratorica&amp;utm_medium=menu&amp;utm_source=celebratorica</string>
 
 	<!-- Showcases -->
-	<string name="showcase_add_item_title">Add Item</string>
-	<string name="showcase_add_item_message">Add something that happened today worth celebrating.</string>
+	<string name="showcase_add_item_title">Add item</string>
+	<string name="showcase_add_item_message">Add something that happened today that\'s worth celebrating.</string>
+	<string name="showcase_add_first_category_title">Add a category</string>
+	<string name="showcase_add_first_category_message">Add a category to remember what\'s worth celebrating or something you\'re grateful for.</string>
+	<string name="showcase_add_another_category_title">Add another category</string>
+	<string name="showcase_add_another_category_message">What other categories can you add? How about all the thanks you\'ve received today?</string>
+	<string name="showcase_add_another_category_id" translatable="false">add_another_category</string>
 </resources>

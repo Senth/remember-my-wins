@@ -2,20 +2,25 @@ package com.spiddekauga.celebratorica.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.view.View;
 
 import com.spiddekauga.android.AppActivity;
+import com.spiddekauga.android.FragmentEvent;
+import com.spiddekauga.android.ui.ColorHelper;
 import com.spiddekauga.android.ui.showcase.MaterialShowcase;
 import com.spiddekauga.android.ui.showcase.MaterialShowcaseView;
 import com.spiddekauga.celebratorica.R;
+import com.spiddekauga.utils.EventBus;
+import com.squareup.otto.Subscribe;
 
 /**
  * All different showcases
  */
 public enum Showcases {
-	ADD_CELEBRATION(null) {
+	ADD_ITEM(null) {
 		@Override
 		MaterialShowcase create(View target) {
 			if (target == null) {
@@ -28,6 +33,39 @@ public enum Showcases {
 					.setDelay(DELAY_DEFAULT)
 					.build();
 		}
+	},
+	ADD_ANOTHER_CATEGORY(R.string.showcase_add_another_category_id, 5) {
+		@Override
+		MaterialShowcase create(View target) {
+			if (target == null) {
+				throw new IllegalArgumentException("target must be non-null");
+			}
+			Resources resources = AppActivity.getActivity().getResources();
+			return new MaterialShowcaseView.Builder(AppActivity.getActivity())
+					.setTitleText(R.string.showcase_add_another_category_title)
+					.setContentText(R.string.showcase_add_another_category_message)
+					.setTarget(target)
+					.setDelay(DELAY_DEFAULT)
+					.setSingleUse(mShowcaseId)
+					.setBackgroundColor(ColorHelper.getColor(resources, R.color.material_showcase_background_inverted, null))
+					.build();
+		}
+	},
+	ADD_FIRST_CATEGORY(null) {
+		@Override
+		MaterialShowcase create(View target) {
+			if (target == null) {
+				throw new IllegalArgumentException("target must be non-null");
+			}
+			Resources resources = AppActivity.getActivity().getResources();
+			return new MaterialShowcaseView.Builder(AppActivity.getActivity())
+					.setTitleText(R.string.showcase_add_first_category_title)
+					.setContentText(R.string.showcase_add_first_category_message)
+					.setTarget(target)
+					.setDelay(DELAY_DEFAULT)
+					.setBackgroundColor(ColorHelper.getColor(resources, R.color.material_showcase_background_inverted, null))
+					.build();
+		}
 	};
 private static final String PREFERENCE_NAME = "showcase_prefs";
 private static final String PREF_SESSION_KEY = "session";
@@ -35,12 +73,14 @@ private static final int MAX_SHOWCASES_PER_SESSION = 1;
 private static final int DELAY_DEFAULT = 3000;
 private static final int SESSION_COUNT;
 private static int mShowcasesShownThisSession = 0;
+private static MaterialShowcase mActiveShowcase = null;
 
 static {
 	SharedPreferences preferences = AppActivity.getActivity().getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE);
 	int session = preferences.getInt(PREF_SESSION_KEY, 1);
 	preferences.edit().putInt(PREF_SESSION_KEY, session + 1).apply();
 	SESSION_COUNT = session;
+	new FragmentListener();
 }
 
 String mShowcaseId = null;
@@ -104,6 +144,7 @@ private boolean hasFired() {
  * @param showcase the created showcase to show
  */
 private static void show(MaterialShowcase showcase) {
+	mActiveShowcase = showcase;
 	showcase.show();
 }
 
@@ -120,6 +161,22 @@ abstract MaterialShowcase create(View target);
 public void setAsShown() {
 	if (isSingleUse()) {
 		MaterialShowcaseView.setFired(AppActivity.getActivity(), mShowcaseId);
+	}
+}
+
+private static class FragmentListener {
+	FragmentListener() {
+		EventBus.getInstance().register(this);
+	}
+	
+	@SuppressWarnings("unused")
+	@Subscribe
+	public void onFragment(FragmentEvent event) {
+		switch (event.getEventType()) {
+		case RESUME:
+			// TODO abort showcase
+			break;
+		}
 	}
 }
 }

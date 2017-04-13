@@ -142,7 +142,7 @@ private void populateItems() {
 		// https://developer.android.com/reference/android/support/v4/view/ViewPager.SimpleOnPageChangeListener.html
 		// Check this when the fragment is activated
 //		if (items.isEmpty()) {
-//			Showcases.ADD_CELEBRATION.show(mAddButton);
+//			Showcases.ADD_ITEM.show(mAddButton);
 //		}
 	}
 }

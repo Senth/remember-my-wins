@@ -21,4 +21,9 @@
 	<string name="category_restored">Kategori återställd</string>
 	<string name="item_removed">Post borttagen</string>
 	<string name="item_restored">Post återställd</string>
+	<string name="category_edit_header">Redigera kategorier</string>
+	<string name="showcase_add_another_category_message">Vad för andra kategorier kan du lägga till? Kanske alla tack du har fått idag?</string>
+	<string name="showcase_add_another_category_title">Lägg till en kategori</string>
+	<string name="showcase_add_first_category_message">Skapa en kategori för att skriva upp vad som är värt att fira eller vad du är tacksam för.</string>
+	<string name="showcase_add_first_category_title">Lägg till kategori</string>
 </resources>

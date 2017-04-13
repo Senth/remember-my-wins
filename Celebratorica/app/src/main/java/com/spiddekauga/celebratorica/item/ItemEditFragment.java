@@ -37,8 +37,9 @@ public void onSaveInstanceState(Bundle outState) {
 }
 
 @Override
-protected int getTitle() {
-	return R.string.edit;
+protected String getTitle() {
+	String title = getString(R.string.item_edit_header);
+	return String.format(title, getCategory().getName());
 }
 
 @Override

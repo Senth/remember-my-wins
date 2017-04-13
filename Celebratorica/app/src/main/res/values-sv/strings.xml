@@ -3,7 +3,7 @@
 	<string name="app_name">Celebratorica</string>
 	<string name="category_default_celebrate_name">Fira</string>
 	<string name="item_add_discard">Kasta ny post?</string>
-	<string name="item_add_header">Lägg till post</string>
+	<string name="item_add_header">Ny %s post</string>
 	<string name="item_add_success">Post tillagd</string>
 	<string name="item_date">Datum</string>
 	<string name="item_text">Text</string>
@@ -26,4 +26,5 @@
 	<string name="showcase_add_another_category_title">Lägg till en kategori</string>
 	<string name="showcase_add_first_category_message">Skapa en kategori för att skriva upp vad som är värt att fira eller vad du är tacksam för.</string>
 	<string name="showcase_add_first_category_title">Lägg till kategori</string>
+	<string name="item_edit_header">Redigera %s post</string>
 </resources>

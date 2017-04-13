@@ -137,6 +137,10 @@ private void clearDate() {
 	mDateEdit.setText(DATE_FORMAT.format(new Date()));
 }
 
+protected Category getCategory() {
+	return ItemRepo.getInstance().getCategory(mCategoryId);
+}
+
 @Override
 protected boolean isChanged() {
 	return !mTextOriginal.equals(mTextEdit.getText().toString()) ||

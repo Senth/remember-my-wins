@@ -48,8 +48,8 @@ public void onViewStateRestored(Bundle savedInstanceState) {
 }
 
 @Override
-protected int getTitle() {
-	return R.string.edit;
+protected String getTitle() {
+	return getString(R.string.edit);
 }
 
 @Override

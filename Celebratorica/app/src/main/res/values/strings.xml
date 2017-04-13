@@ -4,7 +4,8 @@
 	<!-- Items -->
 	<string name="item_date">Date</string>
 	<string name="item_text">Text</string>
-	<string name="item_add_header">New Item</string>
+	<string name="item_edit_header">Edit %s item</string>
+	<string name="item_add_header">New %s item</string>
 	<string name="item_add_discard">Discard new item?</string>
 	<string name="item_add_success">Item created</string>
 	<string name="item_restored">Item restored</string>

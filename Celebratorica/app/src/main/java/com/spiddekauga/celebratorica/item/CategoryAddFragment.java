@@ -23,8 +23,8 @@ public void onViewCreatedImpl(View view, @Nullable Bundle savedInstanceState) {
 }
 
 @Override
-protected int getTitle() {
-	return R.string.category_add_header;
+protected String getTitle() {
+	return getString(R.string.category_add_header);
 }
 
 @Override

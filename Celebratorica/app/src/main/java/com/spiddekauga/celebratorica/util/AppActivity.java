@@ -52,7 +52,7 @@ public boolean onOptionsItemSelected(MenuItem item) {
 		feedbackFragment.show();
 		return true;
 	
-	case R.id.action_legal:
+	case R.id.action_settings:
 		AppActivity.switchTo(SettingsActivity.class);
 		return true;
 	

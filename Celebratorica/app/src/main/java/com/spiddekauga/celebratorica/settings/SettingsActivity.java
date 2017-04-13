@@ -7,7 +7,6 @@ import android.view.View;
 
 import com.spiddekauga.android.AppFragmentHelper;
 import com.spiddekauga.android.R;
-import com.spiddekauga.android.legal.SettingsLegalFragment;
 import com.spiddekauga.celebratorica.util.AppActivity;
 
 /**
@@ -32,10 +31,10 @@ public void onCreate(Bundle savedInstanceState) {
 		});
 	}
 	FragmentManager fragmentManager = getFragmentManager();
-
+	
 	// Only create if we don't have a fragment
 	if (fragmentManager.getBackStackEntryCount() == 0) {
-		SettingsLegalFragment fragment = new SettingsLegalFragment();
+		SettingsFragment fragment = new SettingsFragment();
 		fragment.show();
 	}
 }

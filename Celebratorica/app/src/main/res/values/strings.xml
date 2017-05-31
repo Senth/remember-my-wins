@@ -45,6 +45,7 @@
 	<string name="setting_reminder_category_name">Daily reminder</string>
 	<string name="setting_reminder_key" translatable="false">reminder</string>
 	<string name="setting_reminder_title">Use daily reminders</string>
-	<string name="setting_reminder_time_1_key" translatable="false">reminder_time</string>
+	<string name="setting_reminder_time_1_key" translatable="false">reminder_time_1</string>
+	<string name="setting_reminder_time_1_default" translatable="false">22:00</string>
 	<string name="setting_reminder_time_title">Set reminder time</string>
 </resources>

@@ -8,8 +8,11 @@ import android.support.v7.app.ActionBar;
 
 import com.spiddekauga.android.AppPreferenceFragment;
 import com.spiddekauga.android.legal.SettingsLegalFragment;
+import com.spiddekauga.android.preference.TimePreference;
 import com.spiddekauga.celebratorica.R;
 import com.spiddekauga.celebratorica.util.AppActivity;
+
+import de.mrapp.android.preference.SwitchPreference;
 
 /**
  * All the settings for Celebratorica App
@@ -22,7 +25,29 @@ public void onCreate(@Nullable Bundle savedInstanceState) {
 	
 	Resources resources = getResources();
 	
-	// Notification Settings
+	// Notification reminder
+	final TimePreference timePreference = (TimePreference) findPreference(resources.getString(R.string.setting_reminder_time_1_key));
+	timePreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+		@Override
+		public boolean onPreferenceChange(Preference preference, Object newValue) {
+			// TODO update notification time
+			return true;
+		}
+	});
+	
+	SwitchPreference notificationEnabledPreference = (SwitchPreference) findPreference(resources.getString(R.string.setting_reminder_key));
+	notificationEnabledPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+		@Override
+		public boolean onPreferenceChange(Preference preference, Object newValue) {
+			if (newValue instanceof Boolean) {
+				boolean enabled = (boolean) newValue;
+				
+				// TODO enable/disable notification
+			}
+			return true;
+		}
+	});
+	
 	
 	// Legal
 	Preference legalPreference = findPreference(resources.getString(R.string.legal_key));

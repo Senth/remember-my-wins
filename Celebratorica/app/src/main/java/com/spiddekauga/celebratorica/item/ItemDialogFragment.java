@@ -126,6 +126,7 @@ private void pickDate() {
 		int month = calendar.get(Calendar.MONTH);
 		int day = calendar.get(Calendar.DAY_OF_MONTH);
 		mDatePickerDialog = DatePickerDialog.newInstance(mDateSetListener, year, month, day);
+		mDatePickerDialog.vibrate(false);
 	}
 	mDatePickerDialog.show(getFragmentManager(), DatePickerDialog.class.getSimpleName());
 }

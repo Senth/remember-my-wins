@@ -7,6 +7,10 @@
 		android:key="@string/setting_reminder_key"
 		android:title="@string/setting_reminder_title" />
 
+	<com.spiddekauga.android.preference.TimePreference
+		android:defaultValue="@string/setting_reminder_time_1_default"
+		android:key="@string/setting_reminder_time_1_key"
+		android:title="@string/setting_reminder_time_title" />
 
 	<PreferenceCategory android:title="@string/legal_category_name" />
 

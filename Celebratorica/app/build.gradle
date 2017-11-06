@@ -5,12 +5,17 @@ if (project.hasProperty("celebratorica.signing")
     apply from: project.property("celebratorica.signing");
 }
 
+
 android {
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
     compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "com.spiddekauga.celebratorica"
-        minSdkVersion 17
+        minSdkVersion 21
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"

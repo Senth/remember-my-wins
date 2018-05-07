@@ -11,12 +11,12 @@ android {
         sourceCompatibility 1.8
         targetCompatibility 1.8
     }
-    compileSdkVersion 25
-    buildToolsVersion '26.0.2'
+    compileSdkVersion 27
+    buildToolsVersion '27.0.3'
     defaultConfig {
-        applicationId "com.spiddekauga.celebratorica"
+        applicationId "io.blushine.celebratorica"
         minSdkVersion 21
-        targetSdkVersion 25
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -30,13 +30,13 @@ android {
 }
 
 dependencies {
-    compile project(':app-utils')
-    compile project(':common-utils')
-    compile 'com.github.spiddekauga:MaterialShowcaseView:2.0.0'
+    implementation project(':app-utils')
+    implementation project(':common-utils')
+    implementation 'com.github.BlushineIO:MaterialShowcaseView:2.1.0'
 
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
         exclude group: 'com.google.code.findbugs', module: 'jsr305'
     })
-    testCompile 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.12'
 }

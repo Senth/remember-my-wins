@@ -11,12 +11,12 @@ android {
         sourceCompatibility 1.8
         targetCompatibility 1.8
     }
-    compileSdkVersion 27
-    buildToolsVersion '27.0.3'
+    compileSdkVersion targetSdkVersionVal
+    buildToolsVersion buildToolsVersionVal
     defaultConfig {
         applicationId "io.blushine.celebratorica"
-        minSdkVersion 21
-        targetSdkVersion 27
+        minSdkVersion minSdkVersionVal
+        targetSdkVersion targetSdkVersionVal
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"

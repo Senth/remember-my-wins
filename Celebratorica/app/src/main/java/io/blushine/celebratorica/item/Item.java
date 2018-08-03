@@ -6,7 +6,7 @@ import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import io.blushine.android.util.DateFormats;
+import io.blushine.android.common.DateFormats;
 
 /**
  * A celebration item

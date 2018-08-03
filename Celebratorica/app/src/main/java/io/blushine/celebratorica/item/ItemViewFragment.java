@@ -17,7 +17,7 @@ import android.widget.LinearLayout;
 import com.squareup.otto.Subscribe;
 
 import io.blushine.android.AppFragment;
-import io.blushine.android.util.ObjectEvent;
+import io.blushine.android.common.ObjectEvent;
 import io.blushine.celebratorica.R;
 import io.blushine.celebratorica.util.AppActivity;
 import io.blushine.celebratorica.util.Showcases;

@@ -1,6 +1,6 @@
 package io.blushine.celebratorica.settings;
 
-import io.blushine.android.util.Time;
+import io.blushine.android.common.Time;
 
 /**
  * Repository for settings

@@ -3,7 +3,7 @@ package io.blushine.celebratorica.settings;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import io.blushine.android.util.Time;
+import io.blushine.android.common.Time;
 import io.blushine.celebratorica.R;
 import io.blushine.celebratorica.util.AppActivity;
 

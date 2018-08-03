@@ -2,7 +2,7 @@ package io.blushine.celebratorica.item;
 
 import java.util.List;
 
-import io.blushine.android.util.ObjectEvent;
+import io.blushine.android.common.ObjectEvent;
 
 /**
  * Item event

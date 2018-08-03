@@ -5,7 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
 
-import io.blushine.android.util.DocumentChangeChecker;
+import io.blushine.android.common.DocumentChangeChecker;
 import io.blushine.celebratorica.R;
 import io.blushine.celebratorica.item.CategoryOrderFragment;
 import io.blushine.celebratorica.settings.SettingsActivity;

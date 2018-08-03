@@ -5,8 +5,8 @@ import android.support.annotation.Nullable;
 import android.view.MenuItem;
 import android.view.View;
 
+import io.blushine.android.common.ObjectEvent;
 import io.blushine.android.ui.SnackbarHelper;
-import io.blushine.android.util.ObjectEvent;
 import io.blushine.celebratorica.R;
 import io.blushine.utils.EventBus;
 

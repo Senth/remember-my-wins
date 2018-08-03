@@ -26,37 +26,28 @@ public void onCreate(@Nullable Bundle savedInstanceState) {
 	
 	// Notification reminder
 	final TimePreference timePreference = (TimePreference) findPreference(resources.getString(R.string.setting_reminder_time_1_key));
-	timePreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-		@Override
-		public boolean onPreferenceChange(Preference preference, Object newValue) {
-			// TODO update notification time
-			return true;
-		}
+	timePreference.setOnPreferenceChangeListener((preference, newValue) -> {
+		// TODO update notification time
+		return true;
 	});
 	
 	SwitchPreference notificationEnabledPreference = (SwitchPreference) findPreference(resources.getString(R.string.setting_reminder_key));
-	notificationEnabledPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-		@Override
-		public boolean onPreferenceChange(Preference preference, Object newValue) {
-			if (newValue instanceof Boolean) {
-				boolean enabled = (boolean) newValue;
-				
-				// TODO enable/disable notification
-			}
-			return true;
+	notificationEnabledPreference.setOnPreferenceChangeListener((preference, newValue) -> {
+		if (newValue instanceof Boolean) {
+			boolean enabled = (boolean) newValue;
+			
+			// TODO enable/disable notification
 		}
+		return true;
 	});
 	
 	
 	// Legal
 	Preference legalPreference = findPreference(resources.getString(R.string.legal_key));
-	legalPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-		@Override
-		public boolean onPreferenceClick(Preference preference) {
-			SettingsLegalFragment fragment = new SettingsLegalFragment();
-			fragment.show();
-			return true;
-		}
+	legalPreference.setOnPreferenceClickListener(preference -> {
+		SettingsLegalFragment fragment = new SettingsLegalFragment();
+		fragment.show();
+		return true;
 	});
 }
 

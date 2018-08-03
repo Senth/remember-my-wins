@@ -1,6 +1,6 @@
-include ':app', ':app-utils', ':cloudshine', ':common-utils'
+include ':app', ':android-framework', ':common-utils', ':android-sqlite'
 
 // Custom git directories
-project(':app-utils').projectDir = new File('../../android-utils/app-utils')
 project(':common-utils').projectDir = new File('../../common-utils')
-project(':cloudshine').projectDir = new File('../../cloudshine')
+project(':android-framework').projectDir = new File('../../android-framework/android-framework')
+project(':android-sqlite').projectDir = new File('../../android-sqlite/android-sqlite')

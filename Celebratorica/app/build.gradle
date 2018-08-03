@@ -30,8 +30,9 @@ android {
 }
 
 dependencies {
-    implementation project(':app-utils')
     implementation project(':common-utils')
+    implementation project(':android-framework')
+    implementation project(':android-sqlite')
     implementation 'com.github.BlushineIO:MaterialShowcaseView:2.1.0'
 
     androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {

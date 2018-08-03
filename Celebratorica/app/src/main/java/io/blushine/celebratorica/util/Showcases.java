@@ -11,7 +11,7 @@ import com.squareup.otto.Subscribe;
 
 import io.blushine.android.AppActivity;
 import io.blushine.android.FragmentEvent;
-import io.blushine.android.ui.ColorHelper;
+import io.blushine.android.common.ColorHelper;
 import io.blushine.android.ui.showcase.MaterialShowcase;
 import io.blushine.android.ui.showcase.MaterialShowcaseView;
 import io.blushine.celebratorica.R;

@@ -5,8 +5,8 @@ import android.os.Bundle;
 import android.view.MenuItem;
 
 import de.mrapp.android.dialog.MaterialDialog;
+import io.blushine.android.common.ObjectEvent;
 import io.blushine.android.ui.SnackbarHelper;
-import io.blushine.android.util.ObjectEvent;
 import io.blushine.celebratorica.R;
 import io.blushine.utils.EventBus;
 

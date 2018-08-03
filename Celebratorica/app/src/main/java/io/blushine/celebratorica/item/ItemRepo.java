@@ -5,7 +5,7 @@ import com.squareup.otto.Subscribe;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.blushine.android.util.ObjectEvent;
+import io.blushine.android.common.ObjectEvent;
 import io.blushine.utils.EventBus;
 
 /**

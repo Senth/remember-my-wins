@@ -1,11 +1,15 @@
 package io.blushine.celebratorica.item;
 
+import com.google.gson.Gson;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import io.blushine.android.common.ObjectEvent;
+import io.blushine.celebratorica.util.ExportDataEvent;
+import io.blushine.celebratorica.util.ExportEvent;
+import io.blushine.celebratorica.util.ImportDataEvent;
 import io.blushine.utils.EventBus;
 
 /**
@@ -44,29 +48,12 @@ List<Item> getItems(long categoryId) {
 }
 
 /**
- * Get all items from all categories, sorted by date
- * @return list of all items from all categories, sorted by date
- */
-List<Item> getItems() {
-	// TODO get items from all categories
-	return new ArrayList<>();
-}
-
-/**
  * Get the specified category
  * @param categoryId the category to get
  * @return category with the categoryId, null if not found
  */
 Category getCategory(long categoryId) {
 	return mSqliteGateway.getCategory(categoryId);
-}
-
-/**
- * Get all item lists
- * @return list of all item lists
- */
-List<Category> getCategories() {
-	return mSqliteGateway.getCategories();
 }
 
 @SuppressWarnings("unused")
@@ -116,6 +103,48 @@ private void removeItems(List<Item> items) {
 	for (Item item : items) {
 		mSqliteGateway.removeItem(item);
 	}
+}
+
+@SuppressWarnings("unused")
+@Subscribe
+public void onExportEvent(ExportEvent event) {
+	List<Category> categories = getCategories();
+	List<Item> items = getItems();
+	
+	Gson gson = new Gson();
+	ExportDataEvent exportDataEvent = new ExportDataEvent();
+	
+	exportDataEvent.categoriesJson = gson.toJson(categories);
+	exportDataEvent.itemsJson = gson.toJson(items);
+	
+	EventBus.getInstance().post(exportDataEvent);
+}
+
+/**
+ * Get all item lists
+ * @return list of all item lists
+ */
+List<Category> getCategories() {
+	return mSqliteGateway.getCategories();
+}
+
+/**
+ * Get all items from all categories, sorted by date
+ * @return list of all items from all categories, sorted by date
+ */
+List<Item> getItems() {
+	return mSqliteGateway.getItems(null);
+}
+
+@SuppressWarnings({"unused", "unchecked"})
+@Subscribe
+public void onImportDataEvent(ImportDataEvent event) {
+	Gson gson = new Gson();
+	
+	List<Category> categories = gson.fromJson(event.categoriesJson, ArrayList.class);
+	List<Item> items = gson.fromJson(event.itemsJson, ArrayList.class);
+	
+	mSqliteGateway.importData(categories, items);
 }
 
 @SuppressWarnings("unused")

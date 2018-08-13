@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 if (project.hasProperty("celebratorica.signing")
         && new File(project.property("celebratorica.signing")).exists()) {
-    apply from: project.property("celebratorica.signing");
+    apply from: project.property("celebratorica.signing")
 }
 
 
@@ -34,6 +34,7 @@ dependencies {
     implementation project(':android-framework')
     implementation project(':android-sqlite')
     implementation 'com.github.BlushineIO:MaterialShowcaseView:2.1.0'
+    implementation 'com.google.code.gson:gson:2.8.0'
 
     androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'

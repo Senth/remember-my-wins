@@ -12,6 +12,18 @@
 		android:key="@string/setting_reminder_time_1_key"
 		android:title="@string/setting_reminder_time_title" />
 
+	<PreferenceCategory android:title="@string/setting_import_export_category_name" />
+
+	<Preference
+		android:key="@string/setting_import_key"
+		android:persistent="false"
+		android:title="@string/setting_import_title" />
+
+	<Preference
+		android:key="@string/setting_export_key"
+		android:persistent="false"
+		android:title="@string/setting_export_title" />
+
 	<PreferenceCategory android:title="@string/legal_category_name" />
 
 	<Preference

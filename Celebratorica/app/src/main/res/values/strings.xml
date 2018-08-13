@@ -48,4 +48,9 @@
 	<string name="setting_reminder_time_1_key" translatable="false">reminder_time_1</string>
 	<string name="setting_reminder_time_1_default" translatable="false">22:00</string>
 	<string name="setting_reminder_time_title">Set reminder time</string>
+	<string name="setting_import_export_category_name">Import/Export database</string>
+	<string name="setting_import_key" translatable="false">import</string>
+	<string name="setting_import_title">Import from cloud</string>
+	<string name="setting_export_key" translatable="false">export</string>
+	<string name="setting_export_title">Export to cloud</string>
 </resources>

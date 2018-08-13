@@ -30,6 +30,7 @@ public void onCreate(@Nullable Bundle savedInstanceState) {
 		// TODO update notification time
 		return true;
 	});
+	// TODO set notification time as subtitle
 	
 	SwitchPreference notificationEnabledPreference = (SwitchPreference) findPreference(resources.getString(R.string.setting_reminder_key));
 	notificationEnabledPreference.setOnPreferenceChangeListener((preference, newValue) -> {
@@ -38,6 +39,21 @@ public void onCreate(@Nullable Bundle savedInstanceState) {
 			
 			// TODO enable/disable notification
 		}
+		return true;
+	});
+	
+	
+	// Import
+	Preference importPreference = findPreference(resources.getString(R.string.setting_import_key));
+	importPreference.setOnPreferenceClickListener(preference -> {
+		// TODO Import
+		return true;
+	});
+	
+	// Export
+	Preference exportPreference = findPreference(resources.getString(R.string.setting_export_key));
+	exportPreference.setOnPreferenceClickListener(preference -> {
+		// TODO export
 		return true;
 	});
 	

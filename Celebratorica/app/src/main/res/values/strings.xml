@@ -1,5 +1,5 @@
 <resources>
-	<string name="app_name">Celebratorica</string>
+	<string name="app_name">Remember My Wins</string>
 
 	<!-- Items -->
 	<string name="item_date">Date</string>
@@ -25,7 +25,7 @@
 	<string name="category_remove_dialog_message">Removing a category will remove all its items.\n\nDo you still want to remove the category?</string>
 
 	<!-- Default Categories -->
-	<string name="category_default_celebrate_name">Celebrate</string>
+	<string name="category_default_celebrate_name">Wins</string>
 	<string name="category_default_gratitude_name">Gratitude</string>
 
 	<!-- Menus -->

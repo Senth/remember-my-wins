@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="app_name">Celebratorica</string>
+	<string name="app_name">Remember My Wins</string>
 	<string name="category_default_celebrate_name">Fira</string>
 	<string name="item_add_discard">Kasta ny post?</string>
 	<string name="item_add_header">Ny %s post</string>

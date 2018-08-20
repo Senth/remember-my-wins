@@ -1,8 +1,9 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
 
-if (project.hasProperty("celebratorica.signing")
-        && new File(project.property("celebratorica.signing")).exists()) {
-    apply from: project.property("celebratorica.signing")
+if (project.hasProperty("remembermywins.signing")
+        && new File(project.property("remembermywins.signing")).exists()) {
+    apply from: project.property("remembermywins.signing")
 }
 
 
@@ -14,7 +15,7 @@ android {
     compileSdkVersion targetSdkVersionVal
     buildToolsVersion buildToolsVersionVal
     defaultConfig {
-        applicationId "io.blushine.celebratorica"
+        applicationId "io.blushine.rmw"
         minSdkVersion minSdkVersionVal
         targetSdkVersion targetSdkVersionVal
         versionCode 1
@@ -36,9 +37,17 @@ dependencies {
     implementation 'com.github.BlushineIO:MaterialShowcaseView:2.1.0'
     implementation 'com.google.code.gson:gson:2.8.0'
 
+    // Firebase
+    implementation 'com.google.firebase:firebase-core:16.0.1'
+    implementation 'com.google.firebase:firebase-auth:16.0.3'
+    implementation 'com.google.firebase:firebase-firestore:17.1.0'
+    implementation 'com.firebaseui:firebase-ui-auth:4.0.0'
+
     androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
         exclude group: 'com.google.code.findbugs', module: 'jsr305'
     })
     testImplementation 'junit:junit:4.12'
 }
+
+apply plugin: 'com.google.gms.google-services'

@@ -24,6 +24,10 @@
 
 		<!-- Info -->
 		<activity android:name="io.blushine.android.info.InfoActivity" />
+
+		<meta-data
+			android:name="firebase_analytics_collection_enabled"
+			android:value="false" />
 	</application>
 
 </manifest>

@@ -8,50 +8,6 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1097483073204:android:df284d00cf705894",
-        "android_client_info": {
-          "package_name": "io.blushine.celebratorica"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "1097483073204-sd5bsu9qem2m5otgcfbgl831mgctp8k8.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "io.blushine.celebratorica",
-            "certificate_hash": "22f1b13ef3d0179df11ad439f2d633e047b6e135"
-          }
-        },
-        {
-          "client_id": "1097483073204-5pg24uisu5hndqcounuq1rbtdn9u0k3j.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyCSJGvnd9gcUskohopBXnTST_CDYbUYssA"
-        }
-      ],
-      "services": {
-        "analytics_service": {
-          "status": 1
-        },
-        "appinvite_service": {
-          "status": 2,
-          "other_platform_oauth_client": [
-            {
-              "client_id": "1097483073204-5pg24uisu5hndqcounuq1rbtdn9u0k3j.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        },
-        "ads_service": {
-          "status": 2
-        }
-      }
-    },
-    {
-      "client_info": {
         "mobilesdk_app_id": "1:1097483073204:android:1e97c262073fae5e",
         "android_client_info": {
           "package_name": "io.blushine.rmw"

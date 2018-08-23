@@ -1,6 +1,7 @@
-include ':app', ':android-framework', ':common-utils', ':android-sqlite'
+include ':app', ':android-framework', 'android-firebase', ':common-utils', ':android-sqlite'
 
 // Custom git directories
 project(':common-utils').projectDir = new File('../../common-utils')
 project(':android-framework').projectDir = new File('../../android-framework/android-framework')
+project(':android-firebase').projectDir = new File('../../android-firebase/android-firebase')
 project(':android-sqlite').projectDir = new File('../../android-sqlite/android-sqlite')

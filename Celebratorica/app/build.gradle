@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.google.gms.google-services'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 
 if (project.hasProperty("remembermywins.signing")
         && new File(project.property("remembermywins.signing")).exists()) {
@@ -8,12 +9,11 @@ if (project.hasProperty("remembermywins.signing")
 
 
 android {
-    compileOptions {
-        sourceCompatibility 1.8
-        targetCompatibility 1.8
-    }
     compileSdkVersion targetSdkVersionVal
     buildToolsVersion buildToolsVersionVal
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
     defaultConfig {
         applicationId "io.blushine.rmw"
         minSdkVersion minSdkVersionVal
@@ -28,20 +28,20 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
     implementation project(':common-utils')
     implementation project(':android-framework')
     implementation project(':android-sqlite')
+    implementation project(':android-firebase')
     implementation 'com.github.BlushineIO:MaterialShowcaseView:2.1.0'
     implementation 'com.google.code.gson:gson:2.8.0'
-
-    // Firebase
-    implementation 'com.google.firebase:firebase-core:16.0.1'
-    implementation 'com.google.firebase:firebase-auth:16.0.3'
-    implementation 'com.google.firebase:firebase-firestore:17.1.0'
-    implementation 'com.firebaseui:firebase-ui-auth:4.0.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersionVal"
 
     androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'

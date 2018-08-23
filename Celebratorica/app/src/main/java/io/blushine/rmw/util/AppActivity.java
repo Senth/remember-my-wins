@@ -6,8 +6,8 @@ import android.os.Bundle;
 import android.view.MenuItem;
 
 import io.blushine.android.common.DocumentChangeChecker;
+import io.blushine.android.firebase.FirebaseAuth;
 import io.blushine.rmw.R;
-import io.blushine.rmw.firebase.FirebaseAuth;
 import io.blushine.rmw.item.CategoryOrderFragment;
 import io.blushine.rmw.settings.SettingsActivity;
 
@@ -30,7 +30,7 @@ protected void onCreate(Bundle savedInstanceState) {
 protected void onFirstTime() {
 	// TODO only init Firebase or Sqlite not both (depending on what backend the user has selected)
 	Sqlite.init();
-	FirebaseAuth.getInstance();
+	FirebaseAuth.INSTANCE.getCurrentUser();
 	checkDocumentUpdates();
 }
 
@@ -60,11 +60,11 @@ public boolean onOptionsItemSelected(MenuItem item) {
 	
 	// TODO temporary sign in and out testing
 	case R.id.action_sign_in:
-		FirebaseAuth.getInstance().signIn();
+		FirebaseAuth.INSTANCE.signIn();
 		return true;
 	
 	case R.id.action_sign_out:
-		FirebaseAuth.getInstance().signOut();
+		FirebaseAuth.INSTANCE.signOut();
 		return true;
 	
 	default:

@@ -27,7 +27,7 @@ private void invalidateCache() {
 
 @Override
 public Fragment getItem(int position) {
-	long categoryId = mCachedCategories.get(position).getCategoryId();
+	long categoryId = mCachedCategories.get(position).getId();
 	CategoryPageFragment fragment = new CategoryPageFragment();
 	fragment.setArguments(categoryId);
 	return fragment;

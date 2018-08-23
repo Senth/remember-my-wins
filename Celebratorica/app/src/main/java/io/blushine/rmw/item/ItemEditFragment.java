@@ -21,7 +21,7 @@ public void onViewStateRestored(Bundle savedInstanceState) {
 	if (savedInstanceState != null) {
 		long itemId = savedInstanceState.getLong(ITEM_ID_SAVE_KEY, -1);
 		mItem = new Item();
-		mItem.setItemId(itemId);
+		mItem.setId(itemId);
 	} else {
 		setFields(mItem);
 	}
@@ -31,7 +31,7 @@ public void onViewStateRestored(Bundle savedInstanceState) {
 
 @Override
 public void onSaveInstanceState(Bundle outState) {
-	outState.putLong(ITEM_ID_SAVE_KEY, mItem.getItemId());
+	outState.putLong(ITEM_ID_SAVE_KEY, mItem.getId());
 	
 	super.onSaveInstanceState(outState);
 }

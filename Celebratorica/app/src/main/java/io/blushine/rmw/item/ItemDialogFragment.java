@@ -26,7 +26,7 @@ import io.blushine.rmw.util.AppActivity;
  */
 public abstract class ItemDialogFragment extends DialogFragment {
 private static final String TAG = ItemDialogFragment.class.getSimpleName();
-private static final SimpleDateFormat DATE_FORMAT = Item.getDateFormat();
+private static final SimpleDateFormat DATE_FORMAT = Item.Companion.getDATE_FORMAT();
 private static final String TEXT_SAVE_KEY = "text";
 private static final String DATE_SAVE_KEY = "date";
 private static final String ORIGINAL_SAVE_SUFFIX = "_original";
@@ -45,7 +45,7 @@ private final DatePickerDialog.OnDateSetListener mDateSetListener = new DatePick
 };
 private String mTextOriginal = "";
 private String mDateOriginal = "";
-private long mCategoryId = -1;
+private String mCategoryId = "";
 private DatePickerDialog mDatePickerDialog;
 
 protected EditText getTextField() {
@@ -56,7 +56,7 @@ protected EditText getTextField() {
  * Set the category id for this dialog
  * @param categoryId the category id for this dialog
  */
-void setCategoryId(long categoryId) {
+void setCategoryId(String categoryId) {
 	mCategoryId = categoryId;
 }
 
@@ -77,11 +77,11 @@ public View onCreateViewImpl(LayoutInflater inflater, ViewGroup container, Bundl
 		mTextOriginal = savedInstanceState.getString(TEXT_SAVE_KEY + ORIGINAL_SAVE_SUFFIX);
 		dateValue = savedInstanceState.getString(DATE_SAVE_KEY);
 		mDateOriginal = savedInstanceState.getString(DATE_SAVE_KEY + ORIGINAL_SAVE_SUFFIX);
-		mCategoryId = savedInstanceState.getLong(CATEGORY_ID_SAKE_KEY);
+		mCategoryId = savedInstanceState.getString(CATEGORY_ID_SAKE_KEY);
 	}
 	
-	if (mCategoryId == -1) {
-		throw new IllegalStateException("List id has not been set");
+	if (mCategoryId == null || mCategoryId.isEmpty()) {
+		throw new IllegalStateException("Category id has not been set");
 	}
 	
 	
@@ -155,7 +155,7 @@ public void onSaveInstanceState(Bundle outState) {
 	outState.putString(TEXT_SAVE_KEY + ORIGINAL_SAVE_SUFFIX, mTextOriginal);
 	outState.putString(DATE_SAVE_KEY, mDateEdit.getText().toString());
 	outState.putString(DATE_SAVE_KEY + ORIGINAL_SAVE_SUFFIX, mDateOriginal);
-	outState.putLong(CATEGORY_ID_SAKE_KEY, mCategoryId);
+	outState.putString(CATEGORY_ID_SAKE_KEY, mCategoryId);
 	
 	super.onSaveInstanceState(outState);
 }
@@ -168,8 +168,8 @@ protected void setFields(Item item) {
 	if (item != null) {
 		mTextOriginal = item.getText();
 		mTextEdit.setText(item.getText());
-		mDateOriginal = item.getDate();
-		mDateEdit.setText(item.getDate());
+		mDateOriginal = item.getDateString();
+		mDateEdit.setText(mDateOriginal);
 		mCategoryId = item.getCategoryId();
 	}
 }

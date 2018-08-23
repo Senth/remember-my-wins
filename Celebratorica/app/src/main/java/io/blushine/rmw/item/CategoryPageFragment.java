@@ -122,7 +122,7 @@ private Category getCategory() {
 	
 	if (category == null) {
 		category = new Category();
-		category.setCategoryId(mCategoryId);
+		category.setId(mCategoryId);
 	}
 	return category;
 }

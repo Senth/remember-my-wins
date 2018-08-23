@@ -4,10 +4,12 @@ import android.content.ContentValues;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.util.Log;
-import android.util.SparseIntArray;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import io.blushine.android.sqlite.SqliteGateway;
@@ -17,15 +19,14 @@ import io.blushine.rmw.util.AppActivity;
 /**
  * Gateway for getting celebration and list items
  */
-class ItemSqliteGateway extends SqliteGateway {
+class ItemSqliteGateway extends SqliteGateway implements ItemGateway {
 private static final String TAG = ItemSqliteGateway.class.getSimpleName();
 
-/**
- * Get the specified category
- * @param categoryId the category to get
- * @return category with the categoryId, null if not found
- */
-Category getCategory(long categoryId) {
+private String idToString(long id) {
+	return Long.toString(id);
+}
+
+public Category getCategory(@NotNull String categoryId) {
 	Resources resources = AppActivity.getActivity().getResources();
 	
 	String sql = "SELECT " +
@@ -39,7 +40,7 @@ Category getCategory(long categoryId) {
 	if (cursor.moveToNext()) {
 		int i = 0;
 		category = new Category();
-		category.setCategoryId(categoryId);
+		category.setId(categoryId);
 		category.setName(cursor.getString(i++));
 		category.setOrder(cursor.getInt(i));
 	}
@@ -48,11 +49,8 @@ Category getCategory(long categoryId) {
 	return category;
 }
 
-/**
- * Get all categories
- * @return list of all categories
- */
-List<Category> getCategories() {
+@NotNull
+public List<Category> getCategories() {
 	Resources resources = AppActivity.getActivity().getResources();
 	
 	String sql = "SELECT " +
@@ -67,7 +65,7 @@ List<Category> getCategories() {
 	while (cursor.moveToNext()) {
 		Category category = new Category();
 		int i = 0;
-		category.setCategoryId(cursor.getLong(i++));
+		category.setId(idToString(cursor.getLong(i++)));
 		category.setName(cursor.getString(i++));
 		category.setOrder(cursor.getInt(i));
 		
@@ -78,12 +76,8 @@ List<Category> getCategories() {
 	return categories;
 }
 
-/**
- * Get all items in the specified category
- * @param categoryId the category id to get the item from, set to null to get items from all categories
- * @return list of all items in the category list
- */
-List<Item> getItems(Long categoryId) {
+@NotNull
+public List<Item> getItems(String categoryId) {
 	Resources resources = AppActivity.getActivity().getResources();
 	
 	String sql = "SELECT " +
@@ -106,8 +100,8 @@ List<Item> getItems(Long categoryId) {
 	while (cursor.moveToNext()) {
 		Item item = new Item();
 		int i = 0;
-		item.setItemId(cursor.getLong(i++));
-		item.setCategoryId(cursor.getLong(i++));
+		item.setId(idToString(cursor.getLong(i++)));
+		item.setCategoryId(idToString(cursor.getLong(i++)));
 		item.setText(cursor.getString(i++));
 		item.setDate(cursor.getLong(i));
 		
@@ -118,11 +112,7 @@ List<Item> getItems(Long categoryId) {
 	return items;
 }
 
-/**
- * Update a category.
- * @param category the category to update
- */
-void updateCategory(Category category) {
+public void updateCategory(@NotNull Category category) {
 	Resources resources = AppActivity.getActivity().getResources();
 	
 	ContentValues contentValues = new ContentValues(2);
@@ -130,19 +120,15 @@ void updateCategory(Category category) {
 	contentValues.put(resources.getString(R.string.table_list_order), category.getOrder());
 	
 	String table = resources.getString(R.string.table_list);
-	String where = resources.getString(R.string.table_list_id) + "=" + category.getCategoryId();
+	String where = resources.getString(R.string.table_list_id) + "=" + category.getId();
 	update(table, contentValues, where);
 }
 
-/**
- * Remove category.
- * @param category the category to remove.
- */
-void removeCategory(Category category) {
+public void removeCategory(@NotNull Category category) {
 	Resources resources = AppActivity.getActivity().getResources();
 	
 	String table = resources.getString(R.string.table_list);
-	String where = resources.getString(R.string.table_list_id) + "=" + category.getCategoryId();
+	String where = resources.getString(R.string.table_list_id) + "=" + category.getId();
 	delete(table, where);
 	
 	// Update order of categories after this category
@@ -158,43 +144,29 @@ void removeCategory(Category category) {
 	
 }
 
-/**
- * Update an item.
- * @param item the item to update
- */
-void updateItem(Item item) {
+public void updateItem(@NotNull Item item) {
 	Resources resources = AppActivity.getActivity().getResources();
 	
 	ContentValues contentValues = new ContentValues(2);
 	contentValues.put(resources.getString(R.string.table_item_text), item.getText());
-	contentValues.put(resources.getString(R.string.table_item_date), item.getDateTime());
+	contentValues.put(resources.getString(R.string.table_item_date), item.getDate());
 	
 	String table = resources.getString(R.string.table_item);
-	String where = resources.getString(R.string.table_item_id) + "=" + item.getItemId();
+	String where = resources.getString(R.string.table_item_id) + "=" + item.getId();
 	update(table, contentValues, where);
 }
 
-/**
- * Remove an item.
- * @param item the item item to remove
- */
-void removeItem(Item item) {
+public void removeItem(@NotNull Item item) {
 	Resources resources = AppActivity.getActivity().getResources();
 	
 	String table = resources.getString(R.string.table_item);
-	String where = resources.getString(R.string.table_item_id) + "=" + item.getItemId();
+	String where = resources.getString(R.string.table_item_id) + "=" + item.getId();
 	delete(table, where);
 }
 
-/**
- * Import categories and items into the database.
- * @param categories all categories to import. If a category with the same name already exists
- * it will add the items to that category instead.
- * @param items all the items to import
- */
-void importData(List<Category> categories, List<Item> items) {
+public void importData(@NotNull List<Category> categories, @NotNull List<Item> items) {
 	Resources resources = AppActivity.getActivity().getResources();
-	SparseIntArray idMap = new SparseIntArray(categories.size());
+	HashMap<String, String> idMap = new HashMap<>(categories.size());
 	
 	// Check database for existing categories with matching names
 	for (Category category : categories) {
@@ -208,14 +180,14 @@ void importData(List<Category> categories, List<Item> items) {
 		
 		// Found category with same name -> Use its id
 		if (cursor.moveToNext()) {
-			int existingId = cursor.getInt(0);
-			idMap.append((int) category.getCategoryId(), existingId);
+			String existingId = idToString(cursor.getLong(0));
+			idMap.put(category.getId(), existingId);
 		}
 		// Didn't find category with same name -> Insert category
 		else {
-			int oldId = (int) category.getCategoryId();
+			String oldId = category.getId();
 			addCategory(category);
-			idMap.append(oldId, (int) category.getCategoryId());
+			idMap.put(oldId, category.getId());
 		}
 		
 		close(cursor);
@@ -225,12 +197,12 @@ void importData(List<Category> categories, List<Item> items) {
 	beginTransaction();
 	boolean success = true;
 	for (Item item : items) {
-		int newCategoryId = idMap.get((int) item.getCategoryId());
+		String newCategoryId = idMap.get(item.getCategoryId());
 		item.setCategoryId(newCategoryId);
-		item.setItemId(-1);
 		addItem(item);
 		
-		if (item.getItemId() == -1) {
+		// Failed to add item
+		if (item.getId().isEmpty()) {
 			success = false;
 			break;
 		}
@@ -241,11 +213,7 @@ void importData(List<Category> categories, List<Item> items) {
 	endTransaction();
 }
 
-/**
- * Add a new category. Will automatically set the category id
- * @param category the category to add
- */
-void addCategory(Category category) {
+public void addCategory(@NotNull Category category) {
 	Resources resources = AppActivity.getActivity().getResources();
 	
 	
@@ -273,23 +241,23 @@ void addCategory(Category category) {
 	
 	
 	long id = insert(resources.getString(R.string.table_list), contentValues);
-	category.setCategoryId(id);
+	category.setId(idToString(id));
 }
 
 /**
  * Add a new item. Will automatically set the item id.
  * @param item the item to add
  */
-void addItem(Item item) {
+public void addItem(@NotNull Item item) {
 	Resources resources = AppActivity.getActivity().getResources();
 	
 	ContentValues contentValues = new ContentValues();
 	contentValues.put(resources.getString(R.string.table_list_id), item.getCategoryId());
 	contentValues.put(resources.getString(R.string.table_item_text), item.getText());
-	contentValues.put(resources.getString(R.string.table_item_date), item.getDateTime());
+	contentValues.put(resources.getString(R.string.table_item_date), item.getDate());
 	
 	long id = insert(resources.getString(R.string.table_item), contentValues);
-	item.setItemId(id);
+	item.setId(idToString(id));
 }
 
 /**
@@ -313,4 +281,6 @@ private int getCategoryCount() {
 	
 	return count;
 }
+
+
 }

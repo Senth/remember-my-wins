@@ -66,9 +66,9 @@ public View onCreateViewImpl(LayoutInflater inflater, ViewGroup container, Bundl
 			// Current category id
 			Category category = getSelectedCategory();
 			
-			if (category != null && category.getCategoryId() > 0) {
+			if (category != null && category.getId() > 0) {
 				ItemAddFragment itemAddFragment = new ItemAddFragment();
-				itemAddFragment.setCategoryId(category.getCategoryId());
+				itemAddFragment.setCategoryId(category.getId());
 				itemAddFragment.show();
 			}
 		}
@@ -127,7 +127,7 @@ private void updateLongPressListeners() {
 			public boolean onLongClick(View v) {
 				Category category = mPageAdapter.getCategory(position);
 				
-				if (category != null && category.getCategoryId() > 0) {
+				if (category != null && category.getId() > 0) {
 					CategoryEditFragment categoryEditFragment = new CategoryEditFragment();
 					categoryEditFragment.setArguments(category);
 					categoryEditFragment.show();
@@ -155,7 +155,7 @@ private void displayShowcases() {
 private boolean activeCategoryHasItems() {
 	Category category = getSelectedCategory();
 	if (category != null) {
-		return !ItemRepo.getInstance().getItems(category.getCategoryId()).isEmpty();
+		return !ItemRepo.getInstance().getItems(category.getId()).isEmpty();
 	} else {
 		return false;
 	}

@@ -3,6 +3,8 @@ package io.blushine.rmw.item;
 import com.google.gson.Gson;
 import com.squareup.otto.Subscribe;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,16 +45,16 @@ static ItemRepo getInstance() {
  * @param categoryId the category id to get the items from
  * @return list of all items in the specified category
  */
-List<Item> getItems(long categoryId) {
+List<Item> getItems(String categoryId) {
 	return mSqliteGateway.getItems(categoryId);
 }
 
 /**
  * Get the specified category
  * @param categoryId the category to get
- * @return category with the categoryId, null if not found
+ * @return category with the id, null if not found
  */
-Category getCategory(long categoryId) {
+Category getCategory(@NotNull String categoryId) {
 	return mSqliteGateway.getCategory(categoryId);
 }
 

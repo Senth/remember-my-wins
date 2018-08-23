@@ -17,7 +17,7 @@ private final List<Item> mItems;
 
 CategoryRemoveCommand(Category category) {
 	mCategory = category;
-	mItems = ItemRepo.getInstance().getItems(mCategory.getCategoryId());
+	mItems = ItemRepo.getInstance().getItems(mCategory.getId());
 }
 
 @Override

@@ -71,7 +71,7 @@ public enum Showcases {
 private static final String PREFERENCE_NAME = "showcase_prefs";
 private static final String PREF_SESSION_KEY = "session";
 private static final int MAX_SHOWCASES_PER_SESSION = 1;
-private static final int DELAY_DEFAULT = 3000;
+private static final int DELAY_DEFAULT = 8000;
 private static final int SESSION_COUNT;
 private static int mShowcasesShownThisSession = 0;
 private static MaterialShowcase mActiveShowcase = null;
@@ -145,8 +145,9 @@ private boolean hasFired() {
  * @param showcase the created showcase to show
  */
 private static void show(MaterialShowcase showcase) {
-	mActiveShowcase = showcase;
-	showcase.show();
+	// TODO temporary disabled all showcases
+//	mActiveShowcase = showcase;
+//	showcase.show();
 }
 
 /**

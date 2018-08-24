@@ -75,7 +75,7 @@ protected void onBindView(ViewHolder view, int position) {
 	final Item item = getItem(position);
 	
 	view.mText.setText(item.getText());
-	view.mDate.setText(item.getDate());
+	view.mDate.setText(item.getDateString());
 	
 	int count = getItemCount() - position;
 	view.mCount.setText(String.valueOf(count));

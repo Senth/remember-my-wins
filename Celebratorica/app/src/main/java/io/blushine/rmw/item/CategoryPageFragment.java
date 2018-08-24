@@ -26,13 +26,13 @@ import io.blushine.utils.EventBus;
  * Page fragment for showing all the items in a list
  */
 public class CategoryPageFragment extends io.blushine.android.Fragment implements ClickListener<Item> {
-static final long DISPLAY_ALL_CATEGORIES = -100;
+static final String DISPLAY_ALL_CATEGORIES = "-100";
 private static final String CATEGORY_ID_KEY = "category_id";
 private static final EventBus mEventBus = EventBus.getInstance();
 private static final String TAG = CategoryPageFragment.class.getSimpleName();
 private static final ItemRepo mItemRepo = ItemRepo.getInstance();
 private final List<Item> mAddToAdapter = new ArrayList<>();
-private long mCategoryId;
+private String mCategoryId;
 private ItemAdapter mItemAdapter = null;
 private RecyclerView mItemListView = null;
 private FloatingActionButton mAddButton;
@@ -42,7 +42,7 @@ private FloatingActionButton mAddButton;
  * @param categoryId the category to display on this page. Set to {@link #DISPLAY_ALL_CATEGORIES} to
  * display all categories
  */
-void setArguments(long categoryId) {
+void setArguments(String categoryId) {
 	setArguments(createArguments(categoryId));
 }
 
@@ -51,9 +51,9 @@ void setArguments(long categoryId) {
  * @param categoryId the category to display on this page. Set to {@link #DISPLAY_ALL_CATEGORIES} to
  * display all categories
  */
-static Bundle createArguments(long categoryId) {
+static Bundle createArguments(String categoryId) {
 	Bundle bundle = new Bundle(1);
-	bundle.putLong(CATEGORY_ID_KEY, categoryId);
+	bundle.putString(CATEGORY_ID_KEY, categoryId);
 	return bundle;
 }
 
@@ -118,7 +118,7 @@ public void onResume() {
 }
 
 private Category getCategory() {
-	Category category = mItemRepo.getCategory((Long) getArgument(CATEGORY_ID_KEY));
+	Category category = mItemRepo.getCategory(getArgument(CATEGORY_ID_KEY));
 	
 	if (category == null) {
 		category = new Category();
@@ -133,7 +133,7 @@ private Category getCategory() {
 private void populateItems() {
 	if (Sqlite.isInitialized() && mAddButton != null && mItemAdapter.getItemCount() == 0) {
 		List<Item> items;
-		if (mCategoryId == DISPLAY_ALL_CATEGORIES) {
+		if (mCategoryId.equals(DISPLAY_ALL_CATEGORIES)) {
 			items = mItemRepo.getItems();
 		} else {
 			items = mItemRepo.getItems(mCategoryId);
@@ -163,11 +163,11 @@ public void onDestroy() {
 
 @Override
 public void onClick(Item item) {
-	if (mCategoryId > 0) {
-		ItemEditFragment celebrationEditFragment = new ItemEditFragment();
-		celebrationEditFragment.setEditItem(item);
-		celebrationEditFragment.setCategoryId(mCategoryId);
-		celebrationEditFragment.show();
+	if (!mCategoryId.isEmpty()) {
+		ItemEditFragment itemEditFragment = new ItemEditFragment();
+		itemEditFragment.setEditItem(item);
+		itemEditFragment.setCategoryId(item.getCategoryId());
+		itemEditFragment.show();
 	}
 }
 

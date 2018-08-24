@@ -30,10 +30,10 @@ public Category getCategory(@NotNull String categoryId) {
 	Resources resources = AppActivity.getActivity().getResources();
 	
 	String sql = "SELECT " +
-			resources.getString(R.string.table_list_name) + ", " +
-			resources.getString(R.string.table_list_order) +
-			" FROM " + resources.getString(R.string.table_list) +
-			" WHERE " + resources.getString(R.string.table_list_id) + "=" + categoryId;
+			resources.getString(R.string.table_category_name) + ", " +
+			resources.getString(R.string.table_category_order) +
+			" FROM " + resources.getString(R.string.table_category) +
+			" WHERE " + resources.getString(R.string.table_category_id) + "=" + categoryId;
 	
 	Cursor cursor = rawQuery(sql);
 	Category category = null;
@@ -54,11 +54,11 @@ public List<Category> getCategories() {
 	Resources resources = AppActivity.getActivity().getResources();
 	
 	String sql = "SELECT " +
-			resources.getString(R.string.table_list_id) + ", " +
-			resources.getString(R.string.table_list_name) + ", " +
-			resources.getString(R.string.table_list_order) +
-			" FROM " + resources.getString(R.string.table_list) +
-			" ORDER BY " + resources.getString(R.string.table_list_order) + " ASC";
+			resources.getString(R.string.table_category_id) + ", " +
+			resources.getString(R.string.table_category_name) + ", " +
+			resources.getString(R.string.table_category_order) +
+			" FROM " + resources.getString(R.string.table_category) +
+			" ORDER BY " + resources.getString(R.string.table_category_order) + " ASC";
 	
 	Cursor cursor = rawQuery(sql);
 	List<Category> categories = new ArrayList<>(cursor.getCount());
@@ -82,13 +82,13 @@ public List<Item> getItems(String categoryId) {
 	
 	String sql = "SELECT " +
 			resources.getString(R.string.table_item_id) + ", " +
-			resources.getString(R.string.table_list_id) + ", " +
+			resources.getString(R.string.table_category_id) + ", " +
 			resources.getString(R.string.table_item_text) + ", " +
 			resources.getString(R.string.table_item_date) +
 			" FROM " + resources.getString(R.string.table_item);
 	
 	if (categoryId != null) {
-		sql += " WHERE " + resources.getString(R.string.table_list_id) + "=" + categoryId;
+		sql += " WHERE " + resources.getString(R.string.table_category_id) + "=" + categoryId;
 	}
 	sql += " ORDER BY " +
 			resources.getString(R.string.table_item_date) + " DESC, " +
@@ -116,27 +116,27 @@ public void updateCategory(@NotNull Category category) {
 	Resources resources = AppActivity.getActivity().getResources();
 	
 	ContentValues contentValues = new ContentValues(2);
-	contentValues.put(resources.getString(R.string.table_list_name), category.getName());
-	contentValues.put(resources.getString(R.string.table_list_order), category.getOrder());
+	contentValues.put(resources.getString(R.string.table_category_name), category.getName());
+	contentValues.put(resources.getString(R.string.table_category_order), category.getOrder());
 	
-	String table = resources.getString(R.string.table_list);
-	String where = resources.getString(R.string.table_list_id) + "=" + category.getId();
+	String table = resources.getString(R.string.table_category);
+	String where = resources.getString(R.string.table_category_id) + "=" + category.getId();
 	update(table, contentValues, where);
 }
 
 public void removeCategory(@NotNull Category category) {
 	Resources resources = AppActivity.getActivity().getResources();
 	
-	String table = resources.getString(R.string.table_list);
-	String where = resources.getString(R.string.table_list_id) + "=" + category.getId();
+	String table = resources.getString(R.string.table_category);
+	String where = resources.getString(R.string.table_category_id) + "=" + category.getId();
 	delete(table, where);
 	
 	// Update order of categories after this category
 	try {
 		String sql = "UPDATE " + table + " SET " +
-				resources.getString(R.string.table_list_order) + "=" + resources.getString(R.string.table_list_order) + "-1 " +
+				resources.getString(R.string.table_category_order) + "=" + resources.getString(R.string.table_category_order) + "-1 " +
 				"WHERE " +
-				resources.getString(R.string.table_list_order) + ">" + category.getOrder();
+				resources.getString(R.string.table_category_order) + ">" + category.getOrder();
 		execSQL(sql);
 	} catch (SQLException e) {
 		Log.e(TAG, "removeCategory() — Invalid SQL syntax", e);
@@ -171,9 +171,9 @@ public void importData(@NotNull List<Category> categories, @NotNull List<Item> i
 	// Check database for existing categories with matching names
 	for (Category category : categories) {
 		String sql = "SELECT " +
-				resources.getString(R.string.table_list_id) +
-				" FROM " + resources.getString(R.string.table_list) +
-				" WHERE " + resources.getString(R.string.table_list_name) + "=" + category.getName() +
+				resources.getString(R.string.table_category_id) +
+				" FROM " + resources.getString(R.string.table_category) +
+				" WHERE " + resources.getString(R.string.table_category_name) + "=" + category.getName() +
 				" COLLATE NOCASE";
 		
 		Cursor cursor = rawQuery(sql);
@@ -220,10 +220,10 @@ public void addCategory(@NotNull Category category) {
 	// Update categories after this order
 	if (category.getOrder() > 0) {
 		try {
-			String sql = "UPDATE " + resources.getString(R.string.table_list) + " SET " +
-					resources.getString(R.string.table_list_order) + "=" + resources.getString(R.string.table_list_order) + "+1 " +
+			String sql = "UPDATE " + resources.getString(R.string.table_category) + " SET " +
+					resources.getString(R.string.table_category_order) + "=" + resources.getString(R.string.table_category_order) + "+1 " +
 					"WHERE " +
-					resources.getString(R.string.table_list_order) + ">=" + category.getOrder();
+					resources.getString(R.string.table_category_order) + ">=" + category.getOrder();
 			execSQL(sql);
 		} catch (SQLException e) {
 			Log.e(TAG, "removeCategory() — Invalid SQL syntax", e);
@@ -236,11 +236,11 @@ public void addCategory(@NotNull Category category) {
 	
 	
 	ContentValues contentValues = new ContentValues();
-	contentValues.put(resources.getString(R.string.table_list_order), category.getOrder());
-	contentValues.put(resources.getString(R.string.table_list_name), category.getName());
+	contentValues.put(resources.getString(R.string.table_category_order), category.getOrder());
+	contentValues.put(resources.getString(R.string.table_category_name), category.getName());
 	
 	
-	long id = insert(resources.getString(R.string.table_list), contentValues);
+	long id = insert(resources.getString(R.string.table_category), contentValues);
 	category.setId(idToString(id));
 }
 
@@ -252,7 +252,7 @@ public void addItem(@NotNull Item item) {
 	Resources resources = AppActivity.getActivity().getResources();
 	
 	ContentValues contentValues = new ContentValues();
-	contentValues.put(resources.getString(R.string.table_list_id), item.getCategoryId());
+	contentValues.put(resources.getString(R.string.table_category_id), item.getCategoryId());
 	contentValues.put(resources.getString(R.string.table_item_text), item.getText());
 	contentValues.put(resources.getString(R.string.table_item_date), item.getDate());
 	
@@ -267,9 +267,9 @@ private int getCategoryCount() {
 	Resources resources = AppActivity.getActivity().getResources();
 	
 	String sql = "SELECT " +
-			resources.getString(R.string.table_list_order) +
-			" FROM " + resources.getString(R.string.table_list) +
-			" ORDER BY " + resources.getString(R.string.table_list_order) + " DESC" +
+			resources.getString(R.string.table_category_order) +
+			" FROM " + resources.getString(R.string.table_category) +
+			" ORDER BY " + resources.getString(R.string.table_category_order) + " DESC" +
 			" LIMIT 1";
 	
 	Cursor cursor = rawQuery(sql);

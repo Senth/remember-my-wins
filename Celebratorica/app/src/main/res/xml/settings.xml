@@ -1,33 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-	<PreferenceCategory android:title="@string/setting_reminder_category_name" />
+	<PreferenceCategory android:title="@string/setting_reminder_category_name">
 
-	<de.mrapp.android.preference.SwitchPreference
-		android:defaultValue="true"
-		android:key="@string/setting_reminder_key"
-		android:title="@string/setting_reminder_title" />
+		<SwitchPreference
+			android:defaultValue="true"
+			android:key="@string/setting_reminder_key"
+			android:title="@string/setting_reminder_title" />
 
-	<io.blushine.android.preference.TimePreference
-		android:defaultValue="@string/setting_reminder_time_1_default"
-		android:key="@string/setting_reminder_time_1_key"
-		android:title="@string/setting_reminder_time_title" />
+		<io.blushine.android.preference.TimePreference
+			android:defaultValue="@string/setting_reminder_time_1_default"
+			android:key="@string/setting_reminder_time_1_key"
+			android:title="@string/setting_reminder_time_title" />
 
-	<PreferenceCategory android:title="@string/setting_import_export_category_name" />
+	</PreferenceCategory>
 
-	<Preference
-		android:key="@string/setting_import_key"
-		android:persistent="false"
-		android:title="@string/setting_import_title" />
+	<PreferenceCategory android:title="@string/setting_store_location_category_name">
 
-	<Preference
-		android:key="@string/setting_export_key"
-		android:persistent="false"
-		android:title="@string/setting_export_title" />
+		<de.mrapp.android.preference.ListPreference
+			style="@style/Material.ListPreference"
+			android:defaultValue="@string/setting_store_location_cloud_key"
+			android:dialogMessage="@string/setting_store_location_message"
+			android:dialogTitle="@string/setting_store_location_dialog_title"
+			android:entries="@array/store_location_entries"
+			android:entryValues="@array/store_location_entry_values"
+			android:key="@string/setting_store_location_key"
+			android:title="@string/setting_store_location_title" />
 
-	<PreferenceCategory android:title="@string/legal_category_name" />
+	</PreferenceCategory>
 
-	<Preference
-		android:key="@string/legal_key"
-		android:persistent="false"
-		android:title="@string/legal_title" />
+	<PreferenceCategory android:title="@string/legal_category_name">
+
+		<Preference
+			android:key="@string/legal_key"
+			android:persistent="false"
+			android:title="@string/legal_title" />
+
+	</PreferenceCategory>
 </PreferenceScreen>

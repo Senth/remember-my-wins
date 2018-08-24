@@ -1,6 +1,5 @@
 package io.blushine.rmw.util;
 
-import android.content.ContentValues;
 import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -51,11 +50,8 @@ public void onCreate(SQLiteDatabase db) {
 	Log.d(TAG, "onCreate()");
 	
 	Resources resources = AppActivity.getActivity().getResources();
-	createListTable(resources, db);
+	createCategoryTable(resources, db);
 	createItemTable(resources, db);
-	
-	// Create default items
-	createDefaultLists(resources, db);
 }
 
 @Override
@@ -64,24 +60,42 @@ public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 	
 	Resources resources = AppActivity.getActivity().getResources();
 	
-	// 1 -> 2: Add new default list
-	if (oldVersion < 2) {
-		String table = resources.getString(R.string.table_list);
-		ContentValues values = new ContentValues();
-		values.put(resources.getString(R.string.table_list_id), 2);
-		values.put(resources.getString(R.string.table_list_order), 2);
-		values.put(resources.getString(R.string.table_list_name), resources.getString(R.string.category_default_gratitude_name));
-		db.insert(table, null, values);
+	// 1 -> 3 - Changed name of list to category
+	if (oldVersion < 3) {
+		upgrade1To3(resources, db);
 	}
 }
 
-private void createListTable(Resources resources, SQLiteDatabase db) {
-	Log.d(TAG, "createListTable()");
+private void upgrade1To3(Resources resources, SQLiteDatabase db) {
+	db.beginTransaction();
+	// List -> Category
+	createCategoryTable(resources, db);
+	String sql = "INSERT INTO category " +
+			"(category_id, category_order, category_name) SELECT " +
+			"list_id, list_order, list_name FROM list";
+	db.execSQL(sql);
+	db.execSQL("DROP TABLE list");
 	
-	String sql = "CREATE TABLE IF NOT EXISTS " + resources.getString(R.string.table_list) + " (" +
-			resources.getString(R.string.table_list_id) + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-			resources.getString(R.string.table_list_order) + " INTEGER, " +
-			resources.getString(R.string.table_list_name) + " TEXT)";
+	// Item (list_id -> item_id)
+	sql = "ALTER TABLE item RENAME TO item_old";
+	db.execSQL(sql);
+	createItemTable(resources, db);
+	sql = "INSERT INTO item " +
+			"(item_id, category_id, item_text, item_date) SELECT " +
+			"item_id, list_id, item_text, item_date FROM item_old";
+	db.execSQL(sql);
+	db.execSQL("DROP TABLE item_old");
+	db.setTransactionSuccessful();
+	db.endTransaction();
+}
+
+private void createCategoryTable(Resources resources, SQLiteDatabase db) {
+	Log.d(TAG, "createCategoryTable()");
+	
+	String sql = "CREATE TABLE IF NOT EXISTS " + resources.getString(R.string.table_category) + " (" +
+			resources.getString(R.string.table_category_id) + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+			resources.getString(R.string.table_category_order) + " INTEGER, " +
+			resources.getString(R.string.table_category_name) + " TEXT)";
 	
 	db.execSQL(sql);
 }
@@ -91,28 +105,11 @@ private void createItemTable(Resources resources, SQLiteDatabase db) {
 	
 	String sql = "CREATE TABLE IF NOT EXISTS " + resources.getString(R.string.table_item) + " (" +
 			resources.getString(R.string.table_item_id) + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-			resources.getString(R.string.table_list_id) + " INTEGER, " +
+			resources.getString(R.string.table_category_id) + " INTEGER, " +
 			resources.getString(R.string.table_item_text) + " TEXT, " +
 			resources.getString(R.string.table_item_date) + " INTEGER, " +
-			"FOREIGN KEY(" + resources.getString(R.string.table_list_id) + ") REFERENCES " + resources.getString(R.string.table_list) + "(" + resources.getString(R.string.table_list_id) + "))";
+			"FOREIGN KEY(" + resources.getString(R.string.table_category_id) + ") REFERENCES " + resources.getString(R.string.table_category) + "(" + resources.getString(R.string.table_category_id) + "))";
 	db.execSQL(sql);
-}
-
-private void createDefaultLists(Resources resources, SQLiteDatabase db) {
-	Log.d(TAG, "createDefaultLists()");
-	
-	String table = resources.getString(R.string.table_list);
-	ContentValues values = new ContentValues();
-	values.put(resources.getString(R.string.table_list_id), 1);
-	values.put(resources.getString(R.string.table_list_order), 1);
-	values.put(resources.getString(R.string.table_list_name), resources.getString(R.string.category_default_celebrate_name));
-	db.insert(table, null, values);
-	
-	values = new ContentValues();
-	values.put(resources.getString(R.string.table_list_id), 2);
-	values.put(resources.getString(R.string.table_list_order), 2);
-	values.put(resources.getString(R.string.table_list_name), resources.getString(R.string.category_default_gratitude_name));
-	db.insert(table, null, values);
 }
 
 private static class InitTask extends AsyncTask<Void, Void, Sqlite> {

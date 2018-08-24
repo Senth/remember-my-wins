@@ -89,7 +89,7 @@ public View onCreateViewImpl(LayoutInflater inflater, ViewGroup container, Bundl
 	
 	
 	// Text validation
-	mTextEdit = (EditText) view.findViewById(R.id.text_edit);
+	mTextEdit = view.findViewById(R.id.text_edit);
 	mTextEdit.setText(textValue);
 	mValidatorGroup.add(new TextValidator.Builder(mTextEdit)
 			.setRequired()
@@ -98,13 +98,8 @@ public View onCreateViewImpl(LayoutInflater inflater, ViewGroup container, Bundl
 	);
 	
 	// Date
-	mDateEdit = (EditText) view.findViewById(R.id.date_edit);
-	mDateEdit.setOnClickListener(new View.OnClickListener() {
-		@Override
-		public void onClick(View v) {
-			pickDate();
-		}
-	});
+	mDateEdit = view.findViewById(R.id.date_edit);
+	mDateEdit.setOnClickListener(v -> pickDate());
 	if (dateValue == null || dateValue.isEmpty()) {
 		clearDate();
 		mDateOriginal = mDateEdit.getText().toString();
@@ -129,7 +124,9 @@ private void pickDate() {
 		mDatePickerDialog = DatePickerDialog.newInstance(mDateSetListener, year, month, day);
 		mDatePickerDialog.vibrate(false);
 	}
-	mDatePickerDialog.show(getFragmentManager(), DatePickerDialog.class.getSimpleName());
+	if (getFragmentManager() != null) {
+		mDatePickerDialog.show(getFragmentManager(), DatePickerDialog.class.getSimpleName());
+	}
 }
 
 /**

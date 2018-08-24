@@ -55,22 +55,19 @@ public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 public View onCreateViewImpl(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 	View view = inflater.inflate(R.layout.fragment_item_view, container, false);
 	
-	Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
+	Toolbar toolbar = view.findViewById(R.id.toolbar);
 	AppActivity.getActivity().setSupportActionBar(toolbar);
 	setHasOptionsMenu(true);
 	
-	mAddButton = (FloatingActionButton) view.findViewById(R.id.add_button);
-	mAddButton.setOnClickListener(new View.OnClickListener() {
-		@Override
-		public void onClick(View v) {
-			// Current category id
-			Category category = getSelectedCategory();
-			
-			if (category != null && category.getId() > 0) {
-				ItemAddFragment itemAddFragment = new ItemAddFragment();
-				itemAddFragment.setCategoryId(category.getId());
-				itemAddFragment.show();
-			}
+	mAddButton = view.findViewById(R.id.add_button);
+	mAddButton.setOnClickListener(v -> {
+		// Current category id
+		Category category = getSelectedCategory();
+		
+		if (category != null && !category.getId().isEmpty()) {
+			ItemAddFragment itemAddFragment = new ItemAddFragment();
+			itemAddFragment.setCategoryId(category.getId());
+			itemAddFragment.show();
 		}
 	});
 	
@@ -86,8 +83,8 @@ public View onCreateViewImpl(LayoutInflater inflater, ViewGroup container, Bundl
 		mPositionAfterUpdate = mViewPager.getCurrentItem();
 	}
 	
-	mViewPager = (ViewPager) view.findViewById(R.id.view_pager);
-	mTabLayout = (TabLayout) view.findViewById(R.id.view_pager_tabs);
+	mViewPager = view.findViewById(R.id.view_pager);
+	mTabLayout = view.findViewById(R.id.view_pager_tabs);
 	mTabLayout.setupWithViewPager(mViewPager);
 	mPageAdapter = null;
 	bindAdapter();
@@ -127,7 +124,7 @@ private void updateLongPressListeners() {
 			public boolean onLongClick(View v) {
 				Category category = mPageAdapter.getCategory(position);
 				
-				if (category != null && category.getId() > 0) {
+				if (category != null && !category.getId().isEmpty()) {
 					CategoryEditFragment categoryEditFragment = new CategoryEditFragment();
 					categoryEditFragment.setArguments(category);
 					categoryEditFragment.show();
@@ -154,11 +151,7 @@ private void displayShowcases() {
 
 private boolean activeCategoryHasItems() {
 	Category category = getSelectedCategory();
-	if (category != null) {
-		return !ItemRepo.getInstance().getItems(category.getId()).isEmpty();
-	} else {
-		return false;
-	}
+	return category != null && !ItemRepo.getInstance().getItems(category.getId()).isEmpty();
 }
 
 @Override

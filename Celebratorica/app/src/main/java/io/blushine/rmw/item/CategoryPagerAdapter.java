@@ -1,11 +1,11 @@
 package io.blushine.rmw.item;
 
 
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
-import android.support.v13.app.FragmentPagerAdapter;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 
 import java.util.List;
 
@@ -27,7 +27,7 @@ private void invalidateCache() {
 
 @Override
 public Fragment getItem(int position) {
-	long categoryId = mCachedCategories.get(position).getId();
+	String categoryId = mCachedCategories.get(position).getId();
 	CategoryPageFragment fragment = new CategoryPageFragment();
 	fragment.setArguments(categoryId);
 	return fragment;

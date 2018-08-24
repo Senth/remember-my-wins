@@ -22,7 +22,7 @@ private Category mCategory = new Category();
  */
 public void setArguments(Category category) {
 	Bundle bundle = new Bundle(3);
-	bundle.putLong(CATEGORY_ID_KEY, category.getId());
+	bundle.putString(CATEGORY_ID_KEY, category.getId());
 	bundle.putString(NAME_KEY, category.getName());
 	bundle.putInt(ORDER_KEY, category.getOrder());
 	
@@ -41,9 +41,9 @@ protected void onDeclareArguments() {
 public void onViewStateRestored(Bundle savedInstanceState) {
 	super.onViewStateRestored(savedInstanceState);
 	
-	mCategory.setId((Long) getArgument(CATEGORY_ID_KEY));
-	mCategory.setName((String) getArgument(NAME_KEY));
-	mCategory.setOrder((Integer) getArgument(ORDER_KEY));
+	mCategory.setId(getArgument(CATEGORY_ID_KEY));
+	mCategory.setName(getArgument(NAME_KEY));
+	mCategory.setOrder(getArgument(ORDER_KEY));
 }
 
 @Override

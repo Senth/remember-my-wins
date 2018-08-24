@@ -10,6 +10,7 @@ import io.blushine.android.firebase.FirebaseAuth;
 import io.blushine.rmw.R;
 import io.blushine.rmw.item.CategoryOrderFragment;
 import io.blushine.rmw.settings.SettingsActivity;
+import io.blushine.rmw.settings.SettingsRepo;
 
 /**
  * Base activity for all activities in this app
@@ -29,9 +30,19 @@ protected void onCreate(Bundle savedInstanceState) {
 
 protected void onFirstTime() {
 	// TODO only init Firebase or Sqlite not both (depending on what backend the user has selected)
-	Sqlite.init();
-	FirebaseAuth.INSTANCE.getCurrentUser();
-	checkDocumentUpdates();
+	switch (SettingsRepo.INSTANCE.getStorageLocation()) {
+	case CLOUD:
+		FirebaseAuth.INSTANCE.getCurrentUser();
+		checkDocumentUpdates();
+		break;
+	case LOCAL:
+		Sqlite.init();
+		checkDocumentUpdates();
+		break;
+	case NOT_SET:
+		// TODO Initialize onboarding?
+		break;
+	}
 }
 
 private void checkDocumentUpdates() {

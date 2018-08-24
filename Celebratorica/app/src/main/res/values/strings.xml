@@ -48,9 +48,14 @@
 	<string name="setting_reminder_time_1_key" translatable="false">reminder_time_1</string>
 	<string name="setting_reminder_time_1_default" translatable="false">22:00</string>
 	<string name="setting_reminder_time_title">Set reminder time</string>
-	<string name="setting_import_export_category_name">Import/Export database</string>
-	<string name="setting_import_key" translatable="false">import</string>
-	<string name="setting_import_title">Import from cloud</string>
-	<string name="setting_export_key" translatable="false">export</string>
-	<string name="setting_export_title">Export to cloud</string>
+	<string name="setting_store_location_key" translatable="false">store_location</string>
+	<string name="setting_store_location_title">Change storage location</string>
+	<string name="setting_store_location_dialog_title">Select storage location</string>
+	<string name="setting_store_location_message">Select whether you want to store your data online in the cloud or locally on your phone.\n\nStoring it in the cloud will let you sync your data between devices and recover your data if you lose your phone.\n\nStoring it locally will let you use the app without an Internet connection.</string>
+	<string name="setting_store_location_category_name">Storage location</string>
+	<string name="setting_store_location_cloud_key" translatable="false">cloud</string>
+	<string name="setting_store_location_cloud_title">Cloud</string>
+	<string name="setting_store_location_local_key" translatable="false">local</string>
+	<string name="setting_store_location_local_title">Phone</string>
+	<string name="setting_store_location_not_set_key" translatable="false">not_set</string>
 </resources>

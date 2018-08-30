@@ -27,7 +27,7 @@ private Sqlite() {
 /**
  * Initialize the SQL DB in a background thread
  */
-static void init() {
+public static void init() {
 	Log.d(TAG, "init()");
 	if (!isInitialized() && mInitTask == null) {
 		Log.d(TAG, "init() - Not initialized, initializing");

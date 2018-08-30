@@ -37,6 +37,6 @@ public boolean execute() {
 		mEventBus.post(new ItemEvent(mItems, ObjectEvent.Actions.REMOVE));
 	}
 	showSnackbarWithUndo(R.string.category_removed);
-	return false;
+	return true;
 }
 }

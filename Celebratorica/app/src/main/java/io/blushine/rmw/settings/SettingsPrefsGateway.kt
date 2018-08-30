@@ -1,6 +1,6 @@
 package io.blushine.rmw.settings
 
-import android.preference.PreferenceManager
+import android.support.v7.preference.PreferenceManager
 import io.blushine.android.common.Time
 import io.blushine.rmw.R
 import io.blushine.rmw.util.AppActivity

@@ -11,7 +11,7 @@ protected void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
 	
 	if (savedInstanceState == null) {
-		new ItemViewFragment().show();
+		new TabViewFragment().show();
 	}
 }
 }

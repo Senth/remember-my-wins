@@ -12,9 +12,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import io.blushine.android.common.ObjectEvent;
 import io.blushine.android.sqlite.SqliteGateway;
 import io.blushine.rmw.R;
 import io.blushine.rmw.util.AppActivity;
+import io.blushine.utils.EventBus;
 
 /**
  * Gateway for getting celebration and list items
@@ -26,31 +28,7 @@ private String idToString(long id) {
 	return Long.toString(id);
 }
 
-public Category getCategory(@NotNull String categoryId) {
-	Resources resources = AppActivity.getActivity().getResources();
-	
-	String sql = "SELECT " +
-			resources.getString(R.string.table_category_name) + ", " +
-			resources.getString(R.string.table_category_order) +
-			" FROM " + resources.getString(R.string.table_category) +
-			" WHERE " + resources.getString(R.string.table_category_id) + "=" + categoryId;
-	
-	Cursor cursor = rawQuery(sql);
-	Category category = null;
-	if (cursor.moveToNext()) {
-		int i = 0;
-		category = new Category();
-		category.setId(categoryId);
-		category.setName(cursor.getString(i++));
-		category.setOrder(cursor.getInt(i));
-	}
-	close(cursor);
-	
-	return category;
-}
-
-@NotNull
-public List<Category> getCategories() {
+public void getCategories() {
 	Resources resources = AppActivity.getActivity().getResources();
 	
 	String sql = "SELECT " +
@@ -73,11 +51,10 @@ public List<Category> getCategories() {
 	}
 	close(cursor);
 	
-	return categories;
+	EventBus.getInstance().post(new CategoryEvent(categories, ObjectEvent.Actions.GET_RESPONSE));
 }
 
-@NotNull
-public List<Item> getItems(String categoryId) {
+public void getItems(String categoryId) {
 	Resources resources = AppActivity.getActivity().getResources();
 	
 	String sql = "SELECT " +
@@ -109,7 +86,7 @@ public List<Item> getItems(String categoryId) {
 	}
 	close(cursor);
 	
-	return items;
+	EventBus.getInstance().post(new ItemEvent(items, ObjectEvent.Actions.GET_RESPONSE));
 }
 
 public void updateCategory(@NotNull Category category) {

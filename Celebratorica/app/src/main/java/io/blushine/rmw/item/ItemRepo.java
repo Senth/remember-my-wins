@@ -1,17 +1,19 @@
 package io.blushine.rmw.item;
 
-import com.google.gson.Gson;
-import com.squareup.otto.Subscribe;
+import android.content.res.Resources;
 
-import org.jetbrains.annotations.NotNull;
+import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import io.blushine.android.common.ObjectEvent;
-import io.blushine.rmw.util.ExportDataEvent;
-import io.blushine.rmw.util.ExportEvent;
-import io.blushine.rmw.util.ImportDataEvent;
+import io.blushine.android.firebase.FirebaseAuth;
+import io.blushine.rmw.R;
+import io.blushine.rmw.settings.SettingsRepo;
+import io.blushine.rmw.settings.StorageLocationSetEvent;
+import io.blushine.rmw.util.AppActivity;
+import io.blushine.rmw.util.Sqlite;
 import io.blushine.utils.EventBus;
 
 /**
@@ -20,13 +22,59 @@ import io.blushine.utils.EventBus;
 class ItemRepo {
 private static final EventBus mEventBus = EventBus.getInstance();
 private static ItemRepo mInstance = null;
-private ItemSqliteGateway mSqliteGateway = new ItemSqliteGateway();
+private ItemGateway mCurrentGateway;
 
 /**
  * Enforces singleton pattern
  */
 private ItemRepo() {
 	EventBus.getInstance().register(this);
+	
+	switch (SettingsRepo.INSTANCE.getStorageLocation()) {
+	case CLOUD:
+		mCurrentGateway = new ItemFirestoreGateway();
+		break;
+	case LOCAL:
+		mCurrentGateway = new ItemSqliteGateway();
+		break;
+	case NOT_SET:
+		// TODO remove, just for implementation and testing
+		mCurrentGateway = new ItemFirestoreGateway();
+		break;
+	}
+	
+	// Add default categories if first time
+	if (!ItemPrefsGateway.INSTANCE.hasAddedDefaultCategories()) {
+		createDefaultCategories();
+		ItemPrefsGateway.INSTANCE.setAddedDefaultCategories(true);
+	}
+}
+
+private void createDefaultCategories() {
+	Resources resources = AppActivity.getActivity().getResources();
+	
+	List<Category> defaultCategories = new ArrayList<>(2);
+	Category category = new Category();
+	category.setName(resources.getString(R.string.category_default_1_name));
+	category.setOrder(1);
+	defaultCategories.add(category);
+	
+	category = new Category();
+	category.setName(resources.getString(R.string.category_default_2_name));
+	category.setOrder(2);
+	defaultCategories.add(category);
+	
+	addCategories(defaultCategories);
+}
+
+/**
+ * Add new categories. Will automatically set the category id
+ * @param categories the categories to add
+ */
+private void addCategories(List<Category> categories) {
+	for (Category category : categories) {
+		mCurrentGateway.addCategory(category);
+	}
 }
 
 /**
@@ -41,21 +89,45 @@ static ItemRepo getInstance() {
 }
 
 /**
- * Get all items in a specified list
- * @param categoryId the category id to get the items from
- * @return list of all items in the specified category
+ * @return true if the backend Firestore or Sqlite has been initialized
  */
-List<Item> getItems(String categoryId) {
-	return mSqliteGateway.getItems(categoryId);
+boolean isBackendInitialized() {
+	switch (SettingsRepo.INSTANCE.getStorageLocation()) {
+	case CLOUD:
+		return true;
+	case LOCAL:
+		return Sqlite.isInitialized();
+	}
+	return false;
+}
+
+@SuppressWarnings("unused")
+@Subscribe
+public void onStorageLocationSetEvent(StorageLocationSetEvent event) {
+	switch (event.getStorageLocation()) {
+	
+	case CLOUD:
+		FirebaseAuth.INSTANCE.getCurrentUser();
+		mCurrentGateway = new ItemFirestoreGateway();
+		break;
+	case LOCAL:
+		if (!Sqlite.isInitialized()) {
+			Sqlite.init();
+		}
+		mCurrentGateway = new ItemSqliteGateway();
+		break;
+	case NOT_SET:
+		throw new IllegalStateException("Storage location should never be NOT SET after it being set");
+	}
 }
 
 /**
- * Get the specified category
- * @param categoryId the category to get
- * @return category with the id, null if not found
+ * Get all items from the specified categories, sorted by date. The result (all items) will be sent as a
+ * {@link ItemEvent} with the action set as {@link io.blushine.android.common.ObjectEvent.Actions#GET_RESPONSE}.
+ * @param categoryId the category to get all items from
  */
-Category getCategory(@NotNull String categoryId) {
-	return mSqliteGateway.getCategory(categoryId);
+void getItems(String categoryId) {
+	mCurrentGateway.getItems(categoryId);
 }
 
 @SuppressWarnings("unused")
@@ -83,7 +155,7 @@ public void onItem(ItemEvent event) {
  */
 private void addItems(List<Item> items) {
 	for (Item item : items) {
-		mSqliteGateway.addItem(item);
+		mCurrentGateway.addItem(item);
 	}
 }
 
@@ -93,7 +165,7 @@ private void addItems(List<Item> items) {
  */
 private void editItems(List<Item> items) {
 	for (Item item : items) {
-		mSqliteGateway.updateItem(item);
+		mCurrentGateway.updateItem(item);
 	}
 }
 
@@ -103,50 +175,24 @@ private void editItems(List<Item> items) {
  */
 private void removeItems(List<Item> items) {
 	for (Item item : items) {
-		mSqliteGateway.removeItem(item);
+		mCurrentGateway.removeItem(item);
 	}
 }
 
-@SuppressWarnings("unused")
-@Subscribe
-public void onExportEvent(ExportEvent event) {
-	List<Category> categories = getCategories();
-	List<Item> items = getItems();
-	
-	Gson gson = new Gson();
-	ExportDataEvent exportDataEvent = new ExportDataEvent();
-	
-	exportDataEvent.categoriesJson = gson.toJson(categories);
-	exportDataEvent.itemsJson = gson.toJson(items);
-	
-	EventBus.getInstance().post(exportDataEvent);
+/**
+ * Get all categories. The result (all categories) will be sent as a {@link CategoryEvent} with the
+ * action set as {@link io.blushine.android.common.ObjectEvent.Actions#GET_RESPONSE}.
+ */
+void getCategories() {
+	mCurrentGateway.getCategories();
 }
 
 /**
- * Get all item lists
- * @return list of all item lists
+ * Get all items from all categories, sorted by date. The result (all items) will be sent as a
+ * {@link ItemEvent} with the action set as {@link io.blushine.android.common.ObjectEvent.Actions#GET_RESPONSE}.
  */
-List<Category> getCategories() {
-	return mSqliteGateway.getCategories();
-}
-
-/**
- * Get all items from all categories, sorted by date
- * @return list of all items from all categories, sorted by date
- */
-List<Item> getItems() {
-	return mSqliteGateway.getItems(null);
-}
-
-@SuppressWarnings({"unused", "unchecked"})
-@Subscribe
-public void onImportDataEvent(ImportDataEvent event) {
-	Gson gson = new Gson();
-	
-	List<Category> categories = gson.fromJson(event.categoriesJson, ArrayList.class);
-	List<Item> items = gson.fromJson(event.itemsJson, ArrayList.class);
-	
-	mSqliteGateway.importData(categories, items);
+void getItems() {
+	mCurrentGateway.getItems(null);
 }
 
 @SuppressWarnings("unused")
@@ -169,22 +215,12 @@ public void onCategory(CategoryEvent event) {
 }
 
 /**
- * Add new categories. Will automatically set the category id
- * @param categories the categories to add
- */
-private void addCategories(List<Category> categories) {
-	for (Category category : categories) {
-		mSqliteGateway.addCategory(category);
-	}
-}
-
-/**
  * Update the specified categories
  * @param categories the categories to update
  */
 private void editCategories(List<Category> categories) {
 	for (Category category : categories) {
-		mSqliteGateway.updateCategory(category);
+		mCurrentGateway.updateCategory(category);
 	}
 }
 
@@ -195,7 +231,7 @@ private void editCategories(List<Category> categories) {
 
 private void removeCategories(List<Category> categories) {
 	for (Category category : categories) {
-		mSqliteGateway.removeCategory(category);
+		mCurrentGateway.removeCategory(category);
 	}
 }
 }

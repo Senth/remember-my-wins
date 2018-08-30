@@ -9,6 +9,7 @@ import java.util.*
  * A celebration item
  */
 internal class Item : Comparable<Item> {
+	var userId = ""
 	var id = ""
 	var categoryId = ""
 	var text = ""

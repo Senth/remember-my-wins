@@ -1,7 +1,6 @@
 package io.blushine.rmw.item;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,17 +12,14 @@ import android.view.ViewGroup;
 
 import com.squareup.otto.Subscribe;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import io.blushine.android.ui.list.ClickListener;
 import io.blushine.rmw.R;
-import io.blushine.rmw.util.Sqlite;
-import io.blushine.rmw.util.SqliteInitializedEvent;
 import io.blushine.utils.EventBus;
 
 /**
- * Page fragment for showing all the items in a list
+ * Page fragment for showing all the items in a category
  */
 public class CategoryPageFragment extends io.blushine.android.Fragment implements ClickListener<Item> {
 static final String DISPLAY_ALL_CATEGORIES = "-100";
@@ -31,18 +27,17 @@ private static final String CATEGORY_ID_KEY = "category_id";
 private static final EventBus mEventBus = EventBus.getInstance();
 private static final String TAG = CategoryPageFragment.class.getSimpleName();
 private static final ItemRepo mItemRepo = ItemRepo.getInstance();
-private final List<Item> mAddToAdapter = new ArrayList<>();
-private String mCategoryId;
+private Category mCategory = new Category();
 private ItemAdapter mItemAdapter = null;
 private RecyclerView mItemListView = null;
 private FloatingActionButton mAddButton;
 
 /**
  * Set the argument used for an instance
- * @param categoryId the category to display on this page. Set to {@link #DISPLAY_ALL_CATEGORIES} to
+ * @param category the category to display on this page. Set to {@link #DISPLAY_ALL_CATEGORIES} to
  * display all categories
  */
-void setArguments(String categoryId) {
+void setArguments(Category category) {
 	setArguments(createArguments(categoryId));
 }
 
@@ -69,13 +64,14 @@ public void onViewCreatedImpl(View view, @Nullable Bundle savedInstanceState) {
 	
 	mItemAdapter = new ItemAdapter();
 	mItemAdapter.addEditFunctionality(this);
-	mItemListView = (RecyclerView) mView.findViewById(R.id.item_list);
+	mItemListView = mView.findViewById(R.id.item_list);
 	mItemListView.setHasFixedSize(true);
 	RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
 	mItemListView.setLayoutManager(layoutManager);
 	mItemListView.setAdapter(mItemAdapter);
+	populateItems();
 	
-	mAddButton = (FloatingActionButton) mView.getRootView().findViewById(R.id.add_button);
+	mAddButton = mView.getRootView().findViewById(R.id.add_button);
 }
 
 @Override
@@ -90,6 +86,21 @@ public View onCreateViewImpl(LayoutInflater inflater, ViewGroup container, Bundl
 	return inflater.inflate(R.layout.fragment_item_page, container, false);
 }
 
+/**
+ * Populate the list with items. Does nothing if the list is already populated
+ */
+private void populateItems() {
+	if (mItemRepo.isBackendInitialized() && mAddButton != null && mItemAdapter.getItemCount() == 0) {
+		List<Item> items;
+		if (mCategoryId.equals(DISPLAY_ALL_CATEGORIES)) {
+			items = mItemRepo.getItems();
+		} else {
+			items = mItemRepo.getItems(mCategoryId);
+		}
+		mItemAdapter.setItems(items);
+	}
+}
+
 @Override
 public void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
@@ -102,19 +113,6 @@ public void onResume() {
 	super.onResume();
 	
 	mItemListView.invalidate();
-	
-	// Add new items to the list after a short delay
-	if (!mAddToAdapter.isEmpty()) {
-		new Handler().postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				mItemAdapter.add(mAddToAdapter);
-				mAddToAdapter.clear();
-			}
-		}, 75);
-	} else {
-		populateItems();
-	}
 }
 
 private Category getCategory() {
@@ -125,27 +123,6 @@ private Category getCategory() {
 		category.setId(mCategoryId);
 	}
 	return category;
-}
-
-/**
- * Populate the list with items. Does nothing if the list is already populated
- */
-private void populateItems() {
-	if (Sqlite.isInitialized() && mAddButton != null && mItemAdapter.getItemCount() == 0) {
-		List<Item> items;
-		if (mCategoryId.equals(DISPLAY_ALL_CATEGORIES)) {
-			items = mItemRepo.getItems();
-		} else {
-			items = mItemRepo.getItems(mCategoryId);
-		}
-		mItemAdapter.setItems(items);
-		
-		// https://developer.android.com/reference/android/support/v4/view/ViewPager.SimpleOnPageChangeListener.html
-		// Check this when the fragment is activated
-//		if (items.isEmpty()) {
-//			Showcases.ADD_ITEM.show(mAddButton);
-//		}
-	}
 }
 
 @Override
@@ -174,8 +151,8 @@ public void onClick(Item item) {
 @SuppressWarnings("unused")
 @Subscribe
 public void onItem(ItemEvent event) {
-	// Only handle events for our list
-	if (event.getFirstObject().getCategoryId() == mCategoryId) {
+	// Only handle events for our category
+	if (event.getFirstObject().getCategoryId().equals(mCategoryId)) {
 		switch (event.getAction()) {
 		case ADDED:
 			if (mItemAdapter.getItemCount() == 0) {
@@ -203,11 +180,5 @@ public void onItem(ItemEvent event) {
 			break;
 		}
 	}
-}
-
-@SuppressWarnings("unused")
-@Subscribe
-public void onSqliteInitialized(SqliteInitializedEvent event) {
-	populateItems();
 }
 }

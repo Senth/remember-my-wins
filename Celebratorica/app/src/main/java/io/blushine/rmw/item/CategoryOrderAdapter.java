@@ -24,10 +24,10 @@ public void add(List<Category> newCategories) {
 		
 		// TODO could probably add item directly into the specific place
 		for (int i = 0; i < existingCategories.size(); ++i) {
-			Category currentListCategory = existingCategories.get(i);
+			Category currentCategory = existingCategories.get(i);
 			
-			boolean isNewBeforeListCategory = category.compareTo(currentListCategory) < 1;
-			if (isNewBeforeListCategory) {
+			boolean isNewBeforeCurrentCategory = category.compareTo(currentCategory) < 1;
+			if (isNewBeforeCurrentCategory) {
 				add(i, category);
 				added = true;
 				break;

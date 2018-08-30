@@ -13,6 +13,7 @@ import io.blushine.android.legal.SettingsLegalFragment;
 import io.blushine.android.preference.TimePreference;
 import io.blushine.rmw.R;
 import io.blushine.rmw.util.AppActivity;
+import io.blushine.utils.EventBus;
 
 /**
  * All the settings for Celebratorica App
@@ -45,8 +46,15 @@ public void onCreate(@Nullable Bundle savedInstanceState) {
 	
 	final ListPreference storageLocationPreference = (ListPreference) findPreference(resources.getString(R.string.setting_store_location_key));
 	storageLocationPreference.setOnPreferenceChangeListener((preference, newValue) -> {
-		// TODO Handle updating storage location
-		return true;
+		// TODO Show another dialog to either accept privacy policy or show ability to delete all online content
+		
+		if (newValue instanceof String) {
+			StorageLocations newLocation = StorageLocations.Companion.toEnum((String) newValue);
+			EventBus.getInstance().post(newLocation);
+			return true;
+		} else {
+			return false;
+		}
 	});
 	
 	

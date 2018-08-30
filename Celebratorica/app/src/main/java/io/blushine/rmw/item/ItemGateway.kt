@@ -12,17 +12,10 @@ internal interface ItemGateway {
 	fun addCategory(category: Category)
 
 	/**
-	 * Get the specified category
-	 * @param categoryId the category to get
-	 * @return category with the id, null if not found
-	 */
-	fun getCategory(categoryId: String): Category?
-
-	/**
 	 * Get all categories
 	 * @return all categories sorted by order
 	 */
-	fun getCategories(): List<Category>
+	fun getCategories()
 
 	/**
 	 * Update a category
@@ -48,7 +41,7 @@ internal interface ItemGateway {
 	 * @param categoryId the category id to get the item from, set to null to get from all categories
 	 * @return list of all items in the category. Items are ordered by date with newest first
 	 */
-	fun getItems(categoryId: String?): List<Item>
+	fun getItems(categoryId: String?)
 
 	/**
 	 * Update an item

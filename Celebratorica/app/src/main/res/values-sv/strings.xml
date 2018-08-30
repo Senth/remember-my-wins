@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="app_name">Remember My Wins</string>
-	<string name="category_default_celebrate_name">Fira</string>
+	<string name="category_default_1_name">Fira</string>
 	<string name="item_add_discard">Kasta ny post?</string>
 	<string name="item_add_header">Ny %s post</string>
 	<string name="item_add_success">Post tillagd</string>
@@ -10,7 +10,7 @@
 	<string name="open_article_menu">Öppna artikel</string>
 	<string name="showcase_add_item_title">Lägg till post</string>
 	<string name="showcase_add_item_message">Lägg till en händelse från idag som är värd att fira.</string>
-	<string name="category_default_gratitude_name">Tacksamhet</string>
+	<string name="category_default_2_name">Tacksamhet</string>
 	<string name="category_add_discard">Kasta ny kategori?</string>
 	<string name="category_add_header">Ny kategori</string>
 	<string name="category_add_success">Kategory skapad</string>

@@ -25,8 +25,8 @@
 	<string name="category_remove_dialog_message">Removing a category will remove all its items.\n\nDo you still want to remove the category?</string>
 
 	<!-- Default Categories -->
-	<string name="category_default_celebrate_name">Wins</string>
-	<string name="category_default_gratitude_name">Gratitude</string>
+	<string name="category_default_1_name">Wins</string>
+	<string name="category_default_2_name">Gratitude</string>
 
 	<!-- Menus -->
 	<string name="open_article_menu">Open article</string>

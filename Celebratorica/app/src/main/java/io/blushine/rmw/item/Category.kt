@@ -6,6 +6,7 @@ import java.util.*
  * Category for specific lists
  */
 internal class Category : Comparable<Category> {
+	var userId = ""
 	var id = ""
 	var name = ""
 	var order = -1

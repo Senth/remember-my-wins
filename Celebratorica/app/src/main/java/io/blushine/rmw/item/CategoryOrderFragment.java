@@ -25,7 +25,6 @@ import io.blushine.android.ui.list.ClickListener;
 import io.blushine.android.ui.list.MoveListener;
 import io.blushine.rmw.R;
 import io.blushine.rmw.util.AppActivity;
-import io.blushine.rmw.util.Sqlite;
 import io.blushine.rmw.util.SqliteInitializedEvent;
 import io.blushine.utils.EventBus;
 
@@ -109,7 +108,7 @@ public void onViewCreatedImpl(View view, @Nullable Bundle savedInstanceState) {
 }
 
 private void bindAdapter() {
-	if (Sqlite.isInitialized() && mCategoryRecyclerView != null && mCategoryRecyclerView.getAdapter() == null) {
+	if (mItemRepo.isBackendInitialized() && mCategoryRecyclerView != null && mCategoryRecyclerView.getAdapter() == null) {
 		if (mCategoryAdapter == null) {
 			mCategoryAdapter = new CategoryOrderAdapter();
 			mCategoryAdapter.addEditFunctionality(this);
@@ -121,7 +120,7 @@ private void bindAdapter() {
 }
 
 private void populateItems() {
-	if (Sqlite.isInitialized() && mCategoryAdapter.getItemCount() == 0) {
+	if (mItemRepo.isBackendInitialized() && mCategoryAdapter.getItemCount() == 0) {
 		mCategoryAdapter.setItems(mItemRepo.getCategories());
 	}
 }

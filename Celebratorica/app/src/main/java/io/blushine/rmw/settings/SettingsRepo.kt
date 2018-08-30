@@ -25,7 +25,7 @@ object SettingsRepo {
 	 * Set the storage location
 	 * @param storageLocation the location to store the items
 	 */
-	fun setStorageLocation(storageLocation: StorageLocations) {
+	internal fun setStorageLocation(storageLocation: StorageLocations) {
 		SettingsPrefsGateway.setStorageLocation(storageLocation)
 	}
 }

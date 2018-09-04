@@ -88,19 +88,6 @@ static ItemRepo getInstance() {
 	return mInstance;
 }
 
-/**
- * @return true if the backend Firestore or Sqlite has been initialized
- */
-boolean isBackendInitialized() {
-	switch (SettingsRepo.INSTANCE.getStorageLocation()) {
-	case CLOUD:
-		return true;
-	case LOCAL:
-		return Sqlite.isInitialized();
-	}
-	return false;
-}
-
 @SuppressWarnings("unused")
 @Subscribe
 public void onStorageLocationSetEvent(StorageLocationSetEvent event) {
@@ -201,15 +188,12 @@ public void onCategory(CategoryEvent event) {
 	switch (event.getAction()) {
 	case ADD:
 		addCategories(event.getObjects());
-		mEventBus.post(new CategoryEvent(event.getObjects(), ObjectEvent.Actions.ADDED));
 		break;
 	case EDIT:
 		editCategories(event.getObjects());
-		mEventBus.post(new CategoryEvent(event.getObjects(), ObjectEvent.Actions.EDITED));
 		break;
 	case REMOVE:
 		removeCategories(event.getObjects());
-		mEventBus.post(new CategoryEvent(event.getObjects(), ObjectEvent.Actions.REMOVED));
 		break;
 	}
 }

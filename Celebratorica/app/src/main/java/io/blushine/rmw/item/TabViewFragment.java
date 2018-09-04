@@ -61,7 +61,7 @@ public View onCreateViewImpl(LayoutInflater inflater, ViewGroup container, Bundl
 		
 		if (category != null && !category.getId().isEmpty()) {
 			ItemAddFragment itemAddFragment = new ItemAddFragment();
-			itemAddFragment.setCategoryId(category.getId());
+			itemAddFragment.setArgument(category);
 			itemAddFragment.show();
 		}
 	});

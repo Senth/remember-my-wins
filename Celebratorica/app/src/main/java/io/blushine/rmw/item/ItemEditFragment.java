@@ -11,29 +11,18 @@ import io.blushine.utils.EventBus;
  * Edit an existing celebration
  */
 public class ItemEditFragment extends ItemDialogFragment {
-private static final String ITEM_ID_SAVE_KEY = "item_id";
+private static final String ITEM_ARG_KEY = "item";
 private Item mItem;
 
 @Override
 public void onViewStateRestored(Bundle savedInstanceState) {
 	super.onViewStateRestored(savedInstanceState);
 	
-	if (savedInstanceState != null) {
-		String itemId = savedInstanceState.getString(ITEM_ID_SAVE_KEY, "");
-		mItem = new Item();
-		mItem.setId(itemId);
-	} else {
+	if (savedInstanceState == null) {
 		setFields(mItem);
 	}
 	
 	setBackMessage(R.string.discard_changes);
-}
-
-@Override
-public void onSaveInstanceState(Bundle outState) {
-	outState.putString(ITEM_ID_SAVE_KEY, mItem.getId());
-	
-	super.onSaveInstanceState(outState);
 }
 
 @Override
@@ -87,11 +76,21 @@ private void removeItem() {
 	dismiss();
 }
 
+@Override
+protected void onDeclareArguments() {
+	super.onDeclareArguments();
+	declareArgument(ITEM_ARG_KEY, ArgumentRequired.REQUIRED);
+}
+
 /**
- * Set the item to be edited. Should be set before calling {@link #show()}
- * @param item the item to edit
+ * Set Arguments
+ * @param category the category of the item we're editing
+ * @param item the item we're editing
  */
-void setEditItem(Item item) {
-	mItem = item;
+public void setArguments(Category category, Item item) {
+	setArgument(category);
+	Bundle bundle = new Bundle();
+	bundle.putParcelable(ITEM_ARG_KEY, item);
+	addArguments(bundle);
 }
 }

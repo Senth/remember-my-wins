@@ -1,5 +1,6 @@
 package io.blushine.rmw.item;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.blushine.android.common.ObjectEvent;
@@ -13,11 +14,12 @@ import io.blushine.utils.EventBus;
 class CategoryRemoveCommand extends SnackbarUndoCommand {
 private static final EventBus mEventBus = EventBus.getInstance();
 private final Category mCategory;
-private final List<Item> mItems;
+private final List<Item> mItems = new ArrayList<>();
 
 CategoryRemoveCommand(Category category) {
 	mCategory = category;
-	mItems = ItemRepo.getInstance().getItems(mCategory.getId());
+	// TODO remove category
+	ItemRepo.getInstance().getItems(mCategory.getId());
 }
 
 @Override

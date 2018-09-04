@@ -50,12 +50,16 @@ public void onCreate(@Nullable Bundle savedInstanceState) {
 		
 		if (newValue instanceof String) {
 			StorageLocations newLocation = StorageLocations.Companion.toEnum((String) newValue);
+			setStorageLocationSummary(storageLocationPreference, newLocation);
 			EventBus.getInstance().post(newLocation);
 			return true;
 		} else {
 			return false;
 		}
 	});
+	
+	// Set current storage location as a summary
+	setStorageLocationSummary(storageLocationPreference, SettingsRepo.INSTANCE.getStorageLocation());
 	
 	
 	// Legal
@@ -70,6 +74,27 @@ public void onCreate(@Nullable Bundle savedInstanceState) {
 @Override
 public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
 	addPreferencesFromResource(R.xml.settings);
+}
+
+/**
+ * Set the summary of the storage location.
+ * @param storageLocation the storage location to use
+ */
+private void setStorageLocationSummary(ListPreference storageLocationPreference, StorageLocations storageLocation) {
+	// Get the correct lang string
+	Resources resources = AppActivity.getActivity().getResources();
+	String[] keys = resources.getStringArray(R.array.store_location_entry_values);
+	String[] langEntries = resources.getStringArray(R.array.store_location_entries);
+	
+	for (int i = 0; i < keys.length; ++i) {
+		String key = keys[i];
+		
+		if (key.equals(storageLocation.getKey())) {
+			String langEntry = langEntries[i];
+			storageLocationPreference.setSummary(langEntry);
+			break;
+		}
+	}
 }
 
 @Override

@@ -1,15 +1,24 @@
 package io.blushine.rmw.item
 
+import android.os.Parcel
+import android.os.Parcelable
 import java.util.*
 
 /**
  * Category for specific lists
  */
-internal class Category : Comparable<Category> {
+internal class Category() : Comparable<Category>, Parcelable {
 	var userId = ""
 	var id = ""
 	var name = ""
 	var order = -1
+
+	constructor(parcel: Parcel) : this() {
+		userId = parcel.readString()
+		id = parcel.readString()
+		name = parcel.readString()
+		order = parcel.readInt()
+	}
 
 	override fun compareTo(other: Category): Int {
 		return Integer.compare(order, other.order)
@@ -30,5 +39,26 @@ internal class Category : Comparable<Category> {
 		val category = other as Category?
 
 		return id == category!!.id
+	}
+
+	override fun writeToParcel(parcel: Parcel, flags: Int) {
+		parcel.writeString(userId)
+		parcel.writeString(id)
+		parcel.writeString(name)
+		parcel.writeInt(order)
+	}
+
+	override fun describeContents(): Int {
+		return 0
+	}
+
+	companion object CREATOR : Parcelable.Creator<Category> {
+		override fun createFromParcel(parcel: Parcel): Category {
+			return Category(parcel)
+		}
+
+		override fun newArray(size: Int): Array<Category?> {
+			return arrayOfNulls(size)
+		}
 	}
 }

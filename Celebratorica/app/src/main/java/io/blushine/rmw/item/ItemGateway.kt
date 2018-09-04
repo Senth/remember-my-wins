@@ -24,6 +24,12 @@ internal interface ItemGateway {
 	fun updateCategory(category: Category)
 
 	/**
+	 * Update several categories
+	 * @param categories the categories to update
+	 */
+	fun updateCategories(categories: Category)
+
+	/**
 	 * Remove a category
 	 * @param category the category to remove
 	 */
@@ -35,6 +41,12 @@ internal interface ItemGateway {
 	 * @param item the item to add
 	 */
 	fun addItem(item: Item)
+
+	/**
+	 * Add several items. Will automatically set the item id
+	 * @param items the items to add
+	 */
+	fun addItems(items: List<Item>)
 
 	/**
 	 * Get all items in the specified category
@@ -54,6 +66,12 @@ internal interface ItemGateway {
 	 * @param item the item to remove
 	 */
 	fun removeItem(item: Item)
+
+	/**
+	 * Remove all items from the specified category
+	 * @param categoryId the category to remove the items from
+	 */
+	fun removeItems(categoryId: String)
 
 	/**
 	 * Import categories and items into the database. Duplicates won't be added

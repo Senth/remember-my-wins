@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import io.blushine.android.DialogFragment;
+import io.blushine.android.common.DateFormats;
 import io.blushine.android.validate.TextValidator;
 import io.blushine.rmw.R;
 import io.blushine.rmw.util.AppActivity;
@@ -26,11 +27,11 @@ import io.blushine.rmw.util.AppActivity;
  */
 public abstract class ItemDialogFragment extends DialogFragment {
 private static final String TAG = ItemDialogFragment.class.getSimpleName();
-private static final SimpleDateFormat DATE_FORMAT = Item.Companion.getDATE_FORMAT();
+private static final SimpleDateFormat DATE_FORMAT = DateFormats.getMediumDateFormat();
 private static final String TEXT_SAVE_KEY = "text";
 private static final String DATE_SAVE_KEY = "date";
 private static final String ORIGINAL_SAVE_SUFFIX = "_original";
-private static final String CATEGORY_ID_SAKE_KEY = "category_id";
+private static final String CATEGORY_ARG_KEY = "category";
 private EditText mTextEdit;
 private EditText mDateEdit;
 private final DatePickerDialog.OnDateSetListener mDateSetListener = new DatePickerDialog.OnDateSetListener() {
@@ -45,7 +46,7 @@ private final DatePickerDialog.OnDateSetListener mDateSetListener = new DatePick
 };
 private String mTextOriginal = "";
 private String mDateOriginal = "";
-private String mCategoryId = "";
+private Category mCategory;
 private DatePickerDialog mDatePickerDialog;
 
 protected EditText getTextField() {
@@ -53,11 +54,25 @@ protected EditText getTextField() {
 }
 
 /**
- * Set the category id for this dialog
- * @param categoryId the category id for this dialog
+ * The category of the item we're adding or changing
+ * @param category the category of the item we're adding or changing
  */
-void setCategoryId(String categoryId) {
-	mCategoryId = categoryId;
+void setArgument(Category category) {
+	Bundle bundle = new Bundle();
+	bundle.putParcelable(CATEGORY_ARG_KEY, category);
+	addArguments(bundle);
+}
+
+@Override
+protected void onDeclareArguments() {
+	super.onDeclareArguments();
+	declareArgument(CATEGORY_ARG_KEY, ArgumentRequired.REQUIRED);
+}
+
+@Override
+protected void onArgumentsSet() {
+	super.onArgumentsSet();
+	mCategory = getArgument(CATEGORY_ARG_KEY);
 }
 
 @Nullable
@@ -77,13 +92,7 @@ public View onCreateViewImpl(LayoutInflater inflater, ViewGroup container, Bundl
 		mTextOriginal = savedInstanceState.getString(TEXT_SAVE_KEY + ORIGINAL_SAVE_SUFFIX);
 		dateValue = savedInstanceState.getString(DATE_SAVE_KEY);
 		mDateOriginal = savedInstanceState.getString(DATE_SAVE_KEY + ORIGINAL_SAVE_SUFFIX);
-		mCategoryId = savedInstanceState.getString(CATEGORY_ID_SAKE_KEY);
 	}
-	
-	if (mCategoryId == null || mCategoryId.isEmpty()) {
-		throw new IllegalStateException("Category id has not been set");
-	}
-	
 	
 	initToolbar(view);
 	
@@ -137,7 +146,7 @@ private void clearDate() {
 }
 
 protected Category getCategory() {
-	return ItemRepo.getInstance().getCategory(mCategoryId);
+	return mCategory;
 }
 
 @Override
@@ -152,7 +161,6 @@ public void onSaveInstanceState(Bundle outState) {
 	outState.putString(TEXT_SAVE_KEY + ORIGINAL_SAVE_SUFFIX, mTextOriginal);
 	outState.putString(DATE_SAVE_KEY, mDateEdit.getText().toString());
 	outState.putString(DATE_SAVE_KEY + ORIGINAL_SAVE_SUFFIX, mDateOriginal);
-	outState.putString(CATEGORY_ID_SAKE_KEY, mCategoryId);
 	
 	super.onSaveInstanceState(outState);
 }
@@ -167,7 +175,6 @@ protected void setFields(Item item) {
 		mTextEdit.setText(item.getText());
 		mDateOriginal = item.getDateString();
 		mDateEdit.setText(mDateOriginal);
-		mCategoryId = item.getCategoryId();
 	}
 }
 
@@ -178,6 +185,6 @@ protected void setFields(Item item) {
 protected void setItemFromFields(Item item) {
 	item.setText(mTextEdit.getText().toString());
 	item.setDate(mDateEdit.getText().toString());
-	item.setCategoryId(mCategoryId);
+	item.setCategoryId(mCategory.getId());
 }
 }

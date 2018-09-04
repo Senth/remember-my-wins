@@ -3,6 +3,7 @@ package io.blushine.rmw.item
 import android.content.res.Resources
 import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
+import io.blushine.android.common.ObjectEvent
 import io.blushine.android.firebase.FirebaseAuth
 import io.blushine.rmw.R
 import io.blushine.rmw.util.AppActivity
@@ -22,13 +23,16 @@ internal class ItemFirestoreGateway : ItemGateway {
 	}
 
 	override fun addCategory(category: Category) {
-		db().collection(resources.getString(R.string.table_category))
-				.add(category)
+		category.userId = getUserId();
+		val newDoc = db().collection(resources.getString(R.string.table_category)).document()
+		category.id = newDoc.id
+		newDoc.set(category)
 				.addOnSuccessListener {
-					Log.d(TAG, "addCategory() — ${it.id}")
+					Log.d(TAG, "addCategory() — ${category.id}")
+					eventBus.post(CategoryEvent(category, ObjectEvent.Actions.ADDED))
 				}
 				.addOnFailureListener {
-					Log.w(TAG, "addCategory() — Error adding document", it)
+					Log.w(TAG, "addCategory() — Error adding document ${category.id}", it)
 				}
 	}
 
@@ -43,7 +47,6 @@ internal class ItemFirestoreGateway : ItemGateway {
 	}
 
 	override fun getCategories() {
-		val categories = ArrayList<Category>()
 		val categoryCollection = db().collection(resources.getString(R.string.table_category))
 
 		categoryCollection
@@ -52,10 +55,16 @@ internal class ItemFirestoreGateway : ItemGateway {
 				.get()
 				.addOnCompleteListener { task ->
 					if (task.isSuccessful) {
+						val categories = ArrayList<Category>()
 						Log.d(TAG, "getCategories() — Found categories")
 						for (categoryDocument in task.result.documents) {
 							val category = categoryDocument.toObject(Category::class.java)
+							if (category != null) {
+								categories.add(category)
+							}
 						}
+						EventBus.getInstance()
+								.post(CategoryEvent(categories, ObjectEvent.Actions.GET_RESPONSE))
 					} else {
 						Log.w(TAG, "getCategories() — Failed to get categories")
 					}

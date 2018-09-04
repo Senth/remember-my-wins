@@ -23,6 +23,7 @@ import io.blushine.utils.EventBus;
  */
 class ItemSqliteGateway extends SqliteGateway implements ItemGateway {
 private static final String TAG = ItemSqliteGateway.class.getSimpleName();
+private final EventBus mEventBus = EventBus.getInstance();
 
 private String idToString(long id) {
 	return Long.toString(id);
@@ -89,6 +90,39 @@ public void getItems(String categoryId) {
 	EventBus.getInstance().post(new ItemEvent(items, ObjectEvent.Actions.GET_RESPONSE));
 }
 
+public void addCategory(@NotNull Category category) {
+	Resources resources = AppActivity.getActivity().getResources();
+	
+	
+	// Update categories after this order
+	if (category.getOrder() > 0) {
+		try {
+			String sql = "UPDATE " + resources.getString(R.string.table_category) + " SET " +
+					resources.getString(R.string.table_category_order) + "=" + resources.getString(R.string.table_category_order) + "+1 " +
+					"WHERE " +
+					resources.getString(R.string.table_category_order) + ">=" + category.getOrder();
+			execSQL(sql);
+		} catch (SQLException e) {
+			Log.e(TAG, "removeCategory() — Invalid SQL syntax", e);
+		}
+	}
+	// Get new order
+	else {
+		category.setOrder(getCategoryCount() + 1);
+	}
+	
+	
+	ContentValues contentValues = new ContentValues();
+	contentValues.put(resources.getString(R.string.table_category_order), category.getOrder());
+	contentValues.put(resources.getString(R.string.table_category_name), category.getName());
+	
+	
+	long id = insert(resources.getString(R.string.table_category), contentValues);
+	category.setId(idToString(id));
+	
+	mEventBus.post(new CategoryEvent(category, ObjectEvent.Actions.ADDED));
+}
+
 public void updateCategory(@NotNull Category category) {
 	Resources resources = AppActivity.getActivity().getResources();
 	
@@ -99,6 +133,8 @@ public void updateCategory(@NotNull Category category) {
 	String table = resources.getString(R.string.table_category);
 	String where = resources.getString(R.string.table_category_id) + "=" + category.getId();
 	update(table, contentValues, where);
+	
+	mEventBus.post(new CategoryEvent(category, ObjectEvent.Actions.EDITED));
 }
 
 public void removeCategory(@NotNull Category category) {
@@ -119,26 +155,25 @@ public void removeCategory(@NotNull Category category) {
 		Log.e(TAG, "removeCategory() — Invalid SQL syntax", e);
 	}
 	
+	mEventBus.post(new CategoryEvent(category, ObjectEvent.Actions.REMOVED));
 }
 
-public void updateItem(@NotNull Item item) {
+/**
+ * Add a new item. Will automatically set the item id.
+ * @param item the item to add
+ */
+public void addItem(@NotNull Item item) {
 	Resources resources = AppActivity.getActivity().getResources();
 	
-	ContentValues contentValues = new ContentValues(2);
+	ContentValues contentValues = new ContentValues();
+	contentValues.put(resources.getString(R.string.table_category_id), item.getCategoryId());
 	contentValues.put(resources.getString(R.string.table_item_text), item.getText());
 	contentValues.put(resources.getString(R.string.table_item_date), item.getDate());
 	
-	String table = resources.getString(R.string.table_item);
-	String where = resources.getString(R.string.table_item_id) + "=" + item.getId();
-	update(table, contentValues, where);
-}
-
-public void removeItem(@NotNull Item item) {
-	Resources resources = AppActivity.getActivity().getResources();
+	long id = insert(resources.getString(R.string.table_item), contentValues);
+	item.setId(idToString(id));
 	
-	String table = resources.getString(R.string.table_item);
-	String where = resources.getString(R.string.table_item_id) + "=" + item.getId();
-	delete(table, where);
+	mEventBus.post(new ItemEvent(item, ObjectEvent.Actions.ADDED));
 }
 
 public void importData(@NotNull List<Category> categories, @NotNull List<Item> items) {
@@ -190,51 +225,28 @@ public void importData(@NotNull List<Category> categories, @NotNull List<Item> i
 	endTransaction();
 }
 
-public void addCategory(@NotNull Category category) {
+public void updateItem(@NotNull Item item) {
 	Resources resources = AppActivity.getActivity().getResources();
 	
-	
-	// Update categories after this order
-	if (category.getOrder() > 0) {
-		try {
-			String sql = "UPDATE " + resources.getString(R.string.table_category) + " SET " +
-					resources.getString(R.string.table_category_order) + "=" + resources.getString(R.string.table_category_order) + "+1 " +
-					"WHERE " +
-					resources.getString(R.string.table_category_order) + ">=" + category.getOrder();
-			execSQL(sql);
-		} catch (SQLException e) {
-			Log.e(TAG, "removeCategory() — Invalid SQL syntax", e);
-		}
-	}
-	// Get new order
-	else {
-		category.setOrder(getCategoryCount() + 1);
-	}
-	
-	
-	ContentValues contentValues = new ContentValues();
-	contentValues.put(resources.getString(R.string.table_category_order), category.getOrder());
-	contentValues.put(resources.getString(R.string.table_category_name), category.getName());
-	
-	
-	long id = insert(resources.getString(R.string.table_category), contentValues);
-	category.setId(idToString(id));
-}
-
-/**
- * Add a new item. Will automatically set the item id.
- * @param item the item to add
- */
-public void addItem(@NotNull Item item) {
-	Resources resources = AppActivity.getActivity().getResources();
-	
-	ContentValues contentValues = new ContentValues();
-	contentValues.put(resources.getString(R.string.table_category_id), item.getCategoryId());
+	ContentValues contentValues = new ContentValues(2);
 	contentValues.put(resources.getString(R.string.table_item_text), item.getText());
 	contentValues.put(resources.getString(R.string.table_item_date), item.getDate());
 	
-	long id = insert(resources.getString(R.string.table_item), contentValues);
-	item.setId(idToString(id));
+	String table = resources.getString(R.string.table_item);
+	String where = resources.getString(R.string.table_item_id) + "=" + item.getId();
+	update(table, contentValues, where);
+	
+	mEventBus.post(new ItemEvent(item, ObjectEvent.Actions.EDITED));
+}
+
+public void removeItem(@NotNull Item item) {
+	Resources resources = AppActivity.getActivity().getResources();
+	
+	String table = resources.getString(R.string.table_item);
+	String where = resources.getString(R.string.table_item_id) + "=" + item.getId();
+	delete(table, where);
+	
+	mEventBus.post(new ItemEvent(item, ObjectEvent.Actions.REMOVED));
 }
 
 /**

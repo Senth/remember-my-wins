@@ -1,19 +1,32 @@
 package io.blushine.rmw.item
 
+import android.os.Parcel
+import android.os.Parcelable
 import io.blushine.android.common.DateFormats
 import java.text.ParsePosition
 import java.text.SimpleDateFormat
 import java.util.*
 
+@JvmField
+val DATE_FORMAT: SimpleDateFormat = DateFormats.getMediumDateFormat()
+
 /**
  * A celebration item
  */
-internal class Item : Comparable<Item> {
+internal class Item() : Comparable<Item>, Parcelable {
 	var userId = ""
 	var id = ""
 	var categoryId = ""
 	var text = ""
 	var date: Long = -1
+
+	constructor(parcel: Parcel) : this() {
+		userId = parcel.readString()
+		id = parcel.readString()
+		categoryId = parcel.readString()
+		text = parcel.readString()
+		date = parcel.readLong()
+	}
 
 	/**
 	 * @return The date in human readable format
@@ -52,8 +65,25 @@ internal class Item : Comparable<Item> {
 
 	}
 
-	companion object {
-		val DATE_FORMAT: SimpleDateFormat
-			get() = DateFormats.getMediumDateFormat()
+	override fun writeToParcel(parcel: Parcel, flags: Int) {
+		parcel.writeString(userId)
+		parcel.writeString(id)
+		parcel.writeString(categoryId)
+		parcel.writeString(text)
+		parcel.writeLong(date)
+	}
+
+	override fun describeContents(): Int {
+		return 0
+	}
+
+	companion object CREATOR : Parcelable.Creator<Item> {
+		override fun createFromParcel(parcel: Parcel): Item {
+			return Item(parcel)
+		}
+
+		override fun newArray(size: Int): Array<Item?> {
+			return arrayOfNulls(size)
+		}
 	}
 }

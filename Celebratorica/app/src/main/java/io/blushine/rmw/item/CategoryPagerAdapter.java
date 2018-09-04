@@ -23,9 +23,9 @@ CategoryPagerAdapter(@NonNull FragmentManager fragmentManager) {
 
 @Override
 public Fragment getItem(int position) {
-	String categoryId = mCategories.get(position).getId();
+	Category category = mCategories.get(position);
 	CategoryPageFragment fragment = new CategoryPageFragment();
-	fragment.setArguments(categoryId);
+	fragment.setArguments(category);
 	return fragment;
 }
 

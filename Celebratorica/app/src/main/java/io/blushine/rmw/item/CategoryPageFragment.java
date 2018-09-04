@@ -22,8 +22,7 @@ import io.blushine.utils.EventBus;
  * Page fragment for showing all the items in a category
  */
 public class CategoryPageFragment extends io.blushine.android.Fragment implements ClickListener<Item> {
-static final String DISPLAY_ALL_CATEGORIES = "-100";
-private static final String CATEGORY_ID_KEY = "category_id";
+private static final String CATEGORY_ARG_KEY = "category";
 private static final EventBus mEventBus = EventBus.getInstance();
 private static final String TAG = CategoryPageFragment.class.getSimpleName();
 private static final ItemRepo mItemRepo = ItemRepo.getInstance();
@@ -34,28 +33,27 @@ private FloatingActionButton mAddButton;
 
 /**
  * Set the argument used for an instance
- * @param category the category to display on this page. Set to {@link #DISPLAY_ALL_CATEGORIES} to
- * display all categories
+ * @param category the category to display on this page. Set to null to display all categories
  */
 void setArguments(Category category) {
-	setArguments(createArguments(categoryId));
+	addArguments(createArguments(category));
 }
 
 /**
  * Create the argument used for an instance
- * @param categoryId the category to display on this page. Set to {@link #DISPLAY_ALL_CATEGORIES} to
+ * @param category the category to display on this page. Set to null to
  * display all categories
  */
-static Bundle createArguments(String categoryId) {
+static Bundle createArguments(Category category) {
 	Bundle bundle = new Bundle(1);
-	bundle.putString(CATEGORY_ID_KEY, categoryId);
+	bundle.putParcelable(CATEGORY_ARG_KEY, category);
 	return bundle;
 }
 
 @Override
 protected void onDeclareArguments() {
 	super.onDeclareArguments();
-	declareArgument(CATEGORY_ID_KEY, ArgumentRequired.REQUIRED);
+	declareArgument(CATEGORY_ARG_KEY, ArgumentRequired.REQUIRED);
 }
 
 @Override
@@ -77,7 +75,7 @@ public void onViewCreatedImpl(View view, @Nullable Bundle savedInstanceState) {
 @Override
 protected void onArgumentsSet() {
 	super.onArgumentsSet();
-	mCategoryId = getArgument(CATEGORY_ID_KEY);
+	mCategory = getArgument(CATEGORY_ARG_KEY);
 }
 
 @Nullable
@@ -90,14 +88,13 @@ public View onCreateViewImpl(LayoutInflater inflater, ViewGroup container, Bundl
  * Populate the list with items. Does nothing if the list is already populated
  */
 private void populateItems() {
-	if (mItemRepo.isBackendInitialized() && mAddButton != null && mItemAdapter.getItemCount() == 0) {
+	if (mAddButton != null && mItemAdapter.getItemCount() == 0) {
 		List<Item> items;
-		if (mCategoryId.equals(DISPLAY_ALL_CATEGORIES)) {
-			items = mItemRepo.getItems();
+		if (mCategory == null) {
+			mItemRepo.getItems();
 		} else {
-			items = mItemRepo.getItems(mCategoryId);
+			mItemRepo.getItems(mCategory.getId());
 		}
-		mItemAdapter.setItems(items);
 	}
 }
 
@@ -109,41 +106,34 @@ public void onCreate(Bundle savedInstanceState) {
 
 @Override
 public void onResume() {
-	Log.d(TAG, "onResume() — " + getCategory().getName());
+	Log.d(TAG, "onResume() — " + getCategoryName());
 	super.onResume();
 	
 	mItemListView.invalidate();
 }
 
-private Category getCategory() {
-	Category category = mItemRepo.getCategory(getArgument(CATEGORY_ID_KEY));
-	
-	if (category == null) {
-		category = new Category();
-		category.setId(mCategoryId);
-	}
-	return category;
-}
-
 @Override
 public void onStop() {
-	Log.d(TAG, "onStop() — " + getCategory().getName());
+	Log.d(TAG, "onStop() — " + getCategoryName());
 	super.onStop();
 }
 
 @Override
 public void onDestroy() {
-	Log.d(TAG, "onDestroy() — " + getCategory().getName());
+	Log.d(TAG, "onDestroy() — " + getCategoryName());
 	super.onDestroy();
 	mEventBus.unregister(this);
 }
 
+private String getCategoryName() {
+	return mCategory != null ? mCategory.getName() : "Display All";
+}
+
 @Override
 public void onClick(Item item) {
-	if (!mCategoryId.isEmpty()) {
+	if (mCategory != null) {
 		ItemEditFragment itemEditFragment = new ItemEditFragment();
-		itemEditFragment.setEditItem(item);
-		itemEditFragment.setCategoryId(item.getCategoryId());
+		itemEditFragment.setArguments(mCategory, item);
 		itemEditFragment.show();
 	}
 }
@@ -152,7 +142,7 @@ public void onClick(Item item) {
 @Subscribe
 public void onItem(ItemEvent event) {
 	// Only handle events for our category
-	if (event.getFirstObject().getCategoryId().equals(mCategoryId)) {
+	if (mCategory != null && event.getFirstObject().getCategoryId().equals(mCategory.getId())) {
 		switch (event.getAction()) {
 		case ADDED:
 			if (mItemAdapter.getItemCount() == 0) {
@@ -177,6 +167,10 @@ public void onItem(ItemEvent event) {
 			else {
 				mItemAdapter.remove(event.getObjects());
 			}
+			break;
+		
+		case GET_RESPONSE:
+			mItemAdapter.setItems(event.getObjects());
 			break;
 		}
 	}

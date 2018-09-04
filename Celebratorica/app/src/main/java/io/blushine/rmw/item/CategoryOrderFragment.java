@@ -25,7 +25,6 @@ import io.blushine.android.ui.list.ClickListener;
 import io.blushine.android.ui.list.MoveListener;
 import io.blushine.rmw.R;
 import io.blushine.rmw.util.AppActivity;
-import io.blushine.rmw.util.SqliteInitializedEvent;
 import io.blushine.utils.EventBus;
 
 /**
@@ -108,20 +107,14 @@ public void onViewCreatedImpl(View view, @Nullable Bundle savedInstanceState) {
 }
 
 private void bindAdapter() {
-	if (mItemRepo.isBackendInitialized() && mCategoryRecyclerView != null && mCategoryRecyclerView.getAdapter() == null) {
+	if (mCategoryRecyclerView != null && mCategoryRecyclerView.getAdapter() == null) {
 		if (mCategoryAdapter == null) {
 			mCategoryAdapter = new CategoryOrderAdapter();
 			mCategoryAdapter.addEditFunctionality(this);
 			mCategoryAdapter.addDragDropMoveFunctionality(this, R.id.reorder_button);
 		}
 		mCategoryRecyclerView.setAdapter(mCategoryAdapter);
-		populateItems();
-	}
-}
-
-private void populateItems() {
-	if (mItemRepo.isBackendInitialized() && mCategoryAdapter.getItemCount() == 0) {
-		mCategoryAdapter.setItems(mItemRepo.getCategories());
+		mItemRepo.getCategories();
 	}
 }
 
@@ -190,12 +183,10 @@ public void onCategory(CategoryEvent event) {
 	case REMOVED:
 		mCategoryAdapter.remove(event.getObjects());
 		break;
+	
+	case GET_RESPONSE:
+		mCategoryAdapter.setItems(event.getObjects());
+		break;
 	}
-}
-
-@SuppressWarnings("unused")
-@Subscribe
-public void onSqliteInitialized(SqliteInitializedEvent event) {
-	bindAdapter();
 }
 }

@@ -58,4 +58,14 @@
 	<string name="setting_store_location_local_key" translatable="false">local</string>
 	<string name="setting_store_location_local_title">Phone</string>
 	<string name="setting_store_location_not_set_key" translatable="false">not_set</string>
+
+	<!-- Firestore Events -->
+	<string name="cloud_failed_get_category">Failed to get categories, try again later.</string>
+	<string name="cloud_failed_add_category">Failed to add category, try again later.</string>
+	<string name="cloud_failed_edit_category">Failed to edit category, try again later.</string>
+	<string name="cloud_failed_remove_category">Failed to remove category, try again later.</string>
+	<string name="cloud_failed_get_items">Failed to get items, try again later.</string>
+	<string name="cloud_failed_add_item">Failed to add item, try again later.</string>
+	<string name="cloud_failed_edit_item">Failed to edit item, try again later.</string>
+	<string name="cloud_failed_remove_item">Failed to remove item, try again later.</string>
 </resources>

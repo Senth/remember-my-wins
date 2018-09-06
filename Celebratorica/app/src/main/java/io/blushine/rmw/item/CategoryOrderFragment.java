@@ -158,7 +158,7 @@ public void onMove(Category item, int fromPosition, int toPosition) {
 		categoriesToUpdate.add(category);
 	}
 	
-	mEventBus.post(new CategoryEvent(categoriesToUpdate, ObjectEvent.Actions.EDIT));
+	mEventBus.post(new CategoryEvent(ObjectEvent.Actions.EDIT, categoriesToUpdate));
 }
 
 @SuppressWarnings("unused")

@@ -17,14 +17,14 @@ ItemRemoveCommand(Item item) {
 
 @Override
 public boolean undo() {
-	mEventBus.post(new ItemEvent(mItem, ItemEvent.Actions.ADD));
+	mEventBus.post(new ItemEvent(ItemEvent.Actions.ADD, mItem));
 	showSnackbar(R.string.item_restored);
 	return true;
 }
 
 @Override
 public boolean execute() {
-	mEventBus.post(new ItemEvent(mItem, ItemEvent.Actions.REMOVE));
+	mEventBus.post(new ItemEvent(ItemEvent.Actions.REMOVE, mItem));
 	showSnackbarWithUndo(R.string.item_removed);
 	return true;
 }

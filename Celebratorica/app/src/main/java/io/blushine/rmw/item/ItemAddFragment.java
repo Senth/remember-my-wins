@@ -26,7 +26,7 @@ private void addItem() {
 	Item item = new Item();
 	setItemFromFields(item);
 	
-	ItemEvent itemEvent = new ItemEvent(item, ItemEvent.Actions.ADD);
+	ItemEvent itemEvent = new ItemEvent(ItemEvent.Actions.ADD, item);
 	EventBus.getInstance().post(itemEvent);
 	SnackbarHelper.showSnackbar(R.string.item_add_success);
 	

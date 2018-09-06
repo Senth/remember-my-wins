@@ -58,7 +58,7 @@ public boolean onMenuItemClick(MenuItem item) {
 private void saveItem() {
 	setItemFromFields(mItem);
 	
-	EventBus.getInstance().post(new ItemEvent(mItem, ItemEvent.Actions.EDIT));
+	EventBus.getInstance().post(new ItemEvent(ItemEvent.Actions.EDIT, mItem));
 	SnackbarHelper.showSnackbar(R.string.item_edit_success);
 	
 	// Go back to list

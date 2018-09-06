@@ -44,7 +44,7 @@ private void addItem() {
 	Category category = new Category();
 	setCategoryFromFields(category);
 	
-	CategoryEvent categoryEvent = new CategoryEvent(category, ObjectEvent.Actions.ADD);
+	CategoryEvent categoryEvent = new CategoryEvent(ObjectEvent.Actions.ADD, category);
 	EventBus.getInstance().post(categoryEvent);
 	SnackbarHelper.showSnackbar(R.string.category_add_success);
 	

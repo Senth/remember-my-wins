@@ -9,11 +9,15 @@ import io.blushine.android.common.ObjectEvent;
  */
 class CategoryEvent extends ObjectEvent<Category> {
 
-CategoryEvent(Category category, Actions action) {
-	super(category, action);
+CategoryEvent(Actions action) {
+	super(action);
 }
 
-CategoryEvent(List<Category> categories, Actions action) {
-	super(categories, action);
+CategoryEvent(Actions action, Category category) {
+	super(action, category);
+}
+
+CategoryEvent(Actions action, List<Category> categories) {
+	super(action, categories);
 }
 }

@@ -1,6 +1,7 @@
 package io.blushine.rmw.item;
 
-import java.util.ArrayList;
+import com.squareup.otto.Subscribe;
+
 import java.util.List;
 
 import io.blushine.android.common.ObjectEvent;
@@ -14,31 +15,60 @@ import io.blushine.utils.EventBus;
 class CategoryRemoveCommand extends SnackbarUndoCommand {
 private static final EventBus mEventBus = EventBus.getInstance();
 private final Category mCategory;
-private final List<Item> mItems = new ArrayList<>();
+private List<Item> mItems = null;
+private boolean mExecuteOnGetItems = false;
 
 CategoryRemoveCommand(Category category) {
 	mCategory = category;
-	// TODO remove category
+	mEventBus.register(this);
 	ItemRepo.getInstance().getItems(mCategory.getId());
 }
 
 @Override
 public boolean undo() {
-	mEventBus.post(new CategoryEvent(mCategory, ObjectEvent.Actions.ADD));
+	mEventBus.post(new CategoryEvent(ObjectEvent.Actions.ADD, mCategory));
 	if (!mItems.isEmpty()) {
-		mEventBus.post(new ItemEvent(mItems, ObjectEvent.Actions.ADD));
+		mEventBus.post(new ItemEvent(ObjectEvent.Actions.ADD, mItems));
 	}
 	showSnackbar(R.string.category_restored);
 	return true;
 }
 
 @Override
-public boolean execute() {
-	mEventBus.post(new CategoryEvent(mCategory, ObjectEvent.Actions.REMOVE));
-	if (!mItems.isEmpty()) {
-		mEventBus.post(new ItemEvent(mItems, ObjectEvent.Actions.REMOVE));
+public synchronized boolean execute() {
+	if (mItems != null) {
+		mEventBus.register(this);
+		remove();
+	} else {
+		mExecuteOnGetItems = true;
 	}
-	showSnackbarWithUndo(R.string.category_removed);
 	return true;
+}
+
+private void remove() {
+	mEventBus.post(new CategoryEvent(ObjectEvent.Actions.REMOVE, mCategory));
+}
+
+@SuppressWarnings("unused")
+@Subscribe
+public synchronized void onCategoryEvent(CategoryEvent event) {
+	if (event.getAction() == ObjectEvent.Actions.REMOVED) {
+		mEventBus.unregister(this);
+		showSnackbarWithUndo(R.string.category_removed);
+	}
+}
+
+@SuppressWarnings("unused")
+@Subscribe
+public synchronized void onItemEvent(ItemEvent event) {
+	if (event.getAction() == ObjectEvent.Actions.GET_RESPONSE && event.getFirstObject().getCategoryId().equals(mCategory.getId())) {
+		mItems = event.getObjects();
+		mEventBus.unregister(this);
+		
+		if (mExecuteOnGetItems) {
+			mExecuteOnGetItems = false;
+			remove();
+		}
+	}
 }
 }

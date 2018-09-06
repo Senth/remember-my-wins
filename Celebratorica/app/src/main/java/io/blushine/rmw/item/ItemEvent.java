@@ -9,11 +9,15 @@ import io.blushine.android.common.ObjectEvent;
  */
 class ItemEvent extends ObjectEvent<Item> {
 
-ItemEvent(Item item, Actions action) {
-	super(item, action);
+ItemEvent(Actions action) {
+	super(action);
 }
 
-ItemEvent(List<Item> items, Actions action) {
-	super(items, action);
+ItemEvent(Actions action, Item item) {
+	super(action, item);
+}
+
+ItemEvent(Actions action, List<Item> items) {
+	super(action, items);
 }
 }

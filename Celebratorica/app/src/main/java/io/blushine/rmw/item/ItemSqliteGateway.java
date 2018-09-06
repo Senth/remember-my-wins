@@ -25,8 +25,37 @@ class ItemSqliteGateway extends SqliteGateway implements ItemGateway {
 private static final String TAG = ItemSqliteGateway.class.getSimpleName();
 private final EventBus mEventBus = EventBus.getInstance();
 
-private String idToString(long id) {
-	return Long.toString(id);
+public void addCategory(@NotNull Category category) {
+	Resources resources = AppActivity.getActivity().getResources();
+	
+	
+	// Update categories after this order
+	if (category.getOrder() > 0) {
+		try {
+			String sql = "UPDATE " + resources.getString(R.string.table_category) + " SET " +
+					resources.getString(R.string.table_category_order) + "=" + resources.getString(R.string.table_category_order) + "+1 " +
+					"WHERE " +
+					resources.getString(R.string.table_category_order) + ">=" + category.getOrder();
+			execSQL(sql);
+		} catch (SQLException e) {
+			Log.e(TAG, "removeCategory() — Invalid SQL syntax", e);
+		}
+	}
+	// Get new order
+	else {
+		category.setOrder(getCategoryCount() + 1);
+	}
+	
+	
+	ContentValues contentValues = new ContentValues();
+	contentValues.put(resources.getString(R.string.table_category_order), category.getOrder());
+	contentValues.put(resources.getString(R.string.table_category_name), category.getName());
+	
+	
+	long id = insert(resources.getString(R.string.table_category), contentValues);
+	category.setId(idToString(id));
+	
+	mEventBus.post(new CategoryEvent(ObjectEvent.Actions.ADDED, category));
 }
 
 public void getCategories() {
@@ -52,7 +81,87 @@ public void getCategories() {
 	}
 	close(cursor);
 	
-	EventBus.getInstance().post(new CategoryEvent(categories, ObjectEvent.Actions.GET_RESPONSE));
+	EventBus.getInstance().post(new CategoryEvent(ObjectEvent.Actions.GET_RESPONSE, categories));
+}
+
+@Override
+public void updateCategories(@NotNull List<Category> categories) {
+	beginTransaction();
+	
+	for (Category category : categories) {
+		updateCategory(category);
+	}
+	
+	setTransactionSuccessful();
+	endTransaction();
+	
+	mEventBus.post(new CategoryEvent(ObjectEvent.Actions.EDITED, categories));
+}
+
+private void updateCategory(@NotNull Category category) {
+	Resources resources = AppActivity.getActivity().getResources();
+	
+	ContentValues contentValues = new ContentValues(2);
+	contentValues.put(resources.getString(R.string.table_category_name), category.getName());
+	contentValues.put(resources.getString(R.string.table_category_order), category.getOrder());
+	
+	String table = resources.getString(R.string.table_category);
+	String where = resources.getString(R.string.table_category_id) + "=" + category.getId();
+	update(table, contentValues, where);
+}
+
+private String idToString(long id) {
+	return Long.toString(id);
+}
+
+public void removeCategory(@NotNull Category category) {
+	Resources resources = AppActivity.getActivity().getResources();
+	
+	beginTransaction();
+	
+	String table = resources.getString(R.string.table_category);
+	String where = resources.getString(R.string.table_category_id) + "=" + category.getId();
+	delete(table, where);
+	
+	// Update order of categories after this category
+	try {
+		String sql = "UPDATE " + table + " SET " +
+				resources.getString(R.string.table_category_order) + "=" + resources.getString(R.string.table_category_order) + "-1 " +
+				"WHERE " +
+				resources.getString(R.string.table_category_order) + ">" + category.getOrder();
+		execSQL(sql);
+	} catch (SQLException e) {
+		Log.e(TAG, "removeCategory() — Invalid SQL syntax", e);
+	}
+	
+	// Remove all items in the category
+	try {
+		String sql = "DELETE FROM " + resources.getString(R.string.table_item) +
+				"WHERE " +
+				resources.getString(R.string.table_category_id) + "=" + category.getId();
+		execSQL(sql);
+	} catch (SQLException e) {
+		Log.e(TAG, "removeCategory() — Invalid SQL syntax", e);
+	}
+	
+	setTransactionSuccessful();
+	endTransaction();
+	
+	mEventBus.post(new CategoryEvent(ObjectEvent.Actions.REMOVED, category));
+}
+
+@Override
+public void addItems(@NotNull List<Item> items) {
+	beginTransaction();
+	
+	for (Item item : items) {
+		addItem(item);
+	}
+	
+	setTransactionSuccessful();
+	endTransaction();
+	
+	mEventBus.post(new ItemEvent(ObjectEvent.Actions.ADDED, items));
 }
 
 public void getItems(String categoryId) {
@@ -87,93 +196,33 @@ public void getItems(String categoryId) {
 	}
 	close(cursor);
 	
-	EventBus.getInstance().post(new ItemEvent(items, ObjectEvent.Actions.GET_RESPONSE));
+	EventBus.getInstance().post(new ItemEvent(ObjectEvent.Actions.GET_RESPONSE, items));
 }
 
-public void addCategory(@NotNull Category category) {
-	Resources resources = AppActivity.getActivity().getResources();
+@Override
+public void updateItems(@NotNull List<Item> items) {
+	beginTransaction();
 	
-	
-	// Update categories after this order
-	if (category.getOrder() > 0) {
-		try {
-			String sql = "UPDATE " + resources.getString(R.string.table_category) + " SET " +
-					resources.getString(R.string.table_category_order) + "=" + resources.getString(R.string.table_category_order) + "+1 " +
-					"WHERE " +
-					resources.getString(R.string.table_category_order) + ">=" + category.getOrder();
-			execSQL(sql);
-		} catch (SQLException e) {
-			Log.e(TAG, "removeCategory() — Invalid SQL syntax", e);
-		}
-	}
-	// Get new order
-	else {
-		category.setOrder(getCategoryCount() + 1);
+	for (Item item : items) {
+		updateItem(item);
 	}
 	
+	setTransactionSuccessful();
+	endTransaction();
 	
-	ContentValues contentValues = new ContentValues();
-	contentValues.put(resources.getString(R.string.table_category_order), category.getOrder());
-	contentValues.put(resources.getString(R.string.table_category_name), category.getName());
-	
-	
-	long id = insert(resources.getString(R.string.table_category), contentValues);
-	category.setId(idToString(id));
-	
-	mEventBus.post(new CategoryEvent(category, ObjectEvent.Actions.ADDED));
+	mEventBus.post(new ItemEvent(ObjectEvent.Actions.EDITED, items));
 }
 
-public void updateCategory(@NotNull Category category) {
+private void updateItem(@NotNull Item item) {
 	Resources resources = AppActivity.getActivity().getResources();
 	
 	ContentValues contentValues = new ContentValues(2);
-	contentValues.put(resources.getString(R.string.table_category_name), category.getName());
-	contentValues.put(resources.getString(R.string.table_category_order), category.getOrder());
-	
-	String table = resources.getString(R.string.table_category);
-	String where = resources.getString(R.string.table_category_id) + "=" + category.getId();
-	update(table, contentValues, where);
-	
-	mEventBus.post(new CategoryEvent(category, ObjectEvent.Actions.EDITED));
-}
-
-public void removeCategory(@NotNull Category category) {
-	Resources resources = AppActivity.getActivity().getResources();
-	
-	String table = resources.getString(R.string.table_category);
-	String where = resources.getString(R.string.table_category_id) + "=" + category.getId();
-	delete(table, where);
-	
-	// Update order of categories after this category
-	try {
-		String sql = "UPDATE " + table + " SET " +
-				resources.getString(R.string.table_category_order) + "=" + resources.getString(R.string.table_category_order) + "-1 " +
-				"WHERE " +
-				resources.getString(R.string.table_category_order) + ">" + category.getOrder();
-		execSQL(sql);
-	} catch (SQLException e) {
-		Log.e(TAG, "removeCategory() — Invalid SQL syntax", e);
-	}
-	
-	mEventBus.post(new CategoryEvent(category, ObjectEvent.Actions.REMOVED));
-}
-
-/**
- * Add a new item. Will automatically set the item id.
- * @param item the item to add
- */
-public void addItem(@NotNull Item item) {
-	Resources resources = AppActivity.getActivity().getResources();
-	
-	ContentValues contentValues = new ContentValues();
-	contentValues.put(resources.getString(R.string.table_category_id), item.getCategoryId());
 	contentValues.put(resources.getString(R.string.table_item_text), item.getText());
 	contentValues.put(resources.getString(R.string.table_item_date), item.getDate());
 	
-	long id = insert(resources.getString(R.string.table_item), contentValues);
-	item.setId(idToString(id));
-	
-	mEventBus.post(new ItemEvent(item, ObjectEvent.Actions.ADDED));
+	String table = resources.getString(R.string.table_item);
+	String where = resources.getString(R.string.table_item_id) + "=" + item.getId();
+	update(table, contentValues, where);
 }
 
 public void importData(@NotNull List<Category> categories, @NotNull List<Item> items) {
@@ -225,29 +274,6 @@ public void importData(@NotNull List<Category> categories, @NotNull List<Item> i
 	endTransaction();
 }
 
-public void updateItem(@NotNull Item item) {
-	Resources resources = AppActivity.getActivity().getResources();
-	
-	ContentValues contentValues = new ContentValues(2);
-	contentValues.put(resources.getString(R.string.table_item_text), item.getText());
-	contentValues.put(resources.getString(R.string.table_item_date), item.getDate());
-	
-	String table = resources.getString(R.string.table_item);
-	String where = resources.getString(R.string.table_item_id) + "=" + item.getId();
-	update(table, contentValues, where);
-	
-	mEventBus.post(new ItemEvent(item, ObjectEvent.Actions.EDITED));
-}
-
-public void removeItem(@NotNull Item item) {
-	Resources resources = AppActivity.getActivity().getResources();
-	
-	String table = resources.getString(R.string.table_item);
-	String where = resources.getString(R.string.table_item_id) + "=" + item.getId();
-	delete(table, where);
-	
-	mEventBus.post(new ItemEvent(item, ObjectEvent.Actions.REMOVED));
-}
 
 /**
  * @return number of categories
@@ -271,5 +297,41 @@ private int getCategoryCount() {
 	return count;
 }
 
+@Override
+public void removeItems(@NotNull List<Item> items) {
+	beginTransaction();
+	
+	for (Item item : items) {
+		removeItem(item);
+	}
+	
+	setTransactionSuccessful();
+	endTransaction();
+	
+	mEventBus.post(new ItemEvent(ObjectEvent.Actions.REMOVED, items));
+}
 
+private void removeItem(@NotNull Item item) {
+	Resources resources = AppActivity.getActivity().getResources();
+	
+	String table = resources.getString(R.string.table_item);
+	String where = resources.getString(R.string.table_item_id) + "=" + item.getId();
+	delete(table, where);
+}
+
+/**
+ * Add a new item. Will automatically set the item id.
+ * @param item the item to add
+ */
+private void addItem(@NotNull Item item) {
+	Resources resources = AppActivity.getActivity().getResources();
+	
+	ContentValues contentValues = new ContentValues();
+	contentValues.put(resources.getString(R.string.table_category_id), item.getCategoryId());
+	contentValues.put(resources.getString(R.string.table_item_text), item.getText());
+	contentValues.put(resources.getString(R.string.table_item_date), item.getDate());
+	
+	long id = insert(resources.getString(R.string.table_item), contentValues);
+	item.setId(idToString(id));
+}
 }

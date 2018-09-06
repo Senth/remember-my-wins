@@ -122,47 +122,17 @@ void getItems(String categoryId) {
 public void onItem(ItemEvent event) {
 	switch (event.getAction()) {
 	case ADD:
-		addItems(event.getObjects());
-		mEventBus.post(new ItemEvent(event.getObjects(), ObjectEvent.Actions.ADDED));
+		mCurrentGateway.addItems(event.getObjects());
+		mEventBus.post(new ItemEvent(ObjectEvent.Actions.ADDED, event.getObjects()));
 		break;
 	case EDIT:
-		editItems(event.getObjects());
-		mEventBus.post(new ItemEvent(event.getObjects(), ObjectEvent.Actions.EDITED));
+		mCurrentGateway.updateItems(event.getObjects());
+		mEventBus.post(new ItemEvent(ObjectEvent.Actions.EDITED, event.getObjects()));
 		break;
 	case REMOVE:
-		removeItems(event.getObjects());
-		mEventBus.post(new ItemEvent(event.getObjects(), ObjectEvent.Actions.REMOVED));
+		mCurrentGateway.removeItems(event.getObjects());
+		mEventBus.post(new ItemEvent(ObjectEvent.Actions.REMOVED, event.getObjects()));
 		break;
-	}
-}
-
-/**
- * Add new item. Will automatically set the item id if no item id has been specified
- * @param items the items to add
- */
-private void addItems(List<Item> items) {
-	for (Item item : items) {
-		mCurrentGateway.addItem(item);
-	}
-}
-
-/**
- * Update items
- * @param items the item to update
- */
-private void editItems(List<Item> items) {
-	for (Item item : items) {
-		mCurrentGateway.updateItem(item);
-	}
-}
-
-/**
- * Remove items.
- * @param items the items to remove
- */
-private void removeItems(List<Item> items) {
-	for (Item item : items) {
-		mCurrentGateway.removeItem(item);
 	}
 }
 
@@ -190,7 +160,7 @@ public void onCategory(CategoryEvent event) {
 		addCategories(event.getObjects());
 		break;
 	case EDIT:
-		editCategories(event.getObjects());
+		mCurrentGateway.updateCategories(event.getObjects());
 		break;
 	case REMOVE:
 		removeCategories(event.getObjects());
@@ -199,20 +169,9 @@ public void onCategory(CategoryEvent event) {
 }
 
 /**
- * Update the specified categories
- * @param categories the categories to update
- */
-private void editCategories(List<Category> categories) {
-	for (Category category : categories) {
-		mCurrentGateway.updateCategory(category);
-	}
-}
-
-/**
  * Remove categories
  * @param categories the categories to remove.
  */
-
 private void removeCategories(List<Category> categories) {
 	for (Category category : categories) {
 		mCurrentGateway.removeCategory(category);

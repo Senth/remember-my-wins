@@ -1,6 +1,5 @@
 package io.blushine.rmw.item;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.MenuItem;
 
@@ -78,7 +77,7 @@ public boolean onMenuItemClick(MenuItem item) {
 private void saveCategory() {
 	setCategoryFromFields(mCategory);
 	
-	EventBus.getInstance().post(new CategoryEvent(mCategory, ObjectEvent.Actions.EDIT));
+	EventBus.getInstance().post(new CategoryEvent(ObjectEvent.Actions.EDIT, mCategory));
 	SnackbarHelper.showSnackbar(R.string.edit_success);
 	
 	// Go back to list
@@ -93,14 +92,11 @@ private void removeCategory() {
 			.setTitle(R.string.category_remove_dialog_title)
 			.setMessage(R.string.category_remove_dialog_message)
 			.setNegativeButton(R.string.cancel, null)
-			.setPositiveButton(R.string.remove, new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					CategoryRemoveCommand removeCommand = new CategoryRemoveCommand(mCategory);
-					removeCommand.execute();
-					
-					dismiss();
-				}
+			.setPositiveButton(R.string.remove, (dialog1, which) -> {
+				CategoryRemoveCommand removeCommand = new CategoryRemoveCommand(mCategory);
+				removeCommand.execute();
+				
+				dismiss();
 			})
 			.show();
 }

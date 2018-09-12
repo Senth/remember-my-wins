@@ -78,7 +78,7 @@ public void onDestroy() {
 public void onViewCreatedImpl(View view, @Nullable Bundle savedInstanceState) {
 	super.onViewCreatedImpl(view, savedInstanceState);
 	
-	Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
+	Toolbar toolbar = view.findViewById(R.id.toolbar);
 	AppActivity.getActivity().setSupportActionBar(toolbar);
 	toolbar.setTitle(R.string.category_edit_header);
 	toolbar.setNavigationIcon(R.drawable.ic_arrow_back_24dp);
@@ -126,36 +126,24 @@ public void onClick(Category item) {
 public void onMoved(Category item, int fromPosition, int toPosition) {
 	List<Category> categoriesToUpdate = new ArrayList<>(Math.abs(toPosition - fromPosition + 1));
 	
-	// Adjust order for the category
-	int adjustOrderDiff = toPosition - fromPosition;
-	int newOrder = item.getOrder() + adjustOrderDiff;
-	item.setOrder(newOrder);
-	categoriesToUpdate.add(item);
-	
-	
 	// Increase or decrease the category order?
-	int increment;
 	int beginIndex;
 	int endIndex;
 	if (fromPosition < toPosition) {
-		increment = -1;
 		beginIndex = fromPosition;
 		endIndex = toPosition;
 	} else {
-		increment = 1;
-		beginIndex = toPosition + 1;
-		endIndex = fromPosition + 1;
+		beginIndex = toPosition;
+		endIndex = fromPosition;
 	}
 	
 	// Adjust order for the rest of the categories
-	for (int i = beginIndex; i < endIndex; ++i) {
+	for (int i = beginIndex; i <= endIndex; ++i) {
 		Category category = mCategoryAdapter.getItem(i);
-		newOrder = category.getOrder() + increment;
-		category.setOrder(newOrder);
 		categoriesToUpdate.add(category);
 	}
 	
-	mEventBus.post(new CategoryEvent(ObjectEvent.Actions.EDIT, categoriesToUpdate));
+	mEventBus.post(new CategoryEvent(ObjectEvent.Actions.EDIT, categoriesToUpdate, fromPosition, toPosition));
 }
 
 @SuppressWarnings("unused")
@@ -170,11 +158,21 @@ public void onCategory(CategoryEvent event) {
 		mCategoryAdapter.remove(event.getObjects());
 		break;
 	
-	case EDIT_FAILED:
-		mCategoryAdapter.notifyItemsChanged(event.getObjects());
+	case EDIT:
+		if (!event.isMoveEvent() && event.hasObjects()) {
+			mCategoryAdapter.notifyItemChanged(event.getFirstObject());
+		}
 		break;
 	
-	case REMOVED:
+	case EDIT_FAILED:
+		if (event.isMoveEvent()) {
+			mCategoryAdapter.move(event.getMovedTo(), event.getMovedFrom());
+		} else if (event.hasObjects()) {
+			mCategoryAdapter.notifyItemChanged(event.getFirstObject());
+		}
+		break;
+	
+	case REMOVE:
 		mCategoryAdapter.remove(event.getObjects());
 		break;
 	

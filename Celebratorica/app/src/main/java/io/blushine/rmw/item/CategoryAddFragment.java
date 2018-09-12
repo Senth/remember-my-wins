@@ -58,12 +58,12 @@ protected int getMenu() {
 @Override
 public boolean onMenuItemClick(MenuItem item) {
 	if (validateTextFields()) {
-		addItem();
+		saveCategory();
 	}
 	return true;
 }
 
-private void addItem() {
+protected void saveCategory() {
 	Category category = new Category();
 	setCategoryFromFields(category);
 	category.setOrder(mNextOrder);

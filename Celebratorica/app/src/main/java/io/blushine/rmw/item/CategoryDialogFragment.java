@@ -9,6 +9,7 @@ import android.widget.EditText;
 
 import io.blushine.android.AppFragmentHelper;
 import io.blushine.android.DialogFragment;
+import io.blushine.android.common.KeyHelper;
 import io.blushine.android.validate.TextValidator;
 import io.blushine.rmw.R;
 import io.blushine.rmw.util.AppActivity;
@@ -38,8 +39,21 @@ public View onCreateViewImpl(LayoutInflater inflater, @Nullable ViewGroup contai
 			.build()
 	);
 	
+	mNameEdit.setOnEditorActionListener((v, actionId, event) -> {
+		if (KeyHelper.isDoneOrEnterPressed(actionId, event)) {
+			saveCategory();
+		}
+		
+		return true;
+	});
+	
 	return view;
 }
+
+/**
+ * Save the category
+ */
+protected abstract void saveCategory();
 
 /**
  * Focus the name text field

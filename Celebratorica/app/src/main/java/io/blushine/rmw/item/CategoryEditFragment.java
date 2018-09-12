@@ -5,7 +5,6 @@ import android.view.MenuItem;
 
 import de.mrapp.android.dialog.MaterialDialog;
 import io.blushine.android.common.ObjectEvent;
-import io.blushine.android.ui.SnackbarHelper;
 import io.blushine.rmw.R;
 import io.blushine.utils.EventBus;
 
@@ -74,11 +73,10 @@ public boolean onMenuItemClick(MenuItem item) {
 /**
  * Save the edited category
  */
-private void saveCategory() {
+protected void saveCategory() {
 	setCategoryFromFields(mCategory);
 	
 	EventBus.getInstance().post(new CategoryEvent(ObjectEvent.Actions.EDIT, mCategory));
-	SnackbarHelper.showSnackbar(R.string.edit_success);
 	
 	// Go back to list
 	dismiss();

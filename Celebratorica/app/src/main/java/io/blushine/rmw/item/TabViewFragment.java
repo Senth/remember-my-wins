@@ -202,7 +202,7 @@ public synchronized void onCategory(CategoryEvent event) {
 			break;
 		
 		case EDIT_FAILED:
-			sortAndUpdateSelected(getSelectedCategory());
+			sortAndSetSelected(getSelectedCategory());
 			break;
 		
 		case REMOVE_FAILED:
@@ -213,7 +213,7 @@ public synchronized void onCategory(CategoryEvent event) {
 			Category selectedCategory = getSelectedCategory();
 			mCategoryAdapter.setItems(event.getObjects());
 			mAddButton.setVisibility(View.VISIBLE);
-			sortAndUpdateSelected(selectedCategory);
+			sortAndSetSelected(selectedCategory);
 			break;
 		}
 		
@@ -238,7 +238,15 @@ private void addCategory(Category category) {
 }
 
 private void editCategories(List<Category> categories) {
-	sortAndUpdateSelected(getSelectedCategory());
+	for (Category editedCategory : categories) {
+		Category tabCategory = mCategoryAdapter.findCategory(editedCategory);
+		
+		if (tabCategory != null) {
+			tabCategory.set(editedCategory);
+		}
+	}
+	
+	sortAndSetSelected(getSelectedCategory());
 }
 
 private void removeCategory(Category category) {
@@ -255,7 +263,7 @@ private void removeCategory(Category category) {
 	}
 }
 
-private void sortAndUpdateSelected(Category selectedCategory) {
+private void sortAndSetSelected(Category selectedCategory) {
 	if (selectedCategory == null) {
 		return;
 	}

@@ -105,10 +105,13 @@ internal class ItemFirestoreGateway : ItemGateway {
 	}
 
 	override fun updateCategories(categories: List<Category>) {
+		val userId = getUserId()
+
 		db()
 				.runTransaction { transaction ->
 					for (category in categories) {
 						val doc = getCategory(category.id)
+						category.userId = userId
 						transaction.set(doc, category)
 					}
 				}

@@ -3,6 +3,7 @@ package io.blushine.rmw.item;
 
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -103,12 +104,28 @@ void sortItems() {
  * @param position get the category in this position
  * @return category in the specified position, null if no categories exist
  */
+@Nullable
 Category getCategory(int position) {
 	if (!mCategories.isEmpty()) {
 		return mCategories.get(position);
 	} else {
 		return null;
 	}
+}
+
+/**
+ * Find a category that matches the specified category
+ * @param searchCategory search for a category that matches this category (with {@link Object#equals(Object)})
+ * @return category that matches the specified category, null if there are no matches
+ */
+@Nullable
+Category findCategory(Category searchCategory) {
+	for (Category category : mCategories) {
+		if (category.equals(searchCategory)) {
+			return category;
+		}
+	}
+	return null;
 }
 
 /**

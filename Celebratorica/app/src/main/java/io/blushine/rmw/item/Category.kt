@@ -52,6 +52,13 @@ internal class Category() : Comparable<Category>, Parcelable {
 		return 0
 	}
 
+	fun set(category: Category) {
+		userId = category.userId
+		id = category.id
+		name = category.name
+		order = category.order
+	}
+
 	companion object CREATOR : Parcelable.Creator<Category> {
 		override fun createFromParcel(parcel: Parcel): Category {
 			return Category(parcel)

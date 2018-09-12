@@ -39,6 +39,48 @@ public void add(List<Category> newCategories) {
 			add(getItemCount(), category);
 		}
 	}
+	
+	updateOrder();
+}
+
+@Override
+public void remove(int itemIndex) {
+	super.remove(itemIndex);
+	updateOrder();
+}
+
+@Override
+public void move(int fromPosition, int toPosition) {
+	Category categoryToMove = getItem(fromPosition);
+	
+	// Update category order
+	int adjustOrderDiff = toPosition - fromPosition;
+	int newOrder = categoryToMove.getOrder() + adjustOrderDiff;
+	categoryToMove.setOrder(newOrder);
+	
+	
+	// Increase or decrease the category order?
+	int increment;
+	int beginIndex;
+	int endIndex;
+	if (fromPosition < toPosition) {
+		increment = -1;
+		beginIndex = fromPosition + 1;
+		endIndex = toPosition;
+	} else {
+		increment = 1;
+		beginIndex = toPosition;
+		endIndex = fromPosition - 1;
+	}
+	
+	// Adjust order for the rest of the categories
+	for (int i = beginIndex; i <= endIndex; ++i) {
+		Category category = getItem(i);
+		newOrder = category.getOrder() + increment;
+		category.setOrder(newOrder);
+	}
+	
+	super.move(fromPosition, toPosition);
 }
 
 @Override
@@ -51,6 +93,13 @@ protected ViewHolder onCreateView(ViewGroup parent, int viewType) {
 protected void onBindView(ViewHolder view, int position) {
 	final Category category = getItem(position);
 	view.mName.setText(category.getName());
+}
+
+private void updateOrder() {
+	for (int i = 0; i < getItemCount(); ++i) {
+		Category category = getItem(i);
+		category.setOrder(i + 1);
+	}
 }
 
 static class ViewHolder extends RecyclerView.ViewHolder {

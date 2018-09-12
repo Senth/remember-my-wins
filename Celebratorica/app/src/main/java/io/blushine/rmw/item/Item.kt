@@ -31,14 +31,14 @@ internal class Item() : Comparable<Item>, Parcelable {
 	/**
 	 * @return The date in human readable format
 	 */
-	fun getDateString(): String {
+	fun getDateFromFormat(): String {
 		return DATE_FORMAT.format(Date(date))
 	}
 
 	/**
 	 * Set the date from a string
 	 */
-	fun setDate(dateString: String) {
+	fun setDateFromFormat(dateString: String) {
 		val parsePosition = ParsePosition(0)
 		date = DATE_FORMAT.parse(dateString, parsePosition).time
 	}

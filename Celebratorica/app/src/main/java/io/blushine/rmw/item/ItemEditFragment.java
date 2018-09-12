@@ -3,7 +3,7 @@ package io.blushine.rmw.item;
 import android.os.Bundle;
 import android.view.MenuItem;
 
-import io.blushine.android.ui.SnackbarHelper;
+import io.blushine.android.common.ObjectEvent;
 import io.blushine.rmw.R;
 import io.blushine.utils.EventBus;
 
@@ -17,10 +17,6 @@ private Item mItem;
 @Override
 public void onViewStateRestored(Bundle savedInstanceState) {
 	super.onViewStateRestored(savedInstanceState);
-	
-	if (savedInstanceState == null) {
-		setFields(mItem);
-	}
 	
 	setBackMessage(R.string.discard_changes);
 }
@@ -59,7 +55,6 @@ private void saveItem() {
 	setItemFromFields(mItem);
 	
 	EventBus.getInstance().post(new ItemEvent(ItemEvent.Actions.EDIT, mItem));
-	SnackbarHelper.showSnackbar(R.string.item_edit_success);
 	
 	// Go back to list
 	dismiss();
@@ -69,8 +64,7 @@ private void saveItem() {
  * Remove the item
  */
 private void removeItem() {
-	ItemRemoveCommand removeCommand = new ItemRemoveCommand(mItem);
-	removeCommand.execute();
+	EventBus.getInstance().post(new ItemEvent(ObjectEvent.Actions.REMOVE, mItem));
 	
 	// Go back to list
 	dismiss();
@@ -80,6 +74,14 @@ private void removeItem() {
 protected void onDeclareArguments() {
 	super.onDeclareArguments();
 	declareArgument(ITEM_ARG_KEY, ArgumentRequired.REQUIRED);
+	declareArgument(TEXT_SAVE_KEY, ArgumentRequired.REQUIRED);
+	declareArgument(DATE_SAVE_KEY, ArgumentRequired.REQUIRED);
+}
+
+@Override
+protected void onArgumentsSet() {
+	super.onArgumentsSet();
+	mItem = getArgument(ITEM_ARG_KEY);
 }
 
 /**
@@ -91,6 +93,8 @@ public void setArguments(Category category, Item item) {
 	setArgument(category);
 	Bundle bundle = new Bundle();
 	bundle.putParcelable(ITEM_ARG_KEY, item);
+	bundle.putString(TEXT_SAVE_KEY, item.getText());
+	bundle.putString(DATE_SAVE_KEY, item.getDateFromFormat());
 	addArguments(bundle);
 }
 }

@@ -3,6 +3,7 @@ package io.blushine.rmw.item;
 import android.content.ContentValues;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import org.jetbrains.annotations.NotNull;
@@ -25,6 +26,10 @@ class ItemSqliteGateway extends SqliteGateway implements ItemGateway {
 private static final String TAG = ItemSqliteGateway.class.getSimpleName();
 private final EventBus mEventBus = EventBus.getInstance();
 
+private static String idToString(long id) {
+	return Long.toString(id);
+}
+
 public void addCategory(@NotNull Category category) {
 	Resources resources = AppActivity.getActivity().getResources();
 	
@@ -41,10 +46,6 @@ public void addCategory(@NotNull Category category) {
 			Log.e(TAG, "removeCategory() — Invalid SQL syntax", e);
 		}
 	}
-	// Get new order
-	else {
-		category.setOrder(getCategoryCount() + 1);
-	}
 	
 	
 	ContentValues contentValues = new ContentValues();
@@ -59,29 +60,7 @@ public void addCategory(@NotNull Category category) {
 }
 
 public void getCategories() {
-	Resources resources = AppActivity.getActivity().getResources();
-	
-	String sql = "SELECT " +
-			resources.getString(R.string.table_category_id) + ", " +
-			resources.getString(R.string.table_category_name) + ", " +
-			resources.getString(R.string.table_category_order) +
-			" FROM " + resources.getString(R.string.table_category) +
-			" ORDER BY " + resources.getString(R.string.table_category_order) + " ASC";
-	
-	Cursor cursor = rawQuery(sql);
-	List<Category> categories = new ArrayList<>(cursor.getCount());
-	while (cursor.moveToNext()) {
-		Category category = new Category();
-		int i = 0;
-		category.setId(idToString(cursor.getLong(i++)));
-		category.setName(cursor.getString(i++));
-		category.setOrder(cursor.getInt(i));
-		
-		categories.add(category);
-	}
-	close(cursor);
-	
-	EventBus.getInstance().post(new CategoryEvent(ObjectEvent.Actions.GET_RESPONSE, categories));
+	new GetCategoryTask().execute(this);
 }
 
 @Override
@@ -110,8 +89,39 @@ private void updateCategory(@NotNull Category category) {
 	update(table, contentValues, where);
 }
 
-private String idToString(long id) {
-	return Long.toString(id);
+private static class GetCategoryTask extends AsyncTask<ItemSqliteGateway, Void, List<Category>> {
+	@Override
+	protected List<Category> doInBackground(ItemSqliteGateway... itemSqliteGateways) {
+		ItemSqliteGateway itemSqliteGateway = itemSqliteGateways[0];
+		Resources resources = AppActivity.getActivity().getResources();
+		
+		String sql = "SELECT " +
+				resources.getString(R.string.table_category_id) + ", " +
+				resources.getString(R.string.table_category_name) + ", " +
+				resources.getString(R.string.table_category_order) +
+				" FROM " + resources.getString(R.string.table_category) +
+				" ORDER BY " + resources.getString(R.string.table_category_order) + " ASC";
+		
+		Cursor cursor = itemSqliteGateway.rawQuery(sql);
+		List<Category> categories = new ArrayList<>(cursor.getCount());
+		while (cursor.moveToNext()) {
+			Category category = new Category();
+			int i = 0;
+			category.setId(idToString(cursor.getLong(i++)));
+			category.setName(cursor.getString(i++));
+			category.setOrder(cursor.getInt(i));
+			
+			categories.add(category);
+		}
+		itemSqliteGateway.close(cursor);
+		
+		return categories;
+	}
+	
+	@Override
+	protected void onPostExecute(List<Category> categories) {
+		EventBus.getInstance().post(new CategoryEvent(ObjectEvent.Actions.GET_RESPONSE, categories));
+	}
 }
 
 public void removeCategory(@NotNull Category category) {
@@ -275,28 +285,6 @@ public void importData(@NotNull List<Category> categories, @NotNull List<Item> i
 }
 
 
-/**
- * @return number of categories
- */
-private int getCategoryCount() {
-	Resources resources = AppActivity.getActivity().getResources();
-	
-	String sql = "SELECT " +
-			resources.getString(R.string.table_category_order) +
-			" FROM " + resources.getString(R.string.table_category) +
-			" ORDER BY " + resources.getString(R.string.table_category_order) + " DESC" +
-			" LIMIT 1";
-	
-	Cursor cursor = rawQuery(sql);
-	int count = 0;
-	if (cursor.moveToNext()) {
-		count = cursor.getInt(0);
-	}
-	close(cursor);
-	
-	return count;
-}
-
 @Override
 public void removeItems(@NotNull List<Item> items) {
 	beginTransaction();
@@ -334,4 +322,6 @@ private void addItem(@NotNull Item item) {
 	long id = insert(resources.getString(R.string.table_item), contentValues);
 	item.setId(idToString(id));
 }
+
+
 }

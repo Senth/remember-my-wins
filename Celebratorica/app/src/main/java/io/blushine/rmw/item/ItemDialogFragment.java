@@ -26,11 +26,10 @@ import io.blushine.rmw.util.AppActivity;
  * Base class for adding/editing a celebration item
  */
 public abstract class ItemDialogFragment extends DialogFragment {
+protected static final String TEXT_SAVE_KEY = "text";
+protected static final String DATE_SAVE_KEY = "date";
 private static final String TAG = ItemDialogFragment.class.getSimpleName();
 private static final SimpleDateFormat DATE_FORMAT = DateFormats.getMediumDateFormat();
-private static final String TEXT_SAVE_KEY = "text";
-private static final String DATE_SAVE_KEY = "date";
-private static final String ORIGINAL_SAVE_SUFFIX = "_original";
 private static final String CATEGORY_ARG_KEY = "category";
 private EditText mTextEdit;
 private EditText mDateEdit;
@@ -44,8 +43,6 @@ private final DatePickerDialog.OnDateSetListener mDateSetListener = new DatePick
 		mDateEdit.setText(date);
 	}
 };
-private String mTextOriginal = "";
-private String mDateOriginal = "";
 private Category mCategory;
 private DatePickerDialog mDatePickerDialog;
 
@@ -82,24 +79,11 @@ public View onCreateViewImpl(LayoutInflater inflater, ViewGroup container, Bundl
 	
 	View view = inflater.inflate(R.layout.fragment_item_dialog, container, false);
 	
-	
-	// Restore saved values
-	String textValue = "";
-	String dateValue = "";
-	
-	if (savedInstanceState != null) {
-		textValue = savedInstanceState.getString(TEXT_SAVE_KEY);
-		mTextOriginal = savedInstanceState.getString(TEXT_SAVE_KEY + ORIGINAL_SAVE_SUFFIX);
-		dateValue = savedInstanceState.getString(DATE_SAVE_KEY);
-		mDateOriginal = savedInstanceState.getString(DATE_SAVE_KEY + ORIGINAL_SAVE_SUFFIX);
-	}
-	
 	initToolbar(view);
-	
 	
 	// Text validation
 	mTextEdit = view.findViewById(R.id.text_edit);
-	mTextEdit.setText(textValue);
+	addSaveView(mTextEdit, TEXT_SAVE_KEY);
 	mValidatorGroup.add(new TextValidator.Builder(mTextEdit)
 			.setRequired()
 			.setMaxLength(AppActivity.getActivity().getResources().getInteger(R.integer.item_text_length_max))
@@ -108,12 +92,10 @@ public View onCreateViewImpl(LayoutInflater inflater, ViewGroup container, Bundl
 	
 	// Date
 	mDateEdit = view.findViewById(R.id.date_edit);
+	addSaveView(mDateEdit, DATE_SAVE_KEY);
 	mDateEdit.setOnClickListener(v -> pickDate());
-	if (dateValue == null || dateValue.isEmpty()) {
+	if (mDateEdit.getText().toString().isEmpty()) {
 		clearDate();
-		mDateOriginal = mDateEdit.getText().toString();
-	} else {
-		mDateEdit.setText(dateValue);
 	}
 	
 	return view;
@@ -149,42 +131,13 @@ protected Category getCategory() {
 	return mCategory;
 }
 
-@Override
-protected boolean isChanged() {
-	return !mTextOriginal.equals(mTextEdit.getText().toString()) ||
-			!mDateOriginal.equals(mDateEdit.getText().toString());
-}
-
-@Override
-public void onSaveInstanceState(Bundle outState) {
-	outState.putString(TEXT_SAVE_KEY, mTextEdit.getText().toString());
-	outState.putString(TEXT_SAVE_KEY + ORIGINAL_SAVE_SUFFIX, mTextOriginal);
-	outState.putString(DATE_SAVE_KEY, mDateEdit.getText().toString());
-	outState.putString(DATE_SAVE_KEY + ORIGINAL_SAVE_SUFFIX, mDateOriginal);
-	
-	super.onSaveInstanceState(outState);
-}
-
-/**
- * Set fields from a specified item item
- * @param item item item to copy values from
- */
-protected void setFields(Item item) {
-	if (item != null) {
-		mTextOriginal = item.getText();
-		mTextEdit.setText(item.getText());
-		mDateOriginal = item.getDateString();
-		mDateEdit.setText(mDateOriginal);
-	}
-}
-
 /**
  * Set a item item from the field values
  * @param item the item to set
  */
 protected void setItemFromFields(Item item) {
 	item.setText(mTextEdit.getText().toString());
-	item.setDate(mDateEdit.getText().toString());
+	item.setDateFromFormat(mDateEdit.getText().toString());
 	item.setCategoryId(mCategory.getId());
 }
 }

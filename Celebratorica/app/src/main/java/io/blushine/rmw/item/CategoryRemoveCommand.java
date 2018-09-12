@@ -37,7 +37,6 @@ public boolean undo() {
 @Override
 public synchronized boolean execute() {
 	if (mItems != null) {
-		mEventBus.register(this);
 		remove();
 	} else {
 		mExecuteOnGetItems = true;
@@ -51,23 +50,23 @@ private void remove() {
 
 @SuppressWarnings("unused")
 @Subscribe
-public synchronized void onCategoryEvent(CategoryEvent event) {
-	if (event.getAction() == ObjectEvent.Actions.REMOVED) {
-		mEventBus.unregister(this);
-		showSnackbarWithUndo(R.string.category_removed);
-	}
-}
-
-@SuppressWarnings("unused")
-@Subscribe
 public synchronized void onItemEvent(ItemEvent event) {
-	if (event.getAction() == ObjectEvent.Actions.GET_RESPONSE && event.getFirstObject().getCategoryId().equals(mCategory.getId())) {
-		mItems = event.getObjects();
-		mEventBus.unregister(this);
+	if (event.getCategoryId().equals(mCategory.getId())) {
+		switch (event.getAction()) {
+		case GET_RESPONSE:
+			mItems = event.getObjects();
+			mEventBus.unregister(this);
+			
+			if (mExecuteOnGetItems) {
+				mExecuteOnGetItems = false;
+				remove();
+			}
+			break;
 		
-		if (mExecuteOnGetItems) {
-			mExecuteOnGetItems = false;
-			remove();
+		case GET_FAILED:
+			mEventBus.unregister(this);
+			mEventBus.post(new CategoryEvent(ObjectEvent.Actions.REMOVE_FAILED, mCategory));
+			break;
 		}
 	}
 }

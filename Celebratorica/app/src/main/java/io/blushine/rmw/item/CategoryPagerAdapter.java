@@ -76,6 +76,7 @@ void addItem(Category newCategory) {
  * @param categories list of all categories
  */
 void setItems(List<Category> categories) {
+	mCategories.clear();
 	mCategories.addAll(categories);
 	notifyDataSetChanged();
 }
@@ -94,6 +95,7 @@ void removeItem(Category category) {
  */
 void sortItems() {
 	Collections.sort(mCategories);
+	notifyDataSetChanged();
 }
 
 /**
@@ -107,5 +109,13 @@ Category getCategory(int position) {
 	} else {
 		return null;
 	}
+}
+
+/**
+ * Remove all categories
+ */
+void clear() {
+	mCategories.clear();
+	notifyDataSetChanged();
 }
 }

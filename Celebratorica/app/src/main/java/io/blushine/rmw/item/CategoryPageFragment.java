@@ -22,7 +22,7 @@ import io.blushine.utils.EventBus;
  * Page fragment for showing all the items in a category
  */
 public class CategoryPageFragment extends io.blushine.android.Fragment implements ClickListener<Item> {
-private static final String CATEGORY_ARG_KEY = "category";
+private static final String CATEGORY_ARG = "category";
 private static final EventBus mEventBus = EventBus.getInstance();
 private static final String TAG = CategoryPageFragment.class.getSimpleName();
 private static final ItemRepo mItemRepo = ItemRepo.getInstance();
@@ -46,14 +46,14 @@ void setArguments(Category category) {
  */
 static Bundle createArguments(Category category) {
 	Bundle bundle = new Bundle(1);
-	bundle.putParcelable(CATEGORY_ARG_KEY, category);
+	bundle.putParcelable(CATEGORY_ARG, category);
 	return bundle;
 }
 
 @Override
 protected void onDeclareArguments() {
 	super.onDeclareArguments();
-	declareArgument(CATEGORY_ARG_KEY, ArgumentRequired.REQUIRED);
+	declareArgument(CATEGORY_ARG, ArgumentRequired.REQUIRED);
 }
 
 @Override
@@ -67,15 +67,14 @@ public void onViewCreatedImpl(View view, @Nullable Bundle savedInstanceState) {
 	RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
 	mItemListView.setLayoutManager(layoutManager);
 	mItemListView.setAdapter(mItemAdapter);
-	populateItems();
-	
 	mAddButton = mView.getRootView().findViewById(R.id.add_button);
+	populateItems();
 }
 
 @Override
 protected void onArgumentsSet() {
 	super.onArgumentsSet();
-	mCategory = getArgument(CATEGORY_ARG_KEY);
+	mCategory = getArgument(CATEGORY_ARG);
 }
 
 @Nullable
@@ -88,7 +87,7 @@ public View onCreateViewImpl(LayoutInflater inflater, ViewGroup container, Bundl
  * Populate the list with items. Does nothing if the list is already populated
  */
 private void populateItems() {
-	if (mAddButton != null && mItemAdapter.getItemCount() == 0) {
+	if (mItemAdapter.getItemCount() == 0) {
 		List<Item> items;
 		if (mCategory == null) {
 			mItemRepo.getItems();
@@ -142,7 +141,7 @@ public void onClick(Item item) {
 @Subscribe
 public void onItem(ItemEvent event) {
 	// Only handle events for our category
-	if (mCategory != null && event.getFirstObject().getCategoryId().equals(mCategory.getId())) {
+	if (mCategory != null && event.hasObjects() && event.getFirstObject().getCategoryId().equals(mCategory.getId())) {
 		switch (event.getAction()) {
 		case ADDED:
 			if (mItemAdapter.getItemCount() == 0) {

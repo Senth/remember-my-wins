@@ -37,8 +37,8 @@ protected void onDeclareArguments() {
 }
 
 @Override
-public void onViewStateRestored(Bundle savedInstanceState) {
-	super.onViewStateRestored(savedInstanceState);
+protected void onArgumentsSet() {
+	super.onArgumentsSet();
 	
 	mCategory.setId(getArgument(CATEGORY_ID_KEY));
 	mCategory.setName(getArgument(NAME_KEY));
@@ -88,7 +88,7 @@ private void saveCategory() {
  * Remove the category
  */
 private void removeCategory() {
-	MaterialDialog dialog = new MaterialDialog.Builder(getContext())
+	new MaterialDialog.Builder(getContext())
 			.setTitle(R.string.category_remove_dialog_title)
 			.setMessage(R.string.category_remove_dialog_message)
 			.setNegativeButton(R.string.cancel, null)

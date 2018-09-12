@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.blushine.android.AppFragment;
-import io.blushine.android.AppFragmentHelper;
 import io.blushine.android.common.ObjectEvent;
 import io.blushine.android.ui.list.ClickListener;
 import io.blushine.android.ui.list.MoveListener;
@@ -36,6 +35,7 @@ private static final ItemRepo mItemRepo = ItemRepo.getInstance();
 private final List<Category> mAddToAdapter = new ArrayList<>();
 private CategoryOrderAdapter mCategoryAdapter;
 private RecyclerView mCategoryRecyclerView;
+private FloatingActionButton mAddButton;
 
 @Override
 public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -61,12 +61,9 @@ public void onResume() {
 	
 	// Add new items to the list after a short delay
 	if (!mAddToAdapter.isEmpty()) {
-		new Handler().postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				mCategoryAdapter.add(mAddToAdapter);
-				mAddToAdapter.clear();
-			}
+		new Handler().postDelayed(() -> {
+			mCategoryAdapter.add(mAddToAdapter);
+			mAddToAdapter.clear();
 		}, 75);
 	}
 }
@@ -95,12 +92,12 @@ public void onViewCreatedImpl(View view, @Nullable Bundle savedInstanceState) {
 	RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
 	mCategoryRecyclerView.setLayoutManager(layoutManager);
 	
-	FloatingActionButton addButton = (FloatingActionButton) mView.findViewById(R.id.add_button);
-	addButton.setOnClickListener(new View.OnClickListener() {
-		@Override
-		public void onClick(View v) {
-			new CategoryAddFragment().show();
-		}
+	mAddButton = mView.findViewById(R.id.add_button);
+	mAddButton.setVisibility(View.GONE);
+	mAddButton.setOnClickListener(v -> {
+		CategoryAddFragment categoryAddFragment = new CategoryAddFragment();
+		categoryAddFragment.setArguments(mCategoryAdapter.getItemCount());
+		categoryAddFragment.show();
 	});
 	
 	bindAdapter();
@@ -126,7 +123,7 @@ public void onClick(Category item) {
 }
 
 @Override
-public void onMove(Category item, int fromPosition, int toPosition) {
+public void onMoved(Category item, int fromPosition, int toPosition) {
 	List<Category> categoriesToUpdate = new ArrayList<>(Math.abs(toPosition - fromPosition + 1));
 	
 	// Adjust order for the category
@@ -165,18 +162,15 @@ public void onMove(Category item, int fromPosition, int toPosition) {
 @Subscribe
 public void onCategory(CategoryEvent event) {
 	switch (event.getAction()) {
-	case ADDED:
-		// Add when fragment becomes active
-		if (AppFragmentHelper.getFragment() != this) {
-			mAddToAdapter.addAll(event.getObjects());
-		}
-		// Add directly
-		else {
-			mCategoryAdapter.add(event.getObjects());
-		}
+	case ADD:
+		mCategoryAdapter.add(event.getObjects());
 		break;
 	
-	case EDITED:
+	case ADD_FAILED:
+		mCategoryAdapter.remove(event.getObjects());
+		break;
+	
+	case EDIT_FAILED:
 		mCategoryAdapter.notifyItemsChanged(event.getObjects());
 		break;
 	
@@ -184,8 +178,13 @@ public void onCategory(CategoryEvent event) {
 		mCategoryAdapter.remove(event.getObjects());
 		break;
 	
+	case REMOVE_FAILED:
+		mCategoryAdapter.add(event.getObjects());
+		break;
+	
 	case GET_RESPONSE:
 		mCategoryAdapter.setItems(event.getObjects());
+		mAddButton.setVisibility(View.VISIBLE);
 		break;
 	}
 }

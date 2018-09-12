@@ -16,8 +16,11 @@ import android.widget.LinearLayout;
 
 import com.squareup.otto.Subscribe;
 
+import java.util.List;
+
 import io.blushine.android.AppFragment;
 import io.blushine.rmw.R;
+import io.blushine.rmw.settings.StorageLocationSetEvent;
 import io.blushine.rmw.util.AppActivity;
 import io.blushine.utils.EventBus;
 
@@ -67,7 +70,11 @@ public View onCreateViewImpl(LayoutInflater inflater, ViewGroup container, Bundl
 	});
 	
 	ImageButton addCategoryButton = view.findViewById(R.id.add_category_button);
-	addCategoryButton.setOnClickListener(v -> new CategoryAddFragment().show());
+	addCategoryButton.setOnClickListener(v -> {
+		CategoryAddFragment categoryAddFragment = new CategoryAddFragment();
+		categoryAddFragment.setArguments(mCategoryAdapter.getCount());
+		categoryAddFragment.show();
+	});
 	
 	if (mCategoryViewPager != null) {
 		mPositionAfterUpdate = mCategoryViewPager.getCurrentItem();
@@ -172,52 +179,104 @@ public void onDestroy() {
 
 @SuppressWarnings("unused")
 @Subscribe
-public void onCategory(CategoryEvent event) {
+public synchronized void onCategory(CategoryEvent event) {
 	// Update tabs
-	if (mCategoryAdapter != null && event.getFirstObject() != null) {
+	if (mCategoryAdapter != null && event.hasObjects()) {
 		Category category = event.getFirstObject();
-		Category selectedCategory = getSelectedCategory();
 		
 		switch (event.getAction()) {
-		case ADDED:
-			// Added first category -> Show add item button
-			if (mCategoryAdapter.getCount() == 0) {
-				mAddButton.setVisibility(View.VISIBLE);
-				mPositionAfterUpdate = 1;
-			}
-			// Adjust position if we added a category before the selected (can happen when we restore a deleted category)
-			else if (category.getOrder() <= selectedCategory.getOrder()) {
-				mPositionAfterUpdate += 1;
-			}
-			
-			mCategoryAdapter.addItem(category);
+		case ADD:
+			addCategory(category);
 			break;
 		
-		case EDITED:
-			mPositionAfterUpdate = selectedCategory.getOrder() - 1;
-			mCategoryAdapter.sortItems();
+		case EDIT:
+			editCategories(event.getObjects());
 			break;
 		
-		case REMOVED:
-			mCategoryAdapter.removeItem(category);
-			
-			// Removed the last category -> Hide add item button
-			if (mCategoryAdapter.getCount() == 0) {
-				mAddButton.setVisibility(View.GONE);
-			}
-			// Adjust position if we removed an item before the selected item
-			else if (category.getOrder() < selectedCategory.getOrder()) {
-				mPositionAfterUpdate -= 1;
-			}
+		case REMOVE:
+			removeCategory(category);
+			break;
+		
+		case ADD_FAILED:
+			removeCategory(category);
+			break;
+		
+		case EDIT_FAILED:
+			sortAndUpdateSelected(getSelectedCategory());
+			break;
+		
+		case REMOVE_FAILED:
+			addCategory(category);
 			break;
 		
 		case GET_RESPONSE:
+			Category selectedCategory = getSelectedCategory();
 			mCategoryAdapter.setItems(event.getObjects());
+			mAddButton.setVisibility(View.VISIBLE);
+			sortAndUpdateSelected(selectedCategory);
 			break;
 		}
 		
 		mCategoryViewPager.setCurrentItem(mPositionAfterUpdate, false);
 		updateLongPressListeners();
 	}
+}
+
+private void addCategory(Category category) {
+	Category selectedCategory = getSelectedCategory();
+	// Added first category -> Show add item button
+	if (mCategoryAdapter.getCount() == 0) {
+		mAddButton.setVisibility(View.VISIBLE);
+		mPositionAfterUpdate = 1;
+	}
+	// Adjust position if we added a category before the selected (can happen when we restore a deleted category)
+	else if (category.getOrder() <= selectedCategory.getOrder()) {
+		mPositionAfterUpdate += 1;
+	}
+	
+	mCategoryAdapter.addItem(category);
+}
+
+private void editCategories(List<Category> categories) {
+	sortAndUpdateSelected(getSelectedCategory());
+}
+
+private void removeCategory(Category category) {
+	Category selectedCategory = getSelectedCategory();
+	mCategoryAdapter.removeItem(category);
+	
+	// Removed the last category -> Hide add item button
+	if (mCategoryAdapter.getCount() == 0) {
+		mAddButton.setVisibility(View.GONE);
+	}
+	// Adjust position if we removed an item before the selected item
+	else if (category.getOrder() < selectedCategory.getOrder()) {
+		mPositionAfterUpdate -= 1;
+	}
+}
+
+private void sortAndUpdateSelected(Category selectedCategory) {
+	if (selectedCategory == null) {
+		return;
+	}
+	
+	mCategoryAdapter.sortItems();
+	
+	// Find the selected category
+	for (int i = 0; i < mCategoryAdapter.getCount(); ++i) {
+		Category categoryInAdapter = mCategoryAdapter.getCategory(i);
+		
+		if (selectedCategory.equals(categoryInAdapter)) {
+			mPositionAfterUpdate = i;
+			break;
+		}
+	}
+}
+
+@SuppressWarnings("unused")
+@Subscribe
+public void onStorageLocationSetEvent(StorageLocationSetEvent event) {
+	mCategoryAdapter.clear();
+	ItemRepo.getInstance().getCategories();
 }
 }

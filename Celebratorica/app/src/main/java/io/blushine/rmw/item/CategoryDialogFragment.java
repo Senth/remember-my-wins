@@ -30,7 +30,7 @@ public View onCreateViewImpl(LayoutInflater inflater, @Nullable ViewGroup contai
 	initToolbar(view);
 	
 	// Name validation
-	mNameEdit = (EditText) view.findViewById(R.id.name_edit);
+	mNameEdit = view.findViewById(R.id.name_edit);
 	addSaveView(mNameEdit, NAME_KEY);
 	mValidatorGroup.add(new TextValidator.Builder(mNameEdit)
 			.setRequired()
@@ -55,5 +55,8 @@ protected void focusNameTextField() {
 protected void setCategoryFromFields(Category category) {
 	category.setName(mNameEdit.getText().toString());
 }
-	
+
+protected String getName() {
+	return mNameEdit.getText().toString();
+}
 }

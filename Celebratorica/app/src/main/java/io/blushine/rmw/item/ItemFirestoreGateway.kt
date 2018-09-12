@@ -4,8 +4,10 @@ import android.content.res.Resources
 import android.util.Log
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import io.blushine.android.common.ObjectEvent
 import io.blushine.android.firebase.FirebaseAuth
+import io.blushine.android.firebase.largeBatch
 import io.blushine.rmw.R
 import io.blushine.rmw.util.AppActivity
 import io.blushine.utils.EventBus
@@ -24,19 +26,6 @@ internal class ItemFirestoreGateway : ItemGateway {
 		return FirebaseFirestore.getInstance()
 	}
 
-	override fun addCategory(category: Category) {
-		category.userId = getUserId()
-		val newDoc = getCategory()
-		category.id = newDoc.id
-		newDoc.set(category)
-				.addOnSuccessListener {
-					eventBus.post(CategoryEvent(ObjectEvent.Actions.ADDED, category))
-				}
-				.addOnFailureListener {
-					eventBus.post(CategoryEvent(ObjectEvent.Actions.ADD_FAILED, category))
-				}
-	}
-
 	private fun getUserId(): String {
 		val user = FirebaseAuth.getCurrentUser()
 		return if (user != null) {
@@ -52,10 +41,12 @@ internal class ItemFirestoreGateway : ItemGateway {
 	 * @param id category id, if not specified creates a new Category document
 	 */
 	private fun getCategory(id: String? = null): DocumentReference {
+		val collectionReference = db().collection(resources.getString(R.string.table_category))
+
 		return if (id != null) {
-			db().document(id)
+			collectionReference.document(id)
 		} else {
-			db().collection(resources.getString(R.string.table_category)).document()
+			collectionReference.document()
 		}
 	}
 
@@ -64,10 +55,12 @@ internal class ItemFirestoreGateway : ItemGateway {
 	 * @param id item id, if not specified creates a new Item document
 	 */
 	private fun getItem(id: String? = null): DocumentReference {
+		val collectionReference = db().collection(resources.getString(R.string.table_item))
+
 		return if (id != null) {
-			db().document(id)
+			collectionReference.document(id)
 		} else {
-			db().collection(resources.getString(R.string.table_item)).document()
+			collectionReference.document()
 		}
 	}
 
@@ -78,20 +71,37 @@ internal class ItemFirestoreGateway : ItemGateway {
 				.whereEqualTo("userId", getUserId())
 				.orderBy("order")
 				.get()
-				.addOnCompleteListener { task ->
-					if (task.isSuccessful) {
-						val categories = ArrayList<Category>()
-						for (categoryDocument in task.result.documents) {
-							val category = categoryDocument.toObject(Category::class.java)
-							if (category != null) {
-								categories.add(category)
-							}
+				.addOnSuccessListener { querySnapshot ->
+					val categories = ArrayList<Category>()
+					for (categoryDocument in querySnapshot.documents) {
+						val category = categoryDocument.toObject(Category::class.java)
+						if (category != null) {
+							categories.add(category)
 						}
-						eventBus.post(CategoryEvent(ObjectEvent.Actions.GET_RESPONSE, categories))
-					} else {
-						eventBus.post(CategoryEvent(ObjectEvent.Actions.GET_FAILED))
 					}
+					eventBus.post(CategoryEvent(ObjectEvent.Actions.GET_RESPONSE, categories))
 				}
+				.addOnFailureListener {
+					eventBus.post(CategoryEvent(ObjectEvent.Actions.GET_FAILED))
+				}
+	}
+
+	override fun addCategory(category: Category) {
+		// TODO get categories after this one
+
+		category.userId = getUserId()
+		val newDoc = getCategory()
+		category.id = newDoc.id
+		newDoc.set(category)
+				.addOnSuccessListener {
+					eventBus.post(CategoryEvent(ObjectEvent.Actions.ADDED, category))
+				}
+				.addOnFailureListener {
+					eventBus.post(CategoryEvent(ObjectEvent.Actions.ADD_FAILED, category))
+				}
+
+
+		// TODO update categories after this one
 	}
 
 	override fun updateCategories(categories: List<Category>) {
@@ -183,19 +193,81 @@ internal class ItemFirestoreGateway : ItemGateway {
 	}
 
 	override fun addItems(items: List<Item>) {
-		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+		val largeBatch = db().largeBatch()
+		val userId = getUserId()
+		for (item in items) {
+			item.userId = userId
+			val doc = getItem()
+			item.id = doc.id
+			largeBatch.set(doc, item)
+		}
+
+		largeBatch.commit()
+				.addOnSuccessListener {
+					eventBus.post(ItemEvent(ObjectEvent.Actions.ADDED, items))
+				}
+				.addOnFailureListener {
+					eventBus.post(ItemEvent(ObjectEvent.Actions.ADD_FAILED, items))
+				}
 	}
 
 	override fun updateItems(items: List<Item>) {
-		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+		val largeBatch = db().largeBatch()
+
+		for (item in items) {
+			val doc = getItem(item.id)
+			largeBatch.set(doc, item)
+		}
+
+		largeBatch.commit()
+				.addOnSuccessListener {
+					eventBus.post(ItemEvent(ObjectEvent.Actions.EDITED, items))
+				}
+				.addOnFailureListener {
+					eventBus.post(ItemEvent(ObjectEvent.Actions.EDIT_FAILED, items))
+				}
 	}
 
 	override fun removeItems(items: List<Item>) {
-		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+		val largeBatch = db().largeBatch()
+
+		for (item in items) {
+			val doc = getItem(item.id)
+			largeBatch.delete(doc)
+		}
+
+		largeBatch.commit()
+				.addOnSuccessListener {
+					eventBus.post(ItemEvent(ObjectEvent.Actions.REMOVED, items))
+				}
+				.addOnFailureListener {
+					eventBus.post(ItemEvent(ObjectEvent.Actions.REMOVE_FAILED, items))
+				}
 	}
 
-	override fun getItems(categoryId: String?) {
-		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+	override fun getItems(categoryId: String) {
+		val itemCollection = db().collection(resources.getString(R.string.table_item))
+
+		var query = itemCollection.whereEqualTo("userId", getUserId())
+
+		if (categoryId != GET_ALL_ITEMS)
+			query = query.whereEqualTo("categoryId", categoryId)
+
+		query.orderBy("date", Query.Direction.DESCENDING)
+				.get()
+				.addOnSuccessListener { querySnapshot ->
+					val items = ArrayList<Item>()
+					for (itemDocument in querySnapshot.documents) {
+						val item = itemDocument.toObject(Item::class.java)
+						if (item != null) {
+							items.add(item)
+						}
+					}
+					eventBus.post(ItemEvent(ObjectEvent.Actions.GET_RESPONSE, items, categoryId))
+				}
+				.addOnFailureListener {
+					eventBus.post(ItemEvent(ObjectEvent.Actions.GET_FAILED, categoryId = categoryId))
+				}
 	}
 
 	override fun importData(categories: List<Category>, items: List<Item>) {

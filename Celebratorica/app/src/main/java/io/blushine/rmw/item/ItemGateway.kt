@@ -40,7 +40,7 @@ internal interface ItemGateway {
 	 * @param categoryId the category id to get the item from, set to null to get from all categories
 	 * @return list of all items in the category. Items are ordered by date with newest first
 	 */
-	fun getItems(categoryId: String?)
+	fun getItems(categoryId: String)
 
 	/**
 	 * Update all the specified items

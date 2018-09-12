@@ -4,23 +4,27 @@ import android.content.res.Resources;
 
 import com.squareup.otto.Subscribe;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import io.blushine.android.common.ObjectEvent;
 import io.blushine.android.firebase.FirebaseAuth;
+import io.blushine.android.ui.SnackbarHelper;
 import io.blushine.rmw.R;
 import io.blushine.rmw.settings.SettingsRepo;
 import io.blushine.rmw.settings.StorageLocationSetEvent;
+import io.blushine.rmw.settings.StorageLocations;
 import io.blushine.rmw.util.AppActivity;
 import io.blushine.rmw.util.Sqlite;
 import io.blushine.utils.EventBus;
+
+import static io.blushine.rmw.item.ItemEventKt.GET_ALL_ITEMS;
 
 /**
  * Controller for getting celebration items and lists
  */
 class ItemRepo {
-private static final EventBus mEventBus = EventBus.getInstance();
 private static ItemRepo mInstance = null;
 private ItemGateway mCurrentGateway;
 
@@ -90,9 +94,8 @@ static ItemRepo getInstance() {
 
 @SuppressWarnings("unused")
 @Subscribe
-public void onStorageLocationSetEvent(StorageLocationSetEvent event) {
-	switch (event.getStorageLocation()) {
-	
+public void onStorageLocation(StorageLocations storageLocation) {
+	switch (storageLocation) {
 	case CLOUD:
 		FirebaseAuth.INSTANCE.getCurrentUser();
 		mCurrentGateway = new ItemFirestoreGateway();
@@ -106,6 +109,8 @@ public void onStorageLocationSetEvent(StorageLocationSetEvent event) {
 	case NOT_SET:
 		throw new IllegalStateException("Storage location should never be NOT SET after it being set");
 	}
+	
+	EventBus.getInstance().post(new StorageLocationSetEvent(storageLocation));
 }
 
 /**
@@ -113,7 +118,7 @@ public void onStorageLocationSetEvent(StorageLocationSetEvent event) {
  * {@link ItemEvent} with the action set as {@link io.blushine.android.common.ObjectEvent.Actions#GET_RESPONSE}.
  * @param categoryId the category to get all items from
  */
-void getItems(String categoryId) {
+void getItems(@NotNull String categoryId) {
 	mCurrentGateway.getItems(categoryId);
 }
 
@@ -123,15 +128,46 @@ public void onItem(ItemEvent event) {
 	switch (event.getAction()) {
 	case ADD:
 		mCurrentGateway.addItems(event.getObjects());
-		mEventBus.post(new ItemEvent(ObjectEvent.Actions.ADDED, event.getObjects()));
 		break;
 	case EDIT:
 		mCurrentGateway.updateItems(event.getObjects());
-		mEventBus.post(new ItemEvent(ObjectEvent.Actions.EDITED, event.getObjects()));
 		break;
 	case REMOVE:
 		mCurrentGateway.removeItems(event.getObjects());
-		mEventBus.post(new ItemEvent(ObjectEvent.Actions.REMOVED, event.getObjects()));
+		break;
+	
+	case ADDED:
+		if (!SnackbarHelper.isShownOrQueued()) {
+			SnackbarHelper.showSnackbar(R.string.item_add_success);
+		}
+		break;
+	
+	case EDITED:
+		if (!SnackbarHelper.isShownOrQueued()) {
+			SnackbarHelper.showSnackbar(R.string.item_edit_success);
+		}
+		break;
+	
+	case REMOVED:
+		SnackbarHelper.showSnackbarUndo(R.string.item_remove_success, v -> {
+			SnackbarHelper.showSnackbar(R.string.item_restored);
+		});
+		break;
+	
+	case ADD_FAILED:
+		SnackbarHelper.showSnackbar(R.string.item_add_failed);
+		break;
+	
+	case EDIT_FAILED:
+		SnackbarHelper.showSnackbar(R.string.item_edit_failed);
+		break;
+	
+	case REMOVE_FAILED:
+		SnackbarHelper.showSnackbar(R.string.item_remove_failed);
+		break;
+	
+	case GET_FAILED:
+		SnackbarHelper.showSnackbar(R.string.item_get_failed);
 		break;
 	}
 }
@@ -149,7 +185,7 @@ void getCategories() {
  * {@link ItemEvent} with the action set as {@link io.blushine.android.common.ObjectEvent.Actions#GET_RESPONSE}.
  */
 void getItems() {
-	mCurrentGateway.getItems(null);
+	mCurrentGateway.getItems(GET_ALL_ITEMS);
 }
 
 @SuppressWarnings("unused")
@@ -164,6 +200,38 @@ public void onCategory(CategoryEvent event) {
 		break;
 	case REMOVE:
 		removeCategories(event.getObjects());
+		break;
+	
+	case ADDED:
+		if (!SnackbarHelper.isShownOrQueued()) {
+			SnackbarHelper.showSnackbar(R.string.category_add_success);
+		}
+		break;
+	
+	case EDITED:
+		if (!SnackbarHelper.isShownOrQueued()) {
+			SnackbarHelper.showSnackbar(R.string.category_edit_success);
+		}
+		break;
+	
+	case REMOVED:
+		SnackbarHelper.showSnackbar(R.string.category_remove_success);
+		break;
+	
+	case ADD_FAILED:
+		SnackbarHelper.showSnackbar(R.string.category_add_failed);
+		break;
+	
+	case EDIT_FAILED:
+		SnackbarHelper.showSnackbar(R.string.category_edit_failed);
+		break;
+	
+	case REMOVE_FAILED:
+		SnackbarHelper.showSnackbar(R.string.category_remove_failed);
+		break;
+	
+	case GET_FAILED:
+		SnackbarHelper.showSnackbar(R.string.category_get_failed);
 		break;
 	}
 }

@@ -6,7 +6,6 @@ import android.view.MenuItem;
 import android.view.View;
 
 import io.blushine.android.AppFragmentHelper;
-import io.blushine.android.ui.SnackbarHelper;
 import io.blushine.rmw.R;
 import io.blushine.utils.EventBus;
 
@@ -28,7 +27,6 @@ private void addItem() {
 	
 	ItemEvent itemEvent = new ItemEvent(ItemEvent.Actions.ADD, item);
 	EventBus.getInstance().post(itemEvent);
-	SnackbarHelper.showSnackbar(R.string.item_add_success);
 	
 	dismiss();
 }

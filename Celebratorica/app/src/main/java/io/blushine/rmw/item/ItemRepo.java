@@ -12,6 +12,7 @@ import java.util.List;
 import io.blushine.android.firebase.FirebaseAuth;
 import io.blushine.android.ui.SnackbarHelper;
 import io.blushine.rmw.R;
+import io.blushine.rmw.item.firestore.ItemFirestoreGateway;
 import io.blushine.rmw.settings.SettingsRepo;
 import io.blushine.rmw.settings.StorageLocationSetEvent;
 import io.blushine.rmw.settings.StorageLocations;

@@ -11,9 +11,6 @@ if (project.hasProperty("remembermywins.signing")
 android {
     compileSdkVersion targetSdkVersionVal
     buildToolsVersion buildToolsVersionVal
-    sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
-    }
     defaultConfig {
         applicationId "io.blushine.rmw"
         minSdkVersion minSdkVersionVal

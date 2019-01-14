@@ -37,7 +37,7 @@ dependencies {
     implementation project(':android-sqlite')
     implementation project(':android-firebase')
     implementation 'com.github.BlushineIO:MaterialShowcaseView:2.1.0'
-    implementation 'com.google.code.gson:gson:2.8.0'
+    implementation 'com.google.code.gson:gson:2.8.2'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersionVal"
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersionVal"
 

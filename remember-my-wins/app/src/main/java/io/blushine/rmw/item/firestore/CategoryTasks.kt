@@ -50,7 +50,10 @@ internal class AddCategoryTask(val category: Category) : FirestoreTask(), Contin
 			transaction.set(newDoc, category)
 
 			// Update all categories after this one
-			UpdateCategoriesTask.transactionImpl(transaction, getCategoriesTask.result)
+			val resultList = getCategoriesTask.result
+			if (resultList != null) {
+				UpdateCategoriesTask.transactionImpl(transaction, resultList)
+			}
 		}
 
 		Tasks.await(task)
@@ -81,8 +84,10 @@ internal class UpdateCategoriesTask(val categories: List<Category>) : FirestoreC
 
 internal class RemoveCategoryTask(val category: Category) : FirestoreTask(), Continuation<Pair<List<Item>, List<Category>>, Unit> {
 	override fun then(combineTask: Task<Pair<List<Item>, List<Category>>>) {
-		val itemsToRemove = combineTask.result.first
-		val categories = combineTask.result.second
+		val taskResult = combineTask.result
+		if (taskResult != null) {
+		val itemsToRemove = taskResult.first
+		val categories = taskResult.second
 
 		db().runTransaction { transaction ->
 			// Delete category
@@ -103,6 +108,7 @@ internal class RemoveCategoryTask(val category: Category) : FirestoreTask(), Con
 					transaction.set(doc, category)
 				}
 			}
+		}
 		}
 	}
 }

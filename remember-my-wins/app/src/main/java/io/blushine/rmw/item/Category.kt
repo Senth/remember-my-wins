@@ -14,9 +14,9 @@ internal class Category() : Comparable<Category>, Parcelable {
 	var order = -1
 
 	constructor(parcel: Parcel) : this() {
-		userId = parcel.readString()
-		id = parcel.readString()
-		name = parcel.readString()
+		userId = parcel.readString() ?: ""
+		id = parcel.readString() ?: ""
+		name = parcel.readString() ?: ""
 		order = parcel.readInt()
 	}
 

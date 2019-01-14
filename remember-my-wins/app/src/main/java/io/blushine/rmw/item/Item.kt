@@ -21,10 +21,10 @@ internal class Item() : Comparable<Item>, Parcelable {
 	var date: Long = -1
 
 	constructor(parcel: Parcel) : this() {
-		userId = parcel.readString()
-		id = parcel.readString()
-		categoryId = parcel.readString()
-		text = parcel.readString()
+		userId = parcel.readString() ?: ""
+		id = parcel.readString() ?: ""
+		categoryId = parcel.readString() ?: ""
+		text = parcel.readString() ?: ""
 		date = parcel.readLong()
 	}
 

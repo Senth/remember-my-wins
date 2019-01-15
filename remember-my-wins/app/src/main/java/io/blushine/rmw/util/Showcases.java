@@ -3,8 +3,8 @@ package io.blushine.rmw.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import android.view.View;
 
 import com.squareup.otto.Subscribe;

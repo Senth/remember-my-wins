@@ -2,10 +2,10 @@ package io.blushine.rmw.settings;
 
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v14.preference.SwitchPreference;
-import android.support.v7.app.ActionBar;
-import android.support.v7.preference.Preference;
+import androidx.annotation.Nullable;
+import androidx.preference.SwitchPreference;
+import androidx.appcompat.app.ActionBar;
+import androidx.preference.Preference;
 
 import de.mrapp.android.preference.ListPreference;
 import io.blushine.android.AppPreferenceFragment;

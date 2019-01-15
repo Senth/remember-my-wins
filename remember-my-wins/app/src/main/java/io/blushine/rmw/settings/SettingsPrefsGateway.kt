@@ -1,6 +1,6 @@
 package io.blushine.rmw.settings
 
-import android.support.v7.preference.PreferenceManager
+import androidx.preference.PreferenceManager
 import io.blushine.android.common.Time
 import io.blushine.rmw.R
 import io.blushine.rmw.util.AppActivity
@@ -26,7 +26,8 @@ internal object SettingsPrefsGateway {
 	 * @return current storage location
 	 */
 	fun getStorageLocation(): StorageLocations {
-		val key = preferences.getString(STORE_LOCATION_KEY, "")
+		// TODO return "" instead of cloud
+		val key = preferences.getString(STORE_LOCATION_KEY, "cloud")
 		return StorageLocations.toEnum(key)
 	}
 

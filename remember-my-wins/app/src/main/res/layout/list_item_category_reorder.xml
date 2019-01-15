@@ -13,7 +13,7 @@
 			style="@style/Material.ListItem.Text.Single.Action"
 			android:text="Text" />
 
-		<android.support.v7.widget.AppCompatImageButton
+		<androidx.appcompat.widget.AppCompatImageButton
 			android:id="@+id/reorder_button"
 			style="@style/Material.ListItem.Action.Single"
 			android:src="@drawable/ic_reorder_24dp"

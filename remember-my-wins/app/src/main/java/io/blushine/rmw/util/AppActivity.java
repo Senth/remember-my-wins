@@ -5,30 +5,29 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
 
+import com.squareup.otto.ThreadEnforcer;
+
 import io.blushine.android.common.DocumentChangeChecker;
 import io.blushine.android.firebase.FirebaseAuth;
 import io.blushine.rmw.R;
 import io.blushine.rmw.item.CategoryOrderFragment;
 import io.blushine.rmw.settings.SettingsActivity;
 import io.blushine.rmw.settings.SettingsRepo;
+import io.blushine.utils.EventBus;
 
 /**
  * Base activity for all activities in this app
  */
 public abstract class AppActivity extends io.blushine.android.AppActivity {
-private static boolean mFirstTime = true;
 
 @Override
 protected void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
-	
-	if (mFirstTime) {
-		mFirstTime = false;
-		onFirstTime();
-	}
 }
 
 protected void onFirstTime() {
+	EventBus.setThreadEnforcer(ThreadEnforcer.ANY);
+	
 	// TODO only init Firebase or Sqlite not both (depending on what backend the user has selected)
 	switch (SettingsRepo.INSTANCE.getStorageLocation()) {
 	case CLOUD:

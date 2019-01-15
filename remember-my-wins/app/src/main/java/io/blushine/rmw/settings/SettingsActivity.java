@@ -2,7 +2,7 @@ package io.blushine.rmw.settings;
 
 import android.app.FragmentManager;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.widget.Toolbar;
 import android.view.View;
 
 import io.blushine.android.AppFragmentHelper;

@@ -16,7 +16,11 @@ enum class StorageLocations(val key: String) {
 	 * @return the enum matching to the specified key. If not found [NOT_SET] will be returned.
 	 */
 	companion object {
-		fun toEnum(key: String): StorageLocations {
+		fun toEnum(key: String?): StorageLocations {
+			if (key == null) {
+				return NOT_SET
+			}
+
 			for (enum in StorageLocations.values()) {
 				if (enum.key == key) {
 					return enum

@@ -7,6 +7,7 @@ import android.view.MenuItem;
 
 import com.squareup.otto.ThreadEnforcer;
 
+import de.mrapp.android.dialog.MaterialDialog;
 import io.blushine.android.common.DocumentChangeChecker;
 import io.blushine.android.firebase.FirebaseAuth;
 import io.blushine.rmw.R;

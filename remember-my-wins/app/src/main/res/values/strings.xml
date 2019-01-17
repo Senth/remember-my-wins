@@ -15,6 +15,7 @@
 	<string name="item_add_failed">Failed to add item, try again later.</string>
 	<string name="item_edit_failed">Failed to edit item, try again later.</string>
 	<string name="item_remove_failed">Failed to remove item, try again later.</string>
+	<string name="item_restore_failed">Failed to restore item.</string>
 
 	<!-- Categories -->
 	<string name="category_name">Category name</string>
@@ -30,7 +31,7 @@
 	<string name="category_edit_failed">Failed to edit category, try again later.</string>
 	<string name="category_remove_failed">Failed to remove category, try again later.</string>
 	<string name="category_remove_dialog_title">Remove category?</string>
-	<string name="category_remove_dialog_message">Removing a category will remove all its items.\n\nDo you still want to remove the category?</string>
+	<string name="category_remove_dialog_message">Removing a category will remove all its items.\n\nThis action cannot be undone!\n\nDo you still want to remove the category?</string>
 
 
 	<!-- Default Categories -->

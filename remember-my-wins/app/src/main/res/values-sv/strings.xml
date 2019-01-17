@@ -15,7 +15,7 @@
 	<string name="category_add_header">Ny kategori</string>
 	<string name="category_add_success">Kategory skapad</string>
 	<string name="category_name">Kategorinamn</string>
-	<string name="category_remove_dialog_message">Om du raderar en kategori raderas även alla dess poster.\n\nVill du fortfarande radera kategorin?</string>
+	<string name="category_remove_dialog_message">Om du raderar en kategori raderas även alla dess poster.\n\nDetta kan inte ångras!\n\nVill du fortfarande radera kategorin?</string>
 	<string name="category_remove_dialog_title">Radera kategori?</string>
 	<string name="category_remove_success">Kategori borttagen</string>
 	<string name="category_restored">Kategori återställd</string>

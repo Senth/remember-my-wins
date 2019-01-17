@@ -28,6 +28,7 @@ import static io.blushine.rmw.item.ItemEventKt.GET_ALL_ITEMS;
 class ItemRepo {
 private static ItemRepo mInstance = null;
 private ItemGateway mCurrentGateway;
+private List<Item> mUndoItems = null;
 
 /**
  * Enforces singleton pattern
@@ -45,6 +46,7 @@ private ItemRepo() {
 	case NOT_SET:
 		// TODO remove, just for implementation and testing
 		mCurrentGateway = new ItemFirestoreGateway();
+		// mCurrentGateway = new ItemEmptyGateway();
 		break;
 	}
 	
@@ -138,8 +140,14 @@ public void onItem(ItemEvent event) {
 		break;
 	
 	case ADDED:
-		if (!SnackbarHelper.isShownOrQueued()) {
+		// Added items
+		if (mUndoItems == null) {
 			SnackbarHelper.showSnackbar(R.string.item_add_success);
+		}
+		// Restored removed items
+		else {
+			SnackbarHelper.showSnackbar(R.string.item_restored);
+			mUndoItems = null;
 		}
 		break;
 	
@@ -151,12 +159,21 @@ public void onItem(ItemEvent event) {
 	
 	case REMOVED:
 		SnackbarHelper.showSnackbarUndo(R.string.item_remove_success, v -> {
-			SnackbarHelper.showSnackbar(R.string.item_restored);
+			mUndoItems = event.getObjects();
+			mCurrentGateway.addItems(event.getObjects());
 		});
 		break;
 	
 	case ADD_FAILED:
-		SnackbarHelper.showSnackbar(R.string.item_add_failed);
+		// Adding items
+		if (mUndoItems == null) {
+			SnackbarHelper.showSnackbar(R.string.item_add_failed);
+		}
+		// Undoing items
+		else {
+			SnackbarHelper.showSnackbar(R.string.item_restore_failed);
+			mUndoItems = null;
+		}
 		break;
 	
 	case EDIT_FAILED:

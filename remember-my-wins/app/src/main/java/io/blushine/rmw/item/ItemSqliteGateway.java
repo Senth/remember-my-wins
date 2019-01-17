@@ -20,7 +20,7 @@ import io.blushine.rmw.util.AppActivity;
 import io.blushine.utils.EventBus;
 
 /**
- * Gateway for getting celebration and list items
+ * Gateway for getting categories and items
  */
 class ItemSqliteGateway extends SqliteGateway implements ItemGateway {
 private static final String TAG = ItemSqliteGateway.class.getSimpleName();

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<!-- Sqlite -->
+	<string name="sqlite_db_name" translatable="false">DB</string>
+	<integer name="sqlite_db_version">3</integer>
+
+	<!-- List -->
+	<string name="table_category" translatable="false">category</string>
+	<string name="table_category_id" translatable="false">category_id</string>
+	<string name="table_category_order" translatable="false">category_order</string>
+	<string name="table_category_name" translatable="false">category_name</string>
+
+	<!-- Item -->
+	<string name="table_item" translatable="false">item</string>
+	<string name="table_item_id" translatable="false">item_id</string>
+	<string name="table_item_text" translatable="false">item_text</string>
+	<string name="table_item_date" translatable="false">item_date</string>
+
+
+</resources>

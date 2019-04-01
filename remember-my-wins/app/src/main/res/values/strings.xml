@@ -1,0 +1,71 @@
+<resources>
+	<string name="app_name">Remember My Wins</string>
+
+	<!-- Items -->
+	<string name="item_date">Date</string>
+	<string name="item_text">Text</string>
+	<string name="item_edit_header">Edit %s item</string>
+	<string name="item_add_header">New %s item</string>
+	<string name="item_add_discard">Discard new item?</string>
+	<string name="item_add_success">Item created</string>
+	<string name="item_restored">Item restored</string>
+	<string name="item_remove_success">Item removed</string>
+	<string name="item_edit_success" translatable="false">@string/edit_success</string>
+	<string name="item_get_failed">Failed to get items, try again later.</string>
+	<string name="item_add_failed">Failed to add item, try again later.</string>
+	<string name="item_edit_failed">Failed to edit item, try again later.</string>
+	<string name="item_remove_failed">Failed to remove item, try again later.</string>
+	<string name="item_restore_failed">Failed to restore item.</string>
+
+	<!-- Categories -->
+	<string name="category_name">Category name</string>
+	<string name="category_add_header">New category</string>
+	<string name="category_add_discard">Discard new category?</string>
+	<string name="category_add_success">Category created</string>
+	<string name="category_restored">Category restored</string>
+	<string name="category_remove_success">Category removed</string>
+	<string name="category_edit_header">Edit categories</string>
+	<string name="category_edit_success" translatable="false">@string/edit_success</string>
+	<string name="category_get_failed">Failed to get categories, try again later.</string>
+	<string name="category_add_failed">Failed to add category, try again later.</string>
+	<string name="category_edit_failed">Failed to edit category, try again later.</string>
+	<string name="category_remove_failed">Failed to remove category, try again later.</string>
+	<string name="category_remove_dialog_title">Remove category?</string>
+	<string name="category_remove_dialog_message">Removing a category will remove all its items.\n\nThis action cannot be undone!\n\nDo you still want to remove the category?</string>
+
+
+	<!-- Default Categories -->
+	<string name="category_default_1_name">Wins</string>
+	<string name="category_default_2_name">Gratitude</string>
+
+	<!-- Menus -->
+	<string name="open_article_menu">Open article</string>
+	<string name="article_url" translatable="false">https://matteusmagnusson.com/celebrate-little-things-life/?utm_campaign=celebratorica&amp;utm_medium=menu&amp;utm_source=celebratorica</string>
+
+	<!-- Showcases -->
+	<string name="showcase_add_item_title">Add item</string>
+	<string name="showcase_add_item_message">Add something that happened today that\'s worth celebrating.</string>
+	<string name="showcase_add_first_category_title">Add a category</string>
+	<string name="showcase_add_first_category_message">Add a category to remember what\'s worth celebrating or something you\'re grateful for.</string>
+	<string name="showcase_add_another_category_title">Add another category</string>
+	<string name="showcase_add_another_category_message">What other categories can you add? How about all the thanks you\'ve received today?</string>
+	<string name="showcase_add_another_category_id" translatable="false">add_another_category</string>
+
+	<!-- Settings -->
+	<string name="setting_reminder_category_name">Daily reminder</string>
+	<string name="setting_reminder_key" translatable="false">reminder</string>
+	<string name="setting_reminder_title">Use daily reminders</string>
+	<string name="setting_reminder_time_1_key" translatable="false">reminder_time_1</string>
+	<string name="setting_reminder_time_1_default" translatable="false">22:00</string>
+	<string name="setting_reminder_time_title">Set reminder time</string>
+	<string name="setting_store_location_key" translatable="false">store_location</string>
+	<string name="setting_store_location_title">Change storage location</string>
+	<string name="setting_store_location_dialog_title">Select storage location</string>
+	<string name="setting_store_location_message">Select whether you want to store your data online in the cloud or locally on your phone.\n\nStoring it in the cloud will let you sync your data between devices and recover your data if you lose your phone.\n\nStoring it locally will let you use the app without an Internet connection.</string>
+	<string name="setting_store_location_category_name">Storage location</string>
+	<string name="setting_store_location_cloud_key" translatable="false">cloud</string>
+	<string name="setting_store_location_cloud_title">Cloud</string>
+	<string name="setting_store_location_local_key" translatable="false">local</string>
+	<string name="setting_store_location_local_title">Phone</string>
+	<string name="setting_store_location_not_set_key" translatable="false">not_set</string>
+</resources>

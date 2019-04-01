@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="app_name">Remember My Wins</string>
+	<string name="category_default_1_name">Fira</string>
+	<string name="item_add_discard">Kasta ny post?</string>
+	<string name="item_add_header">Ny %s post</string>
+	<string name="item_add_success">Post tillagd</string>
+	<string name="item_date">Datum</string>
+	<string name="item_text">Text</string>
+	<string name="open_article_menu">Öppna artikel</string>
+	<string name="showcase_add_item_title">Lägg till post</string>
+	<string name="showcase_add_item_message">Lägg till en händelse från idag som är värd att fira.</string>
+	<string name="category_default_2_name">Tacksamhet</string>
+	<string name="category_add_discard">Kasta ny kategori?</string>
+	<string name="category_add_header">Ny kategori</string>
+	<string name="category_add_success">Kategory skapad</string>
+	<string name="category_name">Kategorinamn</string>
+	<string name="category_remove_dialog_message">Om du raderar en kategori raderas även alla dess poster.\n\nDetta kan inte ångras!\n\nVill du fortfarande radera kategorin?</string>
+	<string name="category_remove_dialog_title">Radera kategori?</string>
+	<string name="category_remove_success">Kategori borttagen</string>
+	<string name="category_restored">Kategori återställd</string>
+	<string name="item_remove_success">Post borttagen</string>
+	<string name="item_restored">Post återställd</string>
+	<string name="category_edit_header">Redigera kategorier</string>
+	<string name="showcase_add_another_category_message">Vad för andra kategorier kan du lägga till? Kanske alla tack du har fått idag?</string>
+	<string name="showcase_add_another_category_title">Lägg till en kategori</string>
+	<string name="showcase_add_first_category_message">Skapa en kategori för att skriva upp vad som är värt att fira eller vad du är tacksam för.</string>
+	<string name="showcase_add_first_category_title">Lägg till kategori</string>
+	<string name="item_edit_header">Redigera %s post</string>
+	<string name="setting_reminder_category_name">Daglig påminnelse</string>
+	<string name="setting_reminder_title">Använd påminnelser</string>
+	<string name="setting_reminder_time_title">Sätt påminnelsetid</string>
+</resources>
